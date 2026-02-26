@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Portal - Science Laboratory Report Notebook</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell teacher-shell">
+      <header class="hero teacher-hero">
+        <div>
+          <p class="eyebrow">Teacher Configuration</p>
+          <h1>Teacher Portal</h1>
+          <p class="hero-subtitle">
+            Set the destination email address where student final PDF submissions will be delivered.
+          </p>
+        </div>
+        <a class="btn btn-secondary" href="index.html">Return to Student Report</a>
+      </header>
+
+      <section class="card teacher-card">
+        <h2>Submission Destination</h2>
+        <p class="helper-text">Any valid email address can be used. This address is used when students submit final reports.</p>
+        <div class="teacher-form-grid">
+          <div>
+            <label for="teacherEmail">Teacher Email Address</label>
+            <input id="teacherEmail" type="email" placeholder="teacher@school.org" autocomplete="off" />
+          </div>
+          <button id="saveTeacherBtn" class="btn btn-strong">Save Email</button>
+        </div>
+        <p id="teacherSaveState" class="meta"></p>
+      </section>
+
+      <section class="card instructions-card">
+        <h2>Configuration Notes</h2>
+        <ul class="notes-list">
+          <li>Email is stored for this browser session and reused by the student page.</li>
+          <li>Students cannot edit this email from the report page.</li>
+        </ul>
+      </section>
+    </div>
+
+    <script src="teacher.js"></script>
+  </body>
+</html>
