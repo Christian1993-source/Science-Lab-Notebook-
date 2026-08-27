@@ -4,7 +4,11 @@ Aplicación web académica para redactar informes de laboratorio con formato ins
 
 ## Funcionalidades principales
 
-- Diseño institucional verde profesional (fondo verde oscuro + tarjetas blancas).
+- Diseño moderno y adaptable con espacios separados para MYP y DP.
+- Campo `Class Code` dentro de Student Information para anotar el código indicado en clase.
+- MYP conserva las 12 secciones del informe actual.
+- DP organiza el informe en Research Design, Data Analysis, Conclusion y Evaluation.
+- Cada sección puede excluirse y restaurarse; solo las activas aparecen en el PDF.
 - Información obligatoria del estudiante:
   - `Title of Experiment`
   - `Student Name`
@@ -16,6 +20,8 @@ Aplicación web académica para redactar informes de laboratorio con formato ins
   - Bloquea evento `paste`
   - Bloquea clic derecho/context menu
   - Muestra alerta: `Paste is disabled. Please write your own work.`
+  - Bloquea cortar, copiar, pegar, arrastrar y soltar, menú contextual e inserciones masivas anormales.
+  - Registra en el informe final la cantidad de intentos bloqueados.
 - Autosave dual:
   - Cada 15 segundos
   - 3 segundos después de dejar de escribir
@@ -26,6 +32,7 @@ Aplicación web académica para redactar informes de laboratorio con formato ins
   - `Submitted` (bloquea edición)
 - Entrega final:
   - Genera PDF académico con márgenes de 1 inch.
+  - Si la libreta se abre directamente desde Finder o el servidor no está disponible, genera el PDF localmente como respaldo.
   - Incluye solo secciones con contenido.
   - Numera secciones automáticamente.
   - Dibuja tablas con líneas visibles.
@@ -36,7 +43,7 @@ Aplicación web académica para redactar informes de laboratorio con formato ins
 - Frontend: HTML + CSS + JavaScript moderno
 - Backend: Node.js + Express
 - Base de datos: Supabase (con fallback en memoria para desarrollo sin credenciales)
-- PDF: PDFKit
+- PDF: PDFKit en el servidor + jsPDF y jsPDF-AutoTable incluidos localmente para conservar el mismo formato al abrir desde Finder.
 
 ## Instalación local
 

@@ -1,5 +1,5 @@
 const path = require("path");
-const { randomUUID } = require("crypto");
+const { randomUUID, timingSafeEqual } = require("crypto");
 const express = require("express");
 const dotenv = require("dotenv");
 const PDFDocument = require("pdfkit");
@@ -10,6 +10,8 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const SUPABASE_TABLE = process.env.SUPABASE_TABLE || "lab_reports";
+
+app.disable("x-powered-by");
 
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
@@ -29,8 +31,21 @@ const sectionOrder = [
   { type: "text", key: "conclusion", label: "Conclusion" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
-  { type: "text", key: "references", label: "References (APA 7)" }
+  { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
+  { type: "text", key: "dpResearchDesign", label: "Research Design", program: "dp" },
+  { type: "text", key: "dpDataAnalysis", label: "Data Analysis", program: "dp" },
+  { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
+  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" }
 ];
+
+sectionOrder.forEach((section) => {
+  if (!section.program) section.program = "myp";
+});
+
+const programSections = {
+  myp: sectionOrder.filter((section) => section.program === "myp").map((section) => section.key),
+  dp: sectionOrder.filter((section) => section.program === "dp").map((section) => section.key)
+};
 
 const supabase =
   process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -40,7 +55,25 @@ const supabase =
 const memoryStore = new Map();
 
 app.use(express.json({ limit: "4mb" }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+  );
+  next();
+});
+
+const publicFiles = new Set(["app.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
+app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
+app.get("/:publicFile", (req, res, next) => {
+  if (!publicFiles.has(req.params.publicFile)) return next();
+  return res.sendFile(path.join(__dirname, req.params.publicFile));
+});
 
 function cleanString(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -121,6 +154,7 @@ function normalizeTableList(tableValue) {
 function sanitizeReport(rawReport) {
   const report = rawReport && typeof rawReport === "object" ? rawReport : {};
   const sections = {};
+  const program = programSections[report.program] ? report.program : "myp";
 
   sectionOrder.forEach((section) => {
     if (section.type === "text") {
@@ -137,8 +171,20 @@ function sanitizeReport(rawReport) {
 
   return {
     id: cleanString(report.id) || randomUUID(),
+    accessToken: cleanString(report.accessToken).slice(0, 128),
     teacherEmail: cleanString(report.teacherEmail),
     teacher: cleanString(report.teacher),
+    classCode: cleanString(report.classCode).slice(0, 24).toUpperCase(),
+    program,
+    activeSections: {
+      myp: Array.isArray(report.activeSections?.myp)
+        ? programSections.myp.filter((key) => report.activeSections.myp.includes(key))
+        : programSections.myp,
+      dp: Array.isArray(report.activeSections?.dp)
+        ? programSections.dp.filter((key) => report.activeSections.dp.includes(key))
+        : programSections.dp
+    },
+    blockedAttempts: Math.max(0, Math.floor(cleanNumber(report.blockedAttempts))),
     title: cleanString(report.title),
     studentName: cleanString(report.studentName),
     date: cleanString(report.date),
@@ -153,6 +199,22 @@ function sanitizeReport(rawReport) {
     updatedAt: cleanString(report.updatedAt),
     submittedAt: cleanString(report.submittedAt)
   };
+}
+
+function tokenMatches(report, suppliedToken) {
+  const expected = cleanString(report?.accessToken);
+  const supplied = cleanString(suppliedToken);
+  if (!expected || !supplied) {
+    return false;
+  }
+  const expectedBuffer = Buffer.from(expected, "utf8");
+  const suppliedBuffer = Buffer.from(supplied, "utf8");
+  return expectedBuffer.length === suppliedBuffer.length && timingSafeEqual(expectedBuffer, suppliedBuffer);
+}
+
+function reportForClient(report) {
+  const { accessToken: _accessToken, ...safeReport } = report;
+  return safeReport;
 }
 
 function tableHasContent(table) {
@@ -317,6 +379,7 @@ function drawTableGrid(doc, table) {
     currentY += rowHeight;
   });
 
+  doc.x = left;
   doc.y = currentY + 12;
 }
 
@@ -378,8 +441,12 @@ function drawDataSection(doc, number, label, notes, sampleCalculations, tables) 
 
 function buildSectionsForPdf(report) {
   const ordered = [];
+  const active = Array.isArray(report.activeSections?.[report.program])
+    ? report.activeSections[report.program]
+    : programSections[report.program];
 
   sectionOrder.forEach((section) => {
+    if (section.program !== report.program || !active.includes(section.key)) return;
     if (section.type === "text") {
       const text = cleanMultiline(report.sections[section.key]);
       if (text.length > 0) {
@@ -424,6 +491,8 @@ function generatePdf(report) {
       align: "center"
     });
     doc.text(`Date: ${report.date}`, { align: "center" });
+    doc.text(`Programme: ${report.program.toUpperCase()} | Class Code: ${report.classCode}`, { align: "center" });
+    doc.fontSize(10).fillColor("#4b5563").text(`Writing integrity: ${report.blockedAttempts} blocked attempt(s)`, { align: "center" });
     doc.text(`Time Spent: ${formatDuration(report.timeSpentSeconds)}`, { align: "center" });
     doc.moveDown(1);
 
@@ -466,6 +535,9 @@ function safeFileName(baseName) {
 }
 
 function validateSubmitFields(report) {
+  if (!report.classCode) {
+    return "Class Code is required.";
+  }
   if (!report.title) {
     return "Title of Experiment is required.";
   }
@@ -488,7 +560,10 @@ app.get("/api/report/:id", async (req, res) => {
     if (!report) {
       return res.status(404).json({ error: "Report not found." });
     }
-    return res.json({ report });
+    if (!tokenMatches(report, req.get("x-report-token"))) {
+      return res.status(404).json({ error: "Report not found." });
+    }
+    return res.json({ report: reportForClient(report) });
   } catch (error) {
     return res.status(500).json({ error: error.message || "Failed to load report." });
   }
@@ -497,7 +572,13 @@ app.get("/api/report/:id", async (req, res) => {
 app.post("/api/draft", async (req, res) => {
   try {
     const report = sanitizeReport(req.body?.report);
+    if (!report.accessToken) {
+      return res.status(400).json({ error: "Report access token is required." });
+    }
     const existing = await getReportById(report.id);
+    if (existing?.accessToken && !tokenMatches(existing, report.accessToken)) {
+      return res.status(404).json({ error: "Report not found." });
+    }
     if (existing?.status === "Submitted") {
       return res.status(409).json({ error: "Report already submitted and locked." });
     }
@@ -517,12 +598,18 @@ app.post("/api/draft", async (req, res) => {
 app.post("/api/submit", async (req, res) => {
   try {
     const report = sanitizeReport(req.body?.report);
+    if (!report.accessToken) {
+      return res.status(400).json({ error: "Report access token is required." });
+    }
     const validationMessage = validateSubmitFields(report);
     if (validationMessage) {
       return res.status(400).json({ error: validationMessage });
     }
 
     const existing = await getReportById(report.id);
+    if (existing?.accessToken && !tokenMatches(existing, report.accessToken)) {
+      return res.status(404).json({ error: "Report not found." });
+    }
     if (existing?.status === "Submitted") {
       return res.status(409).json({ error: "Report already submitted and locked." });
     }
@@ -543,7 +630,7 @@ app.use((req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({ error: "Not found." });
   }
-  return res.sendFile(path.join(__dirname, "public", "index.html"));
+  return res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, () => {

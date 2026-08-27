@@ -1,0 +1,210 @@
+/* Laboratory Atlas — final visual layer. Loaded after the application styles. */
+:root {
+  --atlas-paper: #f1ede3;
+  --atlas-surface: #fffdf8;
+  --atlas-ink: #153142;
+  --atlas-muted: #68777b;
+  --atlas-teal: #108887;
+  --atlas-teal-dark: #086c6c;
+  --atlas-line: #c7d2cf;
+  --atlas-soft: #e8efeb;
+  --atlas-shadow: rgba(21, 49, 66, 0.12);
+}
+
+body,
+body.program-myp,
+body.program-dp {
+  --program-accent: var(--atlas-teal);
+  --program-accent-strong: var(--atlas-teal-dark);
+  --program-glow: rgba(16, 136, 135, 0.16);
+  color: var(--atlas-ink);
+  background-color: var(--atlas-paper);
+  background-image:
+    linear-gradient(rgba(21, 49, 66, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21, 49, 66, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 10% 0%, rgba(16, 136, 135, 0.1), transparent 28%);
+  background-size: 28px 28px, 28px 28px, auto;
+}
+
+.page-shell { max-width: 1380px; padding-top: 24px; }
+
+.hero,
+.main-hero {
+  min-height: 330px;
+  border: 1px solid var(--atlas-line);
+  border-radius: 22px;
+  padding: clamp(28px, 4vw, 54px);
+  background: linear-gradient(110deg, rgba(255, 253, 248, 0.98) 0%, rgba(255, 253, 248, 0.96) 51%, rgba(232, 239, 235, 0.9) 100%);
+  box-shadow: 0 18px 44px var(--atlas-shadow);
+}
+
+.main-hero::before {
+  width: 420px;
+  right: -120px;
+  top: -210px;
+  background: radial-gradient(circle, rgba(16, 136, 135, 0.15), transparent 70%);
+}
+
+.main-hero::after {
+  inset: 20px auto 20px 20px;
+  width: 5px;
+  border-radius: 999px;
+  background: var(--atlas-teal);
+  opacity: 1;
+}
+
+.hero-kicker {
+  margin-bottom: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--atlas-teal-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.17em;
+}
+
+.brand-title { padding: 0 0 18px; }
+.brand-title::after {
+  width: 92px;
+  height: 4px;
+  margin-top: 18px;
+  background: var(--atlas-teal);
+  box-shadow: none;
+}
+.brand-title span { text-shadow: none; }
+.brand-title span:first-child {
+  color: var(--atlas-teal);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: clamp(0.9rem, 1.2vw, 1.12rem);
+  letter-spacing: 0.3em;
+}
+.brand-title span:last-child {
+  margin-top: 10px;
+  color: var(--atlas-ink);
+  background: none;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  letter-spacing: -0.035em;
+  line-height: 0.88;
+}
+.hero-subtitle {
+  margin-top: 0;
+  color: var(--atlas-muted);
+  font-size: 1.03rem;
+  letter-spacing: 0.04em;
+}
+
+.hero-frame {
+  border: 10px solid rgba(255, 253, 248, 0.96);
+  border-radius: 18px;
+  background: var(--atlas-soft);
+  box-shadow: 0 16px 34px rgba(21, 49, 66, 0.18);
+}
+.hero-frame::after { border: 1px solid rgba(21, 49, 66, 0.16); }
+.hero-image { filter: saturate(0.8) contrast(1.02); }
+
+.session-launcher {
+  border: 1px solid var(--atlas-line);
+  border-radius: 18px;
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 12px 30px var(--atlas-shadow);
+}
+.session-launcher::after { background: radial-gradient(circle, rgba(16, 136, 135, 0.12), transparent 68%); }
+.session-copy h2, .card h2 { color: var(--atlas-ink); }
+.session-copy p:last-child, .section-prompt, .meta { color: var(--atlas-muted); }
+
+.eyebrow,
+.criterion-label {
+  padding: 0;
+  border: 0;
+  color: var(--atlas-teal-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+}
+
+.program-option {
+  border: 1px solid var(--atlas-line);
+  border-radius: 12px;
+  color: var(--atlas-ink);
+  background: #fff;
+}
+.program-option.is-active {
+  border-color: var(--atlas-teal);
+  background: #f0faf8;
+  box-shadow: inset 0 0 0 1px var(--atlas-teal), 0 8px 20px var(--program-glow);
+}
+.program-mark, .program-badge { border-radius: 8px; background: var(--atlas-ink); }
+.program-option.is-active .program-mark, .program-badge { background: var(--atlas-teal); }
+.integrity-strip {
+  border: 1px solid #c7e0da;
+  border-radius: 10px;
+  background: #edf7f3;
+  color: #365e5d;
+}
+
+.card {
+  border: 1px solid var(--atlas-line);
+  border-radius: 14px;
+  background: var(--atlas-surface);
+  box-shadow: 0 10px 26px var(--atlas-shadow);
+}
+.instructions-list, .table-editor, .table-block {
+  border-color: var(--atlas-line);
+  background: #f7f5ee;
+  color: var(--atlas-ink);
+}
+.outline-panel {
+  border-top: 5px solid var(--atlas-teal);
+  background: var(--atlas-surface);
+}
+.outline-panel a, label, .table-block-title { color: var(--atlas-ink); }
+.outline-panel li::marker { color: var(--atlas-teal); font-weight: 700; }
+.report-section {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--atlas-line);
+  border-left: 5px solid var(--atlas-teal);
+}
+
+input, textarea {
+  border: 1px solid #b9c8c5;
+  border-radius: 9px;
+  color: var(--atlas-ink);
+  background: #faf8f2;
+}
+input:focus, textarea:focus {
+  outline: 3px solid rgba(16, 136, 135, 0.14);
+  border-color: var(--atlas-teal);
+  background: #fff;
+}
+.table-set-controls button, .table-remove-btn, .table-controls button, .row-delete, .col-delete {
+  border-color: #acc7c1;
+  background: #edf6f3;
+  color: var(--atlas-teal-dark);
+}
+.section-action, .restore-section-btn { border-radius: 8px; }
+
+.action-card {
+  border: 1px solid var(--atlas-line);
+  background: rgba(255, 253, 248, 0.96);
+  box-shadow: 0 14px 32px rgba(21, 49, 66, 0.16);
+  backdrop-filter: blur(10px);
+}
+.btn {
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+}
+.btn-strong, .btn:not(.btn-secondary):not(.btn-strong) { background: var(--atlas-teal-dark); }
+.btn-secondary {
+  border: 1px solid var(--atlas-line);
+  background: #f2f1eb;
+  color: var(--atlas-ink);
+}
+
+@media (max-width: 860px) {
+  .hero, .main-hero { min-height: 0; }
+  .main-hero::after { inset: 18px auto 18px 14px; }
+}

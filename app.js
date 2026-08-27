@@ -1,6 +1,8 @@
 const STORAGE_KEY = "libretaLaboratorio.draft";
 const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
+const PROGRAM_KEY = "libretaLaboratorio.program";
+const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 
 const sectionKeys = [
   "researchQuestion",
@@ -15,7 +17,11 @@ const sectionKeys = [
   "conclusion",
   "evaluation",
   "improvements",
-  "references"
+  "references",
+  "dpResearchDesign",
+  "dpDataAnalysis",
+  "dpConclusion",
+  "dpEvaluation"
 ];
 
 const SELECTABLE_INPUT_TYPES = new Set(["text", "search", "url", "tel", "password", "email", "number"]);
@@ -37,8 +43,38 @@ const sectionOrder = [
   { type: "text", key: "conclusion", label: "Conclusion" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
-  { type: "text", key: "references", label: "References (APA 7)" }
+  { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
+  { type: "text", key: "dpResearchDesign", label: "Research Design", program: "dp" },
+  { type: "text", key: "dpDataAnalysis", label: "Data Analysis", program: "dp" },
+  { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
+  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" }
 ];
+
+sectionOrder.forEach((section) => {
+  if (!section.program) {
+    section.program = "myp";
+  }
+});
+
+const PROGRAM_CONFIGS = {
+  myp: {
+    name: "MYP",
+    fullName: "Middle Years Programme",
+    sections: [
+      "researchQuestion", "backgroundInformation", "variables", "hypothesis", "materials", "procedure",
+      "rawData", "processedData", "conclusion", "evaluation", "improvements", "references"
+    ]
+  },
+  dp: {
+    name: "DP",
+    fullName: "Diploma Programme",
+    sections: ["dpResearchDesign", "dpDataAnalysis", "dpConclusion", "dpEvaluation"]
+  }
+};
+
+function createDefaultActiveSections() {
+  return Object.fromEntries(Object.entries(PROGRAM_CONFIGS).map(([program, config]) => [program, config.sections.slice()]));
+}
 
 const scienceTableTemplates = {
   rawData: ["Trial", "", "", "", ""],
@@ -59,8 +95,14 @@ const legacyScienceHeaderPatterns = [
 
 const state = {
   reportId: generateId(),
+  reportToken: localStorage.getItem(REPORT_TOKEN_KEY) || generateId(),
   startedAt: 0,
   status: "Draft",
+  program: localStorage.getItem(PROGRAM_KEY) === "dp" ? "dp" : "myp",
+  classCode: "",
+  activeSections: createDefaultActiveSections(),
+  blockedAttempts: 0,
+  programmaticUpdate: false,
   tables: {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData")
@@ -74,13 +116,21 @@ const state = {
 };
 
 localStorage.setItem(REPORT_ID_KEY, state.reportId);
+localStorage.setItem(REPORT_TOKEN_KEY, state.reportToken);
 localStorage.setItem(REPORT_STARTED_AT_KEY, String(state.startedAt));
+localStorage.setItem(PROGRAM_KEY, state.program);
 
 const elements = {
   title: document.getElementById("title"),
   teacher: document.getElementById("teacher"),
   studentName: document.getElementById("studentName"),
   date: document.getElementById("date"),
+  classCode: document.getElementById("classCode"),
+  selectedProgram: document.getElementById("selectedProgram"),
+  programBadge: document.getElementById("programBadge"),
+  outlineList: document.getElementById("outlineList"),
+  removedSections: document.getElementById("removedSections"),
+  restoreSectionButtons: document.getElementById("restoreSectionButtons"),
   resetBtn: document.getElementById("resetBtn"),
   loadExampleBtn: document.getElementById("loadExampleBtn"),
   saveDraftBtn: document.getElementById("saveDraftBtn"),
@@ -105,7 +155,11 @@ const sectionInputs = {
   conclusion: document.getElementById("section-conclusion"),
   evaluation: document.getElementById("section-evaluation"),
   improvements: document.getElementById("section-improvements"),
-  references: document.getElementById("section-references")
+  references: document.getElementById("section-references"),
+  dpResearchDesign: document.getElementById("section-dpResearchDesign"),
+  dpDataAnalysis: document.getElementById("section-dpDataAnalysis"),
+  dpConclusion: document.getElementById("section-dpConclusion"),
+  dpEvaluation: document.getElementById("section-dpEvaluation")
 };
 
 init();
@@ -115,6 +169,11 @@ function init() {
   attachInputListeners();
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
+  const localDraft = safeParseLocalDraft();
+  if (localDraft) {
+    applyReportToUI(localDraft);
+  }
+  renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
 
@@ -274,7 +333,7 @@ function maybeStartTimerFromStudentName() {
 }
 
 function attachInputListeners() {
-  const standardInputs = [elements.title, elements.teacher, elements.studentName, elements.date, ...Object.values(sectionInputs)];
+  const standardInputs = [elements.title, elements.teacher, elements.studentName, elements.date, elements.classCode, ...Object.values(sectionInputs)];
 
   standardInputs.forEach((input) => {
     input.addEventListener("input", () => {
@@ -284,9 +343,28 @@ function attachInputListeners() {
       if (input === elements.studentName) {
         maybeStartTimerFromStudentName();
       }
+      if (input === elements.classCode) {
+        state.classCode = input.value.trim().toUpperCase();
+        input.value = state.classCode;
+      }
       persistLocalBackup();
       queueIdleSave();
     });
+  });
+
+  document.querySelectorAll(".program-option").forEach((button) => {
+    button.addEventListener("click", () => setProgram(button.dataset.program));
+  });
+
+  document.addEventListener("click", (event) => {
+    const removeButton = event.target.closest('[data-action="remove-section"]');
+    if (removeButton) {
+      const section = removeButton.closest(".report-section");
+      if (section) removeSection(section.dataset.sectionKey);
+      return;
+    }
+    const restoreButton = event.target.closest('[data-action="restore-section"]');
+    if (restoreButton) restoreSection(restoreButton.dataset.sectionKey);
   });
 
   elements.saveDraftBtn.addEventListener("click", () => {
@@ -320,9 +398,86 @@ function attachInputListeners() {
   });
 }
 
+function setProgram(program) {
+  if (!PROGRAM_CONFIGS[program] || state.status === "Submitted") return;
+  state.program = program;
+  localStorage.setItem(PROGRAM_KEY, program);
+  renderProgramUI();
+  persistLocalBackup();
+  queueIdleSave();
+}
+
+function removeSection(sectionKey) {
+  const active = state.activeSections[state.program];
+  if (!active.includes(sectionKey)) return;
+  if (active.length === 1) {
+    window.alert("At least one report section must remain active.");
+    return;
+  }
+  state.activeSections[state.program] = active.filter((key) => key !== sectionKey);
+  renderProgramUI();
+  persistLocalBackup();
+}
+
+function restoreSection(sectionKey) {
+  const configured = PROGRAM_CONFIGS[state.program].sections;
+  if (!configured.includes(sectionKey)) return;
+  const activeSet = new Set([...state.activeSections[state.program], sectionKey]);
+  state.activeSections[state.program] = configured.filter((key) => activeSet.has(key));
+  renderProgramUI();
+  persistLocalBackup();
+}
+
+function getSectionLabel(sectionKey) {
+  return sectionOrder.find((section) => section.key === sectionKey)?.label || sectionKey;
+}
+
+function renderProgramUI() {
+  const config = PROGRAM_CONFIGS[state.program];
+  const active = state.activeSections[state.program];
+  document.body.classList.toggle("program-myp", state.program === "myp");
+  document.body.classList.toggle("program-dp", state.program === "dp");
+  document.querySelectorAll(".program-option").forEach((button) => {
+    const selected = button.dataset.program === state.program;
+    button.classList.toggle("is-active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  document.querySelectorAll(".report-section").forEach((section) => {
+    section.hidden = section.dataset.program !== state.program || !active.includes(section.dataset.sectionKey);
+  });
+  elements.programBadge.textContent = config.name;
+  elements.selectedProgram.value = config.name;
+  elements.loadExampleBtn.hidden = state.program === "dp";
+  elements.outlineList.replaceChildren();
+  const studentItem = document.createElement("li");
+  studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
+  elements.outlineList.appendChild(studentItem);
+  active.forEach((key) => {
+    const item = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = `#sec-${key}`;
+    link.textContent = getSectionLabel(key);
+    item.appendChild(link);
+    elements.outlineList.appendChild(item);
+  });
+  const removed = config.sections.filter((key) => !active.includes(key));
+  elements.removedSections.hidden = removed.length === 0;
+  elements.restoreSectionButtons.replaceChildren();
+  removed.forEach((key) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "restore-section-btn";
+    button.dataset.action = "restore-section";
+    button.dataset.sectionKey = key;
+    button.textContent = `+ ${getSectionLabel(key)}`;
+    elements.restoreSectionButtons.appendChild(button);
+  });
+}
+
 function getChemistryExampleReport() {
   return {
     id: state.reportId,
+    accessToken: state.reportToken,
     teacherEmail: "",
     teacher: "Mr. Mercado",
     startedAt: 0,
@@ -476,8 +631,12 @@ function resetAllReport() {
   }
 
   state.reportId = generateId();
+  state.reportToken = generateId();
   state.startedAt = 0;
   state.status = "Draft";
+  state.classCode = "";
+  state.blockedAttempts = 0;
+  state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData")
@@ -485,11 +644,16 @@ function resetAllReport() {
 
   localStorage.removeItem(STORAGE_KEY);
   localStorage.setItem(REPORT_ID_KEY, state.reportId);
+  localStorage.setItem(REPORT_TOKEN_KEY, state.reportToken);
   localStorage.setItem(REPORT_STARTED_AT_KEY, String(state.startedAt));
 
   applyReportToUI({
     id: state.reportId,
     teacher: "",
+    classCode: "",
+    program: state.program,
+    activeSections: state.activeSections,
+    blockedAttempts: 0,
     title: "",
     studentName: "",
     date: "",
@@ -528,8 +692,15 @@ function tableHasContent(table, tableKey = "generic") {
 
 function buildPrintableSections(report) {
   const sections = [];
+  const program = PROGRAM_CONFIGS[report.program] ? report.program : "myp";
+  const active = Array.isArray(report.activeSections?.[program])
+    ? report.activeSections[program]
+    : PROGRAM_CONFIGS[program].sections;
 
   sectionOrder.forEach((section) => {
+    if (section.program !== program || !active.includes(section.key)) {
+      return;
+    }
     if (section.type === "text") {
       const text = String(report.sections?.[section.key] || "").trim();
       if (text) {
@@ -587,6 +758,9 @@ function generateBasicPdfBlob(report) {
   lines.push(`Teacher: ${report.teacher || "Not specified"}`);
   lines.push(`Student: ${report.studentName || ""}`);
   lines.push(`Date: ${report.date || ""}`);
+  lines.push(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}`);
+  lines.push(`Class Code: ${report.classCode || ""}`);
+  lines.push(`Writing Integrity: ${report.blockedAttempts || 0} blocked attempt(s)`);
   lines.push(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`);
   lines.push("");
 
@@ -700,6 +874,16 @@ function generatePdfInBrowser(report) {
   });
   drawParagraph(`Student: ${report.studentName || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Date: ${report.date || ""}`, { size: 12, align: "center", lineHeight: 16 });
+  drawParagraph(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}  |  Class Code: ${report.classCode || ""}`, {
+    size: 11,
+    align: "center",
+    lineHeight: 15
+  });
+  drawParagraph(`Writing integrity: ${report.blockedAttempts || 0} blocked attempt(s)`, {
+    size: 10,
+    align: "center",
+    lineHeight: 14
+  });
   drawParagraph(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`, {
     size: 12,
     align: "center",
@@ -768,6 +952,8 @@ function attachRestrictions() {
   const blockEvent = (event) => {
     event.preventDefault();
     event.stopPropagation();
+    state.blockedAttempts += 1;
+    persistLocalBackup();
     showRestrictionAlert();
   };
 
@@ -814,6 +1000,34 @@ function attachRestrictions() {
   document.addEventListener("contextmenu", blockEvent, true);
   document.addEventListener("selectstart", blockEvent, true);
 
+  document.addEventListener("focusin", (event) => {
+    const field = event.target;
+    if ((field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) && !field.readOnly) {
+      field.dataset.safeTypedValue = field.value;
+    }
+  }, true);
+
+  document.addEventListener("input", (event) => {
+    if (state.programmaticUpdate || event.isComposing) return;
+    const field = event.target;
+    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) || field.readOnly || field.type === "date") return;
+    const previous = field.dataset.safeTypedValue ?? "";
+    const current = field.value;
+    const insertedCount = Math.max(0, current.length - previous.length);
+    const inputType = String(event.inputType || "");
+    const prohibitedInput = /insertFromPaste|insertFromDrop|insertFromYank|insertReplacementText/i.test(inputType);
+    const unexplainedBulkInsertion = insertedCount > 2;
+    if (prohibitedInput || unexplainedBulkInsertion) {
+      field.value = previous;
+      state.blockedAttempts += 1;
+      persistLocalBackup();
+      showRestrictionAlert();
+      event.stopImmediatePropagation();
+      return;
+    }
+    field.dataset.safeTypedValue = current;
+  }, true);
+
   document.addEventListener(
     "selectionchange",
     () => {
@@ -854,7 +1068,7 @@ function showRestrictionAlert() {
     return;
   }
   state.restrictionAlertAt = now;
-  window.alert("Copy and paste are disabled. Please write your own work.");
+  window.alert("This protected notebook accepts original typing only.");
 }
 
 function isTrialHeader(headerValue) {
@@ -1149,8 +1363,13 @@ function collectReport() {
 
   return {
     id: state.reportId,
+    accessToken: state.reportToken,
     teacherEmail: "",
     teacher: elements.teacher.value.trim(),
+    classCode: state.classCode || elements.classCode.value.trim().toUpperCase(),
+    program: state.program,
+    activeSections: state.activeSections,
+    blockedAttempts: state.blockedAttempts,
     title: elements.title.value.trim(),
     studentName: elements.studentName.value.trim(),
     date: elements.date.value,
@@ -1173,16 +1392,36 @@ function applyReportToUI(report) {
     localStorage.setItem(REPORT_ID_KEY, normalizedReport.id);
   }
 
+  if (normalizedReport.accessToken) {
+    state.reportToken = String(normalizedReport.accessToken);
+    localStorage.setItem(REPORT_TOKEN_KEY, state.reportToken);
+  }
+
   if (Object.prototype.hasOwnProperty.call(normalizedReport, "startedAt")) {
     const parsedStartedAt = Number(normalizedReport.startedAt);
     state.startedAt = !Number.isNaN(parsedStartedAt) && parsedStartedAt > 0 ? parsedStartedAt : 0;
     localStorage.setItem(REPORT_STARTED_AT_KEY, String(state.startedAt));
   }
 
+  state.programmaticUpdate = true;
+  state.program = PROGRAM_CONFIGS[normalizedReport.program] ? normalizedReport.program : state.program;
+  if (Object.prototype.hasOwnProperty.call(normalizedReport, "classCode")) {
+    state.classCode = String(normalizedReport.classCode || "").trim().toUpperCase();
+  }
+  state.blockedAttempts = Math.max(0, Number(normalizedReport.blockedAttempts) || 0);
+  const defaults = createDefaultActiveSections();
+  state.activeSections = Object.fromEntries(Object.keys(PROGRAM_CONFIGS).map((program) => {
+    const source = normalizedReport.activeSections?.[program];
+    const valid = Array.isArray(source) ? defaults[program].filter((key) => source.includes(key)) : defaults[program];
+    return [program, valid.length ? valid : defaults[program]];
+  }));
+  localStorage.setItem(PROGRAM_KEY, state.program);
+
   elements.teacher.value = normalizedReport.teacher || "";
   elements.title.value = normalizedReport.title || "";
   elements.studentName.value = normalizedReport.studentName || "";
   elements.date.value = normalizedReport.date || "";
+  elements.classCode.value = state.classCode;
 
   sectionKeys.forEach((sectionKey) => {
     sectionInputs[sectionKey].value = normalizedReport.sections?.[sectionKey] || "";
@@ -1194,8 +1433,10 @@ function applyReportToUI(report) {
 
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
+  renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
+  state.programmaticUpdate = false;
 }
 
 function persistLocalBackup() {
@@ -1223,7 +1464,9 @@ async function syncDraftFromServer() {
   }
 
   try {
-    const response = await fetch(`/api/report/${encodeURIComponent(state.reportId)}`);
+    const response = await fetch(`/api/report/${encodeURIComponent(state.reportId)}`, {
+      headers: { "X-Report-Token": state.reportToken }
+    });
     if (!response.ok) {
       return;
     }
@@ -1346,6 +1589,11 @@ async function submitFinalReport() {
   }
 
   const report = collectReport();
+  if (!report.classCode) {
+    window.alert("Enter the Class Code provided by your teacher before downloading the report.");
+    elements.classCode.focus();
+    return;
+  }
   if (!report.title || !report.studentName || !report.date) {
     window.alert("Title of Experiment, Student Name, and Date are required.");
     return;
@@ -1355,7 +1603,37 @@ async function submitFinalReport() {
   elements.saveState.textContent = "Generating final PDF...";
 
   try {
-    const pdfBlob = generatePdfInBrowser(report);
+    let pdfBlob;
+    const openedAsLocalFile = window.location.protocol === "file:";
+
+    if (openedAsLocalFile) {
+      pdfBlob = generatePdfInBrowser(report);
+    } else {
+      try {
+        const response = await fetch("/api/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ report })
+        });
+        if (!response.ok) {
+          if ([404, 405, 501].includes(response.status)) {
+            pdfBlob = generatePdfInBrowser(report);
+          } else {
+            const payload = await readResponse(response);
+            throw new Error(payload.error || "The report service could not generate the PDF.");
+          }
+        } else {
+          pdfBlob = await response.blob();
+        }
+      } catch (error) {
+        if (error instanceof TypeError) {
+          pdfBlob = generatePdfInBrowser(report);
+        } else {
+          throw error;
+        }
+      }
+    }
+
     downloadPdf(pdfBlob, `${safeFileName(report.title)}.pdf`);
 
     state.status = "Submitted";

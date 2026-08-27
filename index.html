@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Science Lab Notebook</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="atlas.css" />
   </head>
-  <body>
+  <body class="program-myp">
     <div class="page-shell">
       <header class="hero main-hero">
         <div class="hero-content">
-          <p class="hero-kicker">Academic Laboratory Reporting</p>
+          <p class="hero-kicker">Laboratory Atlas · Academic Reporting</p>
           <h1 class="brand-title">
             <span>SCIENCE LAB</span>
             <span>NOTEBOOK</span>
           </h1>
+          <p class="hero-subtitle">Build evidence. Explain discovery.</p>
         </div>
         <div class="hero-media">
           <div class="hero-frame">
@@ -29,6 +31,30 @@
         </div>
       </header>
 
+      <section class="session-launcher program-launcher" aria-labelledby="sessionTitle">
+        <div class="session-copy">
+          <p class="eyebrow">Choose your programme</p>
+          <h2 id="sessionTitle">Start today’s lab report</h2>
+          <p>Select the programme that applies to this investigation. The notebook is ready to use immediately.</p>
+        </div>
+        <div class="session-controls">
+          <div class="program-switch" role="group" aria-label="Academic program">
+            <button type="button" class="program-option is-active" data-program="myp" aria-pressed="true">
+              <span class="program-mark">MYP</span>
+              <span><strong>Middle Years</strong><small>Current laboratory format</small></span>
+            </button>
+            <button type="button" class="program-option" data-program="dp" aria-pressed="false">
+              <span class="program-mark">DP</span>
+              <span><strong>Diploma Programme</strong><small>Independent investigation</small></span>
+            </button>
+          </div>
+        </div>
+        <div class="integrity-strip">
+          <span class="integrity-dot" aria-hidden="true"></span>
+          <span><strong>Original writing mode:</strong> paste, copy, cut, drag-and-drop and bulk text insertion are blocked.</span>
+        </div>
+      </section>
+
       <section class="card instructions-card">
         <div class="card-header-row">
           <h2>How to Use This Platform</h2>
@@ -42,22 +68,18 @@
 
       <div class="content-grid">
         <aside class="card outline-panel">
-          <h2>Report Outline</h2>
-          <ol>
-            <li><a href="#studentInfo">Student Information</a></li>
-            <li><a href="#sec-researchQuestion">I. Research Question</a></li>
-            <li><a href="#sec-backgroundInformation">II. Background Information</a></li>
-            <li><a href="#sec-variables">III. Variables</a></li>
-            <li><a href="#sec-hypothesis">IV. Hypothesis</a></li>
-            <li><a href="#sec-materials">V. Materials</a></li>
-            <li><a href="#sec-procedure">VI. Procedure</a></li>
-            <li><a href="#sec-rawData">VII. Raw Data</a></li>
-            <li><a href="#sec-processedData">VIII. Processed Data</a></li>
-            <li><a href="#sec-conclusion">IX. Conclusion</a></li>
-            <li><a href="#sec-evaluation">X. Evaluation</a></li>
-            <li><a href="#sec-improvements">XI. Improvements</a></li>
-            <li><a href="#sec-references">XII. References (APA 7)</a></li>
-          </ol>
+          <div class="outline-heading">
+            <div>
+              <p class="eyebrow">Active structure</p>
+              <h2>Report Outline</h2>
+            </div>
+            <span id="programBadge" class="program-badge">MYP</span>
+          </div>
+          <ol id="outlineList"></ol>
+          <div id="removedSections" class="removed-sections" hidden>
+            <h3>Removed parts</h3>
+            <div id="restoreSectionButtons"></div>
+          </div>
         </aside>
 
         <main class="main-column">
@@ -80,48 +102,56 @@
                 <label for="date">Date *</label>
                 <input id="date" type="date" />
               </div>
+              <div>
+                <label for="classCode">Class Code *</label>
+                <input id="classCode" type="text" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Code provided in class" />
+              </div>
+              <div>
+                <label for="selectedProgram">Programme</label>
+                <input id="selectedProgram" type="text" value="MYP" readonly aria-readonly="true" />
+              </div>
             </div>
           </section>
 
-          <section class="card" id="sec-researchQuestion">
-            <h2>I. Research Question</h2>
+          <section class="card report-section" data-program="myp" data-section-key="researchQuestion" id="sec-researchQuestion">
+            <div class="section-heading"><h2>I. Research Question</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-researchQuestion"></textarea>
           </section>
 
-          <section class="card" id="sec-backgroundInformation">
-            <h2>II. Background Information</h2>
+          <section class="card report-section" data-program="myp" data-section-key="backgroundInformation" id="sec-backgroundInformation">
+            <div class="section-heading"><h2>II. Background Information</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-backgroundInformation"></textarea>
           </section>
 
-          <section class="card" id="sec-variables">
-            <h2>III. Variables</h2>
+          <section class="card report-section" data-program="myp" data-section-key="variables" id="sec-variables">
+            <div class="section-heading"><h2>III. Variables</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-variables"></textarea>
           </section>
 
-          <section class="card" id="sec-hypothesis">
-            <h2>IV. Hypothesis</h2>
+          <section class="card report-section" data-program="myp" data-section-key="hypothesis" id="sec-hypothesis">
+            <div class="section-heading"><h2>IV. Hypothesis</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-hypothesis"></textarea>
           </section>
 
-          <section class="card" id="sec-materials">
-            <h2>V. Materials</h2>
+          <section class="card report-section" data-program="myp" data-section-key="materials" id="sec-materials">
+            <div class="section-heading"><h2>V. Materials</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-materials"></textarea>
           </section>
 
-          <section class="card" id="sec-procedure">
-            <h2>VI. Procedure</h2>
+          <section class="card report-section" data-program="myp" data-section-key="procedure" id="sec-procedure">
+            <div class="section-heading"><h2>VI. Procedure</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-procedure"></textarea>
           </section>
 
-          <section class="card" id="sec-rawData">
-            <h2>VII. Raw Data</h2>
+          <section class="card report-section" data-program="myp" data-section-key="rawData" id="sec-rawData">
+            <div class="section-heading"><h2>VII. Raw Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <label for="section-rawDataNotes">Written Analysys/ Notes</label>
             <textarea id="section-rawDataNotes" class="data-notes"></textarea>
             <div id="rawDataEditor" class="table-editor"></div>
           </section>
 
-          <section class="card" id="sec-processedData">
-            <h2>VIII. Processed Data</h2>
+          <section class="card report-section" data-program="myp" data-section-key="processedData" id="sec-processedData">
+            <div class="section-heading"><h2>VIII. Processed Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <label for="section-processedDataNotes">Written Analysys/ Notes</label>
             <textarea id="section-processedDataNotes" class="data-notes"></textarea>
             <label for="section-processedDataSampleCalculations">Sample Calculations</label>
@@ -129,24 +159,48 @@
             <div id="processedDataEditor" class="table-editor"></div>
           </section>
 
-          <section class="card" id="sec-conclusion">
-            <h2>IX. Conclusion</h2>
+          <section class="card report-section" data-program="myp" data-section-key="conclusion" id="sec-conclusion">
+            <div class="section-heading"><h2>IX. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-conclusion"></textarea>
           </section>
 
-          <section class="card" id="sec-evaluation">
-            <h2>X. Evaluation</h2>
+          <section class="card report-section" data-program="myp" data-section-key="evaluation" id="sec-evaluation">
+            <div class="section-heading"><h2>X. Evaluation</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-evaluation"></textarea>
           </section>
 
-          <section class="card" id="sec-improvements">
-            <h2>XI. Improvements</h2>
+          <section class="card report-section" data-program="myp" data-section-key="improvements" id="sec-improvements">
+            <div class="section-heading"><h2>XI. Improvements</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-improvements"></textarea>
           </section>
 
-          <section class="card" id="sec-references">
-            <h2>XII. References (APA 7)</h2>
+          <section class="card report-section" data-program="myp" data-section-key="references" id="sec-references">
+            <div class="section-heading"><h2>XII. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-references"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpResearchDesign" id="sec-dpResearchDesign">
+            <div class="section-heading"><div><p class="criterion-label">DP Criterion 1</p><h2>I. Research Design</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <p class="section-prompt">Define the research question, scientific context, variables, methodology, materials, safety and ethical considerations.</p>
+            <textarea id="section-dpResearchDesign"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpDataAnalysis" id="sec-dpDataAnalysis">
+            <div class="section-heading"><div><p class="criterion-label">DP Criterion 2</p><h2>II. Data Analysis</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <p class="section-prompt">Present processed data, uncertainties, graphs, sample calculations, patterns and interpretation.</p>
+            <textarea id="section-dpDataAnalysis"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpConclusion" id="sec-dpConclusion">
+            <div class="section-heading"><div><p class="criterion-label">DP Criterion 3</p><h2>III. Conclusion</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <p class="section-prompt">Answer the research question using the results and compare the conclusion with accepted scientific context.</p>
+            <textarea id="section-dpConclusion"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpEvaluation" id="sec-dpEvaluation">
+            <div class="section-heading"><div><p class="criterion-label">DP Criterion 4</p><h2>IV. Evaluation</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <p class="section-prompt">Discuss specific methodological strengths and limitations, their impact, and realistic improvements or extensions.</p>
+            <textarea id="section-dpEvaluation"></textarea>
           </section>
 
           <section class="card action-card">
@@ -163,8 +217,8 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="vendor/jspdf.umd.min.js"></script>
+    <script src="vendor/jspdf.plugin.autotable.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>
