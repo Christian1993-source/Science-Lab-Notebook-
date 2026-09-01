@@ -173,38 +173,80 @@
             <textarea id="section-references"></textarea>
           </section>
 
-          <section class="card report-section dp-section" data-program="dp" data-section-key="dpResearchDesign" id="sec-dpResearchDesign">
-            <div class="section-heading"><div><p class="criterion-label">DP Criterion 1</p><h2>I. Research Design</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <p class="section-prompt">Define the research question, scientific context, variables, methodology, materials, safety and ethical considerations.</p>
-            <textarea id="section-dpResearchDesign"></textarea>
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpResearchQuestion" id="sec-dpResearchQuestion">
+            <div class="section-heading"><h2>I. Research Question</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpResearchQuestion"></textarea>
           </section>
 
-          <section class="card report-section dp-section" data-program="dp" data-section-key="dpDataAnalysis" id="sec-dpDataAnalysis">
-            <div class="section-heading"><div><p class="criterion-label">DP Criterion 2</p><h2>II. Data Analysis</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <p class="section-prompt">Present processed data, uncertainties, graphs, sample calculations, patterns and interpretation.</p>
-            <textarea id="section-dpDataAnalysis"></textarea>
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpBackgroundInformation" id="sec-dpBackgroundInformation">
+            <div class="section-heading"><h2>II. Background Information</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpBackgroundInformation"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpVariables" id="sec-dpVariables">
+            <div class="section-heading"><h2>III. Variables</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpVariables"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpHypothesis" id="sec-dpHypothesis">
+            <div class="section-heading"><h2>IV. Hypothesis</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpHypothesis"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpMaterials" id="sec-dpMaterials">
+            <div class="section-heading"><h2>V. Materials</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpMaterials"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpProcedure" id="sec-dpProcedure">
+            <div class="section-heading"><h2>VI. Procedure</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpProcedure"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpRawData" id="sec-dpRawData">
+            <div class="section-heading"><h2>VII. Raw Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <label for="section-dpRawDataNotes">Written Analysys/ Notes</label>
+            <textarea id="section-dpRawDataNotes" class="data-notes"></textarea>
+            <div id="dpRawDataEditor" class="table-editor"></div>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpProcessedData" id="sec-dpProcessedData">
+            <div class="section-heading"><h2>VIII. Processed Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <label for="section-dpProcessedDataNotes">Written Analysys/ Notes</label>
+            <textarea id="section-dpProcessedDataNotes" class="data-notes"></textarea>
+            <label for="section-dpProcessedDataSampleCalculations">Sample Calculations</label>
+            <textarea id="section-dpProcessedDataSampleCalculations" class="data-notes"></textarea>
+            <div id="dpProcessedDataEditor" class="table-editor"></div>
             <div class="dp-graph-workspace">
               <h3>Graphing Workspace</h3>
-              <p class="section-prompt">Create a scatter plot, label both axes and units, add uncertainty bars when appropriate, and include a best-fit line for the DP data analysis.</p>
+              <p class="section-prompt">Create a scatter plot, label both axes and units, add uncertainty bars when appropriate, and include a best-fit line.</p>
               <iframe
                 class="dp-graph-frame"
                 src="https://christian1993-source.github.io/Mr.-Mercado-Scatter-Plot-Error-Bars-Graph-Lab/?embed=dp"
-                title="DP Data Analysis Graphing Workspace"
+                title="DP Processed Data Graphing Workspace"
                 loading="lazy"
               ></iframe>
             </div>
           </section>
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpConclusion" id="sec-dpConclusion">
-            <div class="section-heading"><div><p class="criterion-label">DP Criterion 3</p><h2>III. Conclusion</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <p class="section-prompt">Answer the research question using the results and compare the conclusion with accepted scientific context.</p>
+            <div class="section-heading"><h2>IX. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpConclusion"></textarea>
           </section>
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpEvaluation" id="sec-dpEvaluation">
-            <div class="section-heading"><div><p class="criterion-label">DP Criterion 4</p><h2>IV. Evaluation</h2></div><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <p class="section-prompt">Discuss specific methodological strengths and limitations, their impact, and realistic improvements or extensions.</p>
+            <div class="section-heading"><h2>X. Evaluation</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpEvaluation"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpImprovements" id="sec-dpImprovements">
+            <div class="section-heading"><h2>XI. Improvements</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpImprovements"></textarea>
+          </section>
+
+          <section class="card report-section dp-section" data-program="dp" data-section-key="dpReferences" id="sec-dpReferences">
+            <div class="section-heading"><h2>XII. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-dpReferences"></textarea>
           </section>
 
           <section class="card action-card">

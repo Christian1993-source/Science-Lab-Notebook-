@@ -32,10 +32,25 @@ const sectionOrder = [
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
   { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
-  { type: "text", key: "dpResearchDesign", label: "Research Design", program: "dp" },
-  { type: "text", key: "dpDataAnalysis", label: "Data Analysis", program: "dp" },
+  { type: "text", key: "dpResearchQuestion", label: "Research Question", program: "dp" },
+  { type: "text", key: "dpBackgroundInformation", label: "Background Information", program: "dp" },
+  { type: "text", key: "dpVariables", label: "Variables", program: "dp" },
+  { type: "text", key: "dpHypothesis", label: "Hypothesis", program: "dp" },
+  { type: "text", key: "dpMaterials", label: "Materials", program: "dp" },
+  { type: "text", key: "dpProcedure", label: "Procedure", program: "dp" },
+  { type: "data", key: "dpRawData", noteKey: "dpRawDataNotes", label: "Raw Data", program: "dp" },
+  {
+    type: "data",
+    key: "dpProcessedData",
+    noteKey: "dpProcessedDataNotes",
+    sampleCalculationsKey: "dpProcessedDataSampleCalculations",
+    label: "Processed Data",
+    program: "dp"
+  },
   { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
-  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" }
+  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" },
+  { type: "text", key: "dpImprovements", label: "Improvements", program: "dp" },
+  { type: "text", key: "dpReferences", label: "References (APA 7)", program: "dp" }
 ];
 
 sectionOrder.forEach((section) => {
@@ -62,7 +77,7 @@ app.use((_req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+    "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-src https://christian1993-source.github.io; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
   );
   next();
 });
@@ -170,6 +185,7 @@ function sanitizeReport(rawReport) {
   });
 
   return {
+    schemaVersion: Math.max(1, Math.floor(cleanNumber(report.schemaVersion) || 1)),
     id: cleanString(report.id) || randomUUID(),
     accessToken: cleanString(report.accessToken).slice(0, 128),
     teacherEmail: cleanString(report.teacherEmail),
@@ -194,7 +210,9 @@ function sanitizeReport(rawReport) {
     sections,
     tables: {
       rawData: normalizeTableList(report.tables?.rawData),
-      processedData: normalizeTableList(report.tables?.processedData)
+      processedData: normalizeTableList(report.tables?.processedData),
+      dpRawData: normalizeTableList(report.tables?.dpRawData),
+      dpProcessedData: normalizeTableList(report.tables?.dpProcessedData)
     },
     updatedAt: cleanString(report.updatedAt),
     submittedAt: cleanString(report.submittedAt)

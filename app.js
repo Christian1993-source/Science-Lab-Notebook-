@@ -3,6 +3,7 @@ const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
+const REPORT_SCHEMA_VERSION = 2;
 
 const sectionKeys = [
   "researchQuestion",
@@ -18,10 +19,19 @@ const sectionKeys = [
   "evaluation",
   "improvements",
   "references",
-  "dpResearchDesign",
-  "dpDataAnalysis",
+  "dpResearchQuestion",
+  "dpBackgroundInformation",
+  "dpVariables",
+  "dpHypothesis",
+  "dpMaterials",
+  "dpProcedure",
+  "dpRawDataNotes",
+  "dpProcessedDataNotes",
+  "dpProcessedDataSampleCalculations",
   "dpConclusion",
-  "dpEvaluation"
+  "dpEvaluation",
+  "dpImprovements",
+  "dpReferences"
 ];
 
 const SELECTABLE_INPUT_TYPES = new Set(["text", "search", "url", "tel", "password", "email", "number"]);
@@ -44,10 +54,25 @@ const sectionOrder = [
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
   { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
-  { type: "text", key: "dpResearchDesign", label: "Research Design", program: "dp" },
-  { type: "text", key: "dpDataAnalysis", label: "Data Analysis", program: "dp" },
+  { type: "text", key: "dpResearchQuestion", label: "Research Question", program: "dp" },
+  { type: "text", key: "dpBackgroundInformation", label: "Background Information", program: "dp" },
+  { type: "text", key: "dpVariables", label: "Variables", program: "dp" },
+  { type: "text", key: "dpHypothesis", label: "Hypothesis", program: "dp" },
+  { type: "text", key: "dpMaterials", label: "Materials", program: "dp" },
+  { type: "text", key: "dpProcedure", label: "Procedure", program: "dp" },
+  { type: "data", key: "dpRawData", notesKey: "dpRawDataNotes", label: "Raw Data", program: "dp" },
+  {
+    type: "data",
+    key: "dpProcessedData",
+    notesKey: "dpProcessedDataNotes",
+    sampleCalculationsKey: "dpProcessedDataSampleCalculations",
+    label: "Processed Data",
+    program: "dp"
+  },
   { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
-  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" }
+  { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" },
+  { type: "text", key: "dpImprovements", label: "Improvements", program: "dp" },
+  { type: "text", key: "dpReferences", label: "References (APA 7)", program: "dp" }
 ];
 
 sectionOrder.forEach((section) => {
@@ -68,7 +93,10 @@ const PROGRAM_CONFIGS = {
   dp: {
     name: "DP",
     fullName: "Diploma Programme",
-    sections: ["dpResearchDesign", "dpDataAnalysis", "dpConclusion", "dpEvaluation"]
+    sections: [
+      "dpResearchQuestion", "dpBackgroundInformation", "dpVariables", "dpHypothesis", "dpMaterials", "dpProcedure",
+      "dpRawData", "dpProcessedData", "dpConclusion", "dpEvaluation", "dpImprovements", "dpReferences"
+    ]
   }
 };
 
@@ -78,7 +106,9 @@ function createDefaultActiveSections() {
 
 const scienceTableTemplates = {
   rawData: ["Trial", "", "", "", ""],
-  processedData: ["Trial", "", "", "", ""]
+  processedData: ["Trial", "", "", "", ""],
+  dpRawData: ["Trial", "", "", "", ""],
+  dpProcessedData: ["Trial", "", "", "", ""]
 };
 const legacyScienceHeaderPatterns = [
   /^independent/i,
@@ -105,7 +135,9 @@ const state = {
   programmaticUpdate: false,
   tables: {
     rawData: defaultTableList("rawData"),
-    processedData: defaultTableList("processedData")
+    processedData: defaultTableList("processedData"),
+    dpRawData: defaultTableList("dpRawData"),
+    dpProcessedData: defaultTableList("dpProcessedData")
   },
   isSaving: false,
   pendingSave: false,
@@ -139,7 +171,9 @@ const elements = {
   saveState: document.getElementById("saveState"),
   statusBadge: document.getElementById("documentStatus"),
   rawDataEditor: document.getElementById("rawDataEditor"),
-  processedDataEditor: document.getElementById("processedDataEditor")
+  processedDataEditor: document.getElementById("processedDataEditor"),
+  dpRawDataEditor: document.getElementById("dpRawDataEditor"),
+  dpProcessedDataEditor: document.getElementById("dpProcessedDataEditor")
 };
 
 const sectionInputs = {
@@ -156,10 +190,19 @@ const sectionInputs = {
   evaluation: document.getElementById("section-evaluation"),
   improvements: document.getElementById("section-improvements"),
   references: document.getElementById("section-references"),
-  dpResearchDesign: document.getElementById("section-dpResearchDesign"),
-  dpDataAnalysis: document.getElementById("section-dpDataAnalysis"),
+  dpResearchQuestion: document.getElementById("section-dpResearchQuestion"),
+  dpBackgroundInformation: document.getElementById("section-dpBackgroundInformation"),
+  dpVariables: document.getElementById("section-dpVariables"),
+  dpHypothesis: document.getElementById("section-dpHypothesis"),
+  dpMaterials: document.getElementById("section-dpMaterials"),
+  dpProcedure: document.getElementById("section-dpProcedure"),
+  dpRawDataNotes: document.getElementById("section-dpRawDataNotes"),
+  dpProcessedDataNotes: document.getElementById("section-dpProcessedDataNotes"),
+  dpProcessedDataSampleCalculations: document.getElementById("section-dpProcessedDataSampleCalculations"),
   dpConclusion: document.getElementById("section-dpConclusion"),
-  dpEvaluation: document.getElementById("section-dpEvaluation")
+  dpEvaluation: document.getElementById("section-dpEvaluation"),
+  dpImprovements: document.getElementById("section-dpImprovements"),
+  dpReferences: document.getElementById("section-dpReferences")
 };
 
 init();
@@ -169,6 +212,8 @@ function init() {
   attachInputListeners();
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
+  renderTableEditor("dpRawData", elements.dpRawDataEditor);
+  renderTableEditor("dpProcessedData", elements.dpProcessedDataEditor);
   const localDraft = safeParseLocalDraft();
   if (localDraft) {
     applyReportToUI(localDraft);
@@ -476,6 +521,7 @@ function renderProgramUI() {
 
 function getChemistryExampleReport() {
   return {
+    schemaVersion: REPORT_SCHEMA_VERSION,
     id: state.reportId,
     accessToken: state.reportToken,
     teacherEmail: "",
@@ -639,7 +685,9 @@ function resetAllReport() {
   state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
-    processedData: defaultTableList("processedData")
+    processedData: defaultTableList("processedData"),
+    dpRawData: defaultTableList("dpRawData"),
+    dpProcessedData: defaultTableList("dpProcessedData")
   };
 
   localStorage.removeItem(STORAGE_KEY);
@@ -661,7 +709,9 @@ function resetAllReport() {
     sections: {},
     tables: {
       rawData: defaultTableList("rawData"),
-      processedData: defaultTableList("processedData")
+      processedData: defaultTableList("processedData"),
+      dpRawData: defaultTableList("dpRawData"),
+      dpProcessedData: defaultTableList("dpProcessedData")
     },
     startedAt: state.startedAt
   });
@@ -1362,6 +1412,7 @@ function collectReport() {
   });
 
   return {
+    schemaVersion: REPORT_SCHEMA_VERSION,
     id: state.reportId,
     accessToken: state.reportToken,
     teacherEmail: "",
@@ -1379,7 +1430,9 @@ function collectReport() {
     sections,
     tables: {
       rawData: state.tables.rawData,
-      processedData: state.tables.processedData
+      processedData: state.tables.processedData,
+      dpRawData: state.tables.dpRawData,
+      dpProcessedData: state.tables.dpProcessedData
     }
   };
 }
@@ -1412,6 +1465,9 @@ function applyReportToUI(report) {
   const defaults = createDefaultActiveSections();
   state.activeSections = Object.fromEntries(Object.keys(PROGRAM_CONFIGS).map((program) => {
     const source = normalizedReport.activeSections?.[program];
+    if (program === "dp" && Number(normalizedReport.schemaVersion) < REPORT_SCHEMA_VERSION) {
+      return [program, defaults[program]];
+    }
     const valid = Array.isArray(source) ? defaults[program].filter((key) => source.includes(key)) : defaults[program];
     return [program, valid.length ? valid : defaults[program]];
   }));
@@ -1429,10 +1485,14 @@ function applyReportToUI(report) {
 
   state.tables.rawData = normalizeTableList(normalizedReport.tables?.rawData, "rawData");
   state.tables.processedData = normalizeTableList(normalizedReport.tables?.processedData, "processedData");
+  state.tables.dpRawData = normalizeTableList(normalizedReport.tables?.dpRawData, "dpRawData");
+  state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
   state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
 
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
+  renderTableEditor("dpRawData", elements.dpRawDataEditor);
+  renderTableEditor("dpProcessedData", elements.dpProcessedDataEditor);
   renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
