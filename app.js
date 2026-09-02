@@ -850,7 +850,7 @@ function generateBasicPdfBlob(report) {
   lines.push(`Time: ${report.time || ""}`);
   lines.push(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}`);
   lines.push(`Class Code: ${report.classCode || ""}`);
-  lines.push(`Writing Integrity: ${report.blockedAttempts || 0} blocked attempt(s)`);
+  lines.push(`Copy and Paste Attempts: ${report.blockedAttempts || 0}`);
   lines.push(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`);
   lines.push("");
 
@@ -970,7 +970,7 @@ function generatePdfInBrowser(report) {
     align: "center",
     lineHeight: 15
   });
-  drawParagraph(`Writing integrity: ${report.blockedAttempts || 0} blocked attempt(s)`, {
+  drawParagraph(`Copy and Paste Attempts: ${report.blockedAttempts || 0}`, {
     size: 10,
     align: "center",
     lineHeight: 14

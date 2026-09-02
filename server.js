@@ -512,7 +512,7 @@ function generatePdf(report) {
     doc.text(`Date: ${report.date}`, { align: "center" });
     doc.text(`Time: ${report.time}`, { align: "center" });
     doc.text(`Programme: ${report.program.toUpperCase()} | Class Code: ${report.classCode}`, { align: "center" });
-    doc.fontSize(10).fillColor("#4b5563").text(`Writing integrity: ${report.blockedAttempts} blocked attempt(s)`, { align: "center" });
+    doc.fontSize(10).fillColor("#4b5563").text(`Copy and Paste Attempts: ${report.blockedAttempts}`, { align: "center" });
     doc.text(`Time Spent: ${formatDuration(report.timeSpentSeconds)}`, { align: "center" });
     doc.moveDown(1);
 
