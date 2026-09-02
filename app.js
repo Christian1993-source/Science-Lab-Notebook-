@@ -215,16 +215,14 @@ function init() {
   renderTableEditor("processedData", elements.processedDataEditor);
   renderTableEditor("dpRawData", elements.dpRawDataEditor);
   renderTableEditor("dpProcessedData", elements.dpProcessedDataEditor);
-  const localDraft = safeParseLocalDraft();
-  if (isLegacyExampleDraft(localDraft)) {
-    clearLegacyExampleDraft();
-  } else if (localDraft) {
-    applyReportToUI(localDraft);
-  }
+  resetAllReport({
+    requireConfirmation: false,
+    restartTimer: false,
+    statusMessage: "New blank report started automatically."
+  });
   renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
-  void initializeAutomaticDateTime(true);
 
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
@@ -659,8 +657,12 @@ function getChemistryExampleReport() {
   };
 }
 
-function resetAllReport() {
-  if (!window.confirm("Are you sure you want to delete all information? This action cannot be undone.")) {
+function resetAllReport({
+  requireConfirmation = true,
+  restartTimer = true,
+  statusMessage = "Report reset. You can start a new draft."
+} = {}) {
+  if (requireConfirmation && !window.confirm("Are you sure you want to delete all information? This action cannot be undone.")) {
     return;
   }
 
@@ -714,11 +716,13 @@ function resetAllReport() {
   });
   void initializeAutomaticDateTime(true);
 
-  state.intervalTimer = setInterval(() => {
-    void saveDraft("interval");
-  }, 15000);
+  if (restartTimer) {
+    state.intervalTimer = setInterval(() => {
+      void saveDraft("interval");
+    }, 15000);
+  }
 
-  elements.saveState.textContent = "Report reset. You can start a new draft.";
+  elements.saveState.textContent = statusMessage;
 }
 
 function tableHasContent(table, tableKey = "generic") {
