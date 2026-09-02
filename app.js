@@ -164,7 +164,6 @@ const elements = {
   removedSections: document.getElementById("removedSections"),
   restoreSectionButtons: document.getElementById("restoreSectionButtons"),
   resetBtn: document.getElementById("resetBtn"),
-  loadExampleBtn: document.getElementById("loadExampleBtn"),
   saveDraftBtn: document.getElementById("saveDraftBtn"),
   loadSavedDraftBtn: document.getElementById("loadSavedDraftBtn"),
   submitBtn: document.getElementById("submitBtn"),
@@ -432,12 +431,6 @@ function attachInputListeners() {
     resetAllReport();
   });
 
-  if (elements.loadExampleBtn) {
-    elements.loadExampleBtn.addEventListener("click", () => {
-      loadExampleReport();
-    });
-  }
-
   elements.submitBtn.addEventListener("click", () => {
     void submitFinalReport();
   });
@@ -492,7 +485,6 @@ function renderProgramUI() {
   });
   elements.programBadge.textContent = config.name;
   elements.selectedProgram.value = config.name;
-  elements.loadExampleBtn.hidden = state.program === "dp";
   elements.outlineList.replaceChildren();
   const studentItem = document.createElement("li");
   studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
@@ -663,7 +655,7 @@ function loadExampleReport() {
 }
 
 function resetAllReport() {
-  if (!window.confirm("Reset all fields and start a new report?")) {
+  if (!window.confirm("Are you sure you want to delete all information? This action cannot be undone.")) {
     return;
   }
 
