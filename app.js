@@ -216,7 +216,9 @@ function init() {
   renderTableEditor("dpRawData", elements.dpRawDataEditor);
   renderTableEditor("dpProcessedData", elements.dpProcessedDataEditor);
   const localDraft = safeParseLocalDraft();
-  if (localDraft) {
+  if (isLegacyExampleDraft(localDraft)) {
+    clearLegacyExampleDraft();
+  } else if (localDraft) {
     applyReportToUI(localDraft);
   }
   renderProgramUI();
@@ -227,6 +229,40 @@ function init() {
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
   }, 15000);
+}
+
+function isLegacyExampleDraft(report) {
+  if (!report || typeof report !== "object") {
+    return false;
+  }
+  const title = String(report.title || "").trim().toLowerCase();
+  const background = String(report.sections?.backgroundInformation || "").toLowerCase();
+  return (title.includes("analysis of motion on an inclined track") || background.includes("linear velocity-time relationship v = v0 + at"));
+}
+
+function clearLegacyExampleDraft() {
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(REPORT_ID_KEY);
+  localStorage.removeItem(REPORT_TOKEN_KEY);
+  localStorage.removeItem(REPORT_STARTED_AT_KEY);
+
+  state.reportId = generateId();
+  state.reportToken = generateId();
+  state.startedAt = 0;
+  state.status = "Draft";
+  state.classCode = "";
+  state.activeSections = createDefaultActiveSections();
+  state.blockedAttempts = 0;
+  state.tables = {
+    rawData: defaultTableList("rawData"),
+    processedData: defaultTableList("processedData"),
+    dpRawData: defaultTableList("dpRawData"),
+    dpProcessedData: defaultTableList("dpProcessedData")
+  };
+
+  localStorage.setItem(REPORT_ID_KEY, state.reportId);
+  localStorage.setItem(REPORT_TOKEN_KEY, state.reportToken);
+  localStorage.setItem(REPORT_STARTED_AT_KEY, "0");
 }
 
 function generateId() {
@@ -623,81 +659,6 @@ function getChemistryExampleReport() {
       }
     }
   };
-}
-
-function getPhysicsExampleReport() {
-  return {
-    id: state.reportId,
-    teacherEmail: "",
-    teacher: "Mr. Mercado",
-    startedAt: 0,
-    title: "Kinematic Analysis of Motion on an Inclined Track",
-    studentName: "Daniel R. Morales",
-    date: "2026-02-12",
-    status: "Draft",
-    sections: {
-      researchQuestion:
-        "How does a cart's velocity change with time on an inclined track when the independent variable is elapsed time (s) and the dependent variable is velocity (m/s), and what acceleration with uncertainty is obtained from repeated trials?",
-      backgroundInformation:
-        "For uniformly accelerated motion, kinematics predicts a linear velocity-time relationship v = v0 + at and a quadratic position-time relationship x = x0 + v0t + 1/2at^2 (Giancoli, 2016). On a fixed incline with limited friction, the component of gravity along the track produces approximately constant acceleration (Serway & Jewett, 2018). Estimating acceleration from the slope of v versus t is a standard approach in introductory mechanics (Young & Freedman, 2020). Reliable conclusions require explicit uncertainty analysis from instrument resolution and repeated trials (Halliday et al., 2018). Reporting mean values with percent uncertainty strengthens scientific validity and supports model-based interpretation (Knight, 2017).",
-      variables:
-        "Independent variable: elapsed time t. Dependent variable: cart velocity v and derived acceleration a. Controlled variables: incline angle, cart mass, release method, same track surface, and same photogate timing setup.",
-      hypothesis:
-        "If the incline angle remains fixed and friction is small, then velocity will increase linearly with time and calculated acceleration will be approximately constant across trials.",
-      materials:
-        "Dynamics cart (0.250 +/- 0.001 kg), aluminum track (1.20 +/- 0.01 m), fixed incline angle 11.0 +/- 0.2 degrees, two photogates with timer resolution +/- 0.001 s, meter stick (1 mm resolution), digital balance (0.01 g resolution), clamp stand, and data sheet.",
-      procedure:
-        "Set track angle to a constant value and verify alignment. Release the cart from the same start point without push. Record velocity at fixed time intervals for each trial, estimate measurement uncertainty from instrument resolution, repeat for three trials, and compute acceleration from the slope of v versus t in each trial.",
-      rawDataNotes:
-        "Raw velocity values increased steadily with time in every run. Instrument uncertainties were tracked for both time and velocity, and the spread remained small across trials.",
-      processedDataNotes:
-        "Linear fits of velocity versus time yielded high coefficients (R^2 > 0.99), supporting near-constant acceleration. Mean acceleration across trials was stable within experimental uncertainty and consistent with the expected incline model.",
-      processedDataSampleCalculations:
-        "Trial 2 slope method: two points (t = 0.40 +/- 0.001 s, v = 0.83 +/- 0.03 m/s) and (t = 1.20 +/- 0.001 s, v = 2.42 +/- 0.03 m/s). a = Delta v / Delta t = (2.42 - 0.83) / (1.20 - 0.40) = 1.99 m/s^2. Propagated uncertainty: Delta a / a ~= sqrt((Delta(Delta v)/Delta v)^2 + (Delta(Delta t)/Delta t)^2) ~= 0.027, so Delta a ~= 0.05 m/s^2.",
-      conclusion:
-        "The data support the hypothesis: velocity increased linearly with time and acceleration remained nearly constant across trials. The kinematic model for uniformly accelerated motion describes the system well.",
-      evaluation:
-        "Main uncertainties came from slight release inconsistencies, photogate alignment, and rolling friction. These effects shifted absolute slope modestly but did not alter linear v-t behavior.",
-      improvements:
-        "Use a longer track interval for improved slope precision, calibrate sensors before each run, and add five or more trials to reduce uncertainty in mean acceleration.",
-      references:
-        "Giancoli, D. C. (2016). Physics: Principles with applications (7th ed.). Pearson.\nHalliday, D., Resnick, R., & Walker, J. (2018). Fundamentals of physics (11th ed.). Wiley.\nKnight, R. D. (2017). Physics for scientists and engineers: A strategic approach (4th ed.). Pearson.\nSerway, R. A., & Jewett, J. W. (2018). Physics for scientists and engineers (10th ed.). Cengage.\nYoung, H. D., & Freedman, R. A. (2020). University physics with modern physics (15th ed.). Pearson."
-    },
-    tables: {
-      rawData: {
-        title: "Table 1. Kinematics Raw Data with Measurement Uncertainty",
-        headers: ["Trial", "Time t (s)", "Delta t (s)", "Velocity v (m/s)", "Delta v (m/s)", "Position x (m)"],
-        rows: [
-          ["Trial 1", "0.40", "0.001", "0.81", "0.03", "0.16"],
-          ["Trial 2", "0.80", "0.001", "1.62", "0.03", "0.64"],
-          ["Trial 3", "1.20", "0.001", "2.43", "0.03", "1.44"]
-        ]
-      },
-      processedData: {
-        title: "Table 2. Processed Kinematics Results and Uncertainty",
-        headers: ["Trial", "Acceleration a (m/s^2)", "Delta a (m/s^2)", "Percent Uncertainty (%)", "R^2", "Percent Difference (%)"],
-        rows: [
-          ["Trial 1", "1.98", "0.05", "2.53", "0.993", "0.50"],
-          ["Trial 2", "1.99", "0.05", "2.51", "0.995", "0.00"],
-          ["Trial 3", "2.02", "0.05", "2.48", "0.992", "1.51"],
-          ["Mean", "2.00", "0.05", "2.50", "0.993", "0.67"]
-        ]
-      }
-    }
-  };
-}
-
-function loadExampleReport() {
-  if (state.status === "Submitted") {
-    return;
-  }
-
-  const exampleReport = getPhysicsExampleReport();
-
-  applyReportToUI(exampleReport);
-  persistLocalBackup();
-  elements.saveState.textContent = "Example report loaded with scientific, high-achievement report content.";
-  queueIdleSave();
 }
 
 function resetAllReport() {
