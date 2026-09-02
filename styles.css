@@ -575,16 +575,31 @@ body {
 
 .outline-panel ol {
   margin: 0;
-  padding-left: 24px;
+  padding: 0;
   line-height: 1.4;
-  list-style-type: upper-roman;
+  list-style: none;
+  counter-reset: outline-item;
 }
 
 .outline-panel li {
+  display: grid;
+  grid-template-columns: 3.4em minmax(0, 1fr);
+  gap: 0.55em;
+  align-items: start;
   margin: 6px 0;
+  counter-increment: outline-item;
+}
+
+.outline-panel li::before {
+  content: counter(outline-item, upper-roman) ".";
+  color: var(--program-accent-strong);
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .outline-panel a {
+  min-width: 0;
   color: #18553a;
   text-decoration: none;
   border-bottom: 1px dashed transparent;
