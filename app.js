@@ -224,7 +224,7 @@ function init() {
   renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
-  void initializeAutomaticDateTime();
+  void initializeAutomaticDateTime(true);
 
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
@@ -296,17 +296,15 @@ async function initializeAutomaticDateTime(force = false) {
     return;
   }
 
-  let timestamp = state.startedAt > 0 ? state.startedAt : Date.now();
-  if (state.startedAt <= 0) {
-    try {
-      const response = await fetch(`./index.html?clock=${Date.now()}`, { method: "HEAD", cache: "no-store" });
-      const serverDate = Date.parse(response.headers.get("date") || "");
-      if (Number.isFinite(serverDate)) {
-        timestamp = serverDate;
-      }
-    } catch (_error) {
-      // Fall back to the device clock when the platform clock is unavailable.
+  let timestamp = Date.now();
+  try {
+    const response = await fetch(`./index.html?clock=${Date.now()}`, { method: "HEAD", cache: "no-store" });
+    const serverDate = Date.parse(response.headers.get("date") || "");
+    if (Number.isFinite(serverDate)) {
+      timestamp = serverDate;
     }
+  } catch (_error) {
+    // Fall back to the device clock when the platform clock is unavailable.
   }
 
   const automatic = formatAutomaticDateTime(timestamp);
