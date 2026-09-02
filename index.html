@@ -7,8 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <link rel="stylesheet" href="styles.css?v=20260902-2" />
-    <link rel="stylesheet" href="atlas.css?v=20260902-2" />
+    <link rel="stylesheet" href="styles.css?v=20260902-3" />
+    <link rel="stylesheet" href="atlas.css?v=20260902-3" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -97,7 +97,11 @@
               </div>
               <div>
                 <label for="date">Date *</label>
-                <input id="date" type="date" />
+                <input id="date" type="date" readonly aria-readonly="true" />
+              </div>
+              <div>
+                <label for="time">Time *</label>
+                <input id="time" type="text" readonly aria-readonly="true" />
               </div>
               <div>
                 <label for="classCode">Class Code *</label>
@@ -267,6 +271,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="app.js?v=20260902-2"></script>
+    <script src="app.js?v=20260902-3"></script>
   </body>
 </html>

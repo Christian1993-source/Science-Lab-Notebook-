@@ -4,6 +4,7 @@ const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 2;
+const REPORT_TIME_ZONE = "America/Puerto_Rico";
 
 const sectionKeys = [
   "researchQuestion",
@@ -157,6 +158,7 @@ const elements = {
   teacher: document.getElementById("teacher"),
   studentName: document.getElementById("studentName"),
   date: document.getElementById("date"),
+  time: document.getElementById("time"),
   classCode: document.getElementById("classCode"),
   selectedProgram: document.getElementById("selectedProgram"),
   programBadge: document.getElementById("programBadge"),
@@ -220,6 +222,7 @@ function init() {
   renderProgramUI();
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
+  void initializeAutomaticDateTime();
 
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
@@ -231,6 +234,49 @@ function generateId() {
     return window.crypto.randomUUID();
   }
   return `report-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function formatAutomaticDateTime(timestamp) {
+  const dateParts = new Intl.DateTimeFormat("en-US", {
+    timeZone: REPORT_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date(timestamp));
+  const part = (type) => dateParts.find((item) => item.type === type)?.value || "";
+  const date = `${part("year")}-${part("month")}-${part("day")}`;
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone: REPORT_TIME_ZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  }).format(new Date(timestamp));
+  return { date, time };
+}
+
+async function initializeAutomaticDateTime(force = false) {
+  if (!force && elements.date.value && elements.time.value) {
+    return;
+  }
+
+  let timestamp = state.startedAt > 0 ? state.startedAt : Date.now();
+  if (state.startedAt <= 0) {
+    try {
+      const response = await fetch(`./index.html?clock=${Date.now()}`, { method: "HEAD", cache: "no-store" });
+      const serverDate = Date.parse(response.headers.get("date") || "");
+      if (Number.isFinite(serverDate)) {
+        timestamp = serverDate;
+      }
+    } catch (_error) {
+      // Fall back to the device clock when the platform clock is unavailable.
+    }
+  }
+
+  const automatic = formatAutomaticDateTime(timestamp);
+  elements.date.value = automatic.date;
+  elements.time.value = automatic.time;
+  persistLocalBackup();
 }
 
 function getTemplateHeaders(tableKey) {
@@ -707,6 +753,7 @@ function resetAllReport() {
     },
     startedAt: state.startedAt
   });
+  void initializeAutomaticDateTime(true);
 
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
@@ -800,6 +847,7 @@ function generateBasicPdfBlob(report) {
   lines.push(`Teacher: ${report.teacher || "Not specified"}`);
   lines.push(`Student: ${report.studentName || ""}`);
   lines.push(`Date: ${report.date || ""}`);
+  lines.push(`Time: ${report.time || ""}`);
   lines.push(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}`);
   lines.push(`Class Code: ${report.classCode || ""}`);
   lines.push(`Writing Integrity: ${report.blockedAttempts || 0} blocked attempt(s)`);
@@ -916,6 +964,7 @@ function generatePdfInBrowser(report) {
   });
   drawParagraph(`Student: ${report.studentName || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Date: ${report.date || ""}`, { size: 12, align: "center", lineHeight: 16 });
+  drawParagraph(`Time: ${report.time || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}  |  Class Code: ${report.classCode || ""}`, {
     size: 11,
     align: "center",
@@ -1416,6 +1465,7 @@ function collectReport() {
     title: elements.title.value.trim(),
     studentName: elements.studentName.value.trim(),
     date: elements.date.value,
+    time: elements.time.value,
     startedAt: state.startedAt,
     timeSpentSeconds: getTimeSpentSeconds(),
     status: state.status,
@@ -1469,6 +1519,7 @@ function applyReportToUI(report) {
   elements.title.value = normalizedReport.title || "";
   elements.studentName.value = normalizedReport.studentName || "";
   elements.date.value = normalizedReport.date || "";
+  elements.time.value = normalizedReport.time || "";
   elements.classCode.value = state.classCode;
 
   sectionKeys.forEach((sectionKey) => {
@@ -1646,8 +1697,8 @@ async function submitFinalReport() {
     elements.classCode.focus();
     return;
   }
-  if (!report.title || !report.studentName || !report.date) {
-    window.alert("Title of Experiment, Student Name, and Date are required.");
+  if (!report.title || !report.studentName || !report.date || !report.time) {
+    window.alert("Title of Experiment, Student Name, Date, and Time are required.");
     return;
   }
 

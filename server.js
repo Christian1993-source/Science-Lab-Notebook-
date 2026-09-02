@@ -204,6 +204,7 @@ function sanitizeReport(rawReport) {
     title: cleanString(report.title),
     studentName: cleanString(report.studentName),
     date: cleanString(report.date),
+    time: cleanString(report.time),
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
     status: report.status === "Submitted" ? "Submitted" : "Draft",
@@ -509,6 +510,7 @@ function generatePdf(report) {
       align: "center"
     });
     doc.text(`Date: ${report.date}`, { align: "center" });
+    doc.text(`Time: ${report.time}`, { align: "center" });
     doc.text(`Programme: ${report.program.toUpperCase()} | Class Code: ${report.classCode}`, { align: "center" });
     doc.fontSize(10).fillColor("#4b5563").text(`Writing integrity: ${report.blockedAttempts} blocked attempt(s)`, { align: "center" });
     doc.text(`Time Spent: ${formatDuration(report.timeSpentSeconds)}`, { align: "center" });
@@ -564,6 +566,9 @@ function validateSubmitFields(report) {
   }
   if (!report.date) {
     return "Date is required.";
+  }
+  if (!report.time) {
+    return "Time is required.";
   }
   return "";
 }
