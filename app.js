@@ -404,9 +404,6 @@ function normalizeTable(table, tableKey = "generic") {
 
   if (isScienceTable(tableKey)) {
     headers = headers.map((header, index) => {
-      if (index === 0) {
-        return "Trial";
-      }
       if (shouldBlankLegacyScienceHeader(header, index)) {
         return "";
       }
@@ -969,26 +966,48 @@ function generatePdfInBrowser(report) {
     const sectionTables = Array.isArray(section.tables) ? section.tables : [];
     if (sectionTables.length > 0 && typeof doc.autoTable === "function") {
       sectionTables.forEach((table, tableIndex) => {
+        const tableLabelCount = Number(Boolean(table.title)) + Number(sectionTables.length > 1);
+        ensureSpace(82 + tableLabelCount * 18);
         if (table.title) {
           drawParagraph(String(table.title), { bold: true, size: 11, lineHeight: 15 });
         }
         if (sectionTables.length > 1) {
           drawParagraph(`Table ${tableIndex + 1}`, { bold: true, size: 11, lineHeight: 15 });
         }
+        const columnCount = Math.max(1, table.headers.length);
+        const columnWidth = maxTextWidth / columnCount;
+        const columnStyles = Object.fromEntries(
+          Array.from({ length: columnCount }, (_, columnIndex) => [columnIndex, { cellWidth: columnWidth }])
+        );
+        const tableFontSize = columnCount <= 5 ? 10 : columnCount <= 7 ? 9 : 8;
         doc.autoTable({
           startY: y,
           head: [table.headers],
           body: table.rows.filter((row) => row.some((cell) => String(cell || "").trim())),
           theme: "grid",
+          tableWidth: maxTextWidth,
+          showHead: "everyPage",
+          pageBreak: "auto",
+          rowPageBreak: "avoid",
           styles: {
             font: "times",
-            fontSize: 10,
-            cellPadding: 4,
+            fontSize: tableFontSize,
+            cellPadding: { top: 7, right: 5, bottom: 7, left: 5 },
+            minCellHeight: 32,
+            overflow: "linebreak",
+            valign: "middle",
             lineColor: [82, 120, 102],
             lineWidth: 0.5
           },
-          headStyles: { fillColor: [232, 241, 236], textColor: [20, 52, 39] },
-          margin: { left: margin, right: margin }
+          headStyles: {
+            fillColor: [232, 241, 236],
+            textColor: [20, 52, 39],
+            fontStyle: "bold",
+            minCellHeight: 34
+          },
+          bodyStyles: { minCellHeight: 38 },
+          columnStyles,
+          margin: { top: margin, bottom: margin, left: margin, right: margin }
         });
         y = doc.lastAutoTable.finalY + 14;
       });
@@ -1279,8 +1298,12 @@ function renderTableEditor(tableKey, container) {
       controls.append(addRowBtn, addColumnBtn, deleteColumnBtn);
     }
 
+    const tableViewport = document.createElement("div");
+    tableViewport.className = "table-viewport";
+
     const tableElement = document.createElement("table");
     tableElement.className = "table-grid";
+    tableElement.style.minWidth = `${Math.max(700, tableData.headers.length * 136 + 96)}px`;
 
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
@@ -1338,8 +1361,9 @@ function renderTableEditor(tableKey, container) {
 
       row.forEach((cell, colIndex) => {
         const td = document.createElement("td");
-        const input = document.createElement("input");
-        input.type = "text";
+        const input = document.createElement("textarea");
+        input.className = "table-cell-input";
+        input.rows = 2;
         input.value = cell;
         input.addEventListener("input", (event) => {
           tableData.rows[rowIndex][colIndex] = event.target.value;
@@ -1371,7 +1395,8 @@ function renderTableEditor(tableKey, container) {
     });
 
     tableElement.appendChild(tbody);
-    tableBlock.append(controls, tableElement);
+    tableViewport.appendChild(tableElement);
+    tableBlock.append(controls, tableViewport);
     container.appendChild(tableBlock);
   });
 

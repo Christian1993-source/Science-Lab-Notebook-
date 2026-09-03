@@ -365,37 +365,72 @@ function drawTableGrid(doc, table) {
     .map((row) => row.map((cell) => cleanString(String(cell))))
     .filter((row) => row.some((cell) => cell.length > 0));
 
-  const rows = [headers, ...dataRows];
   const columnCount = Math.max(headers.length, 1);
   const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
   const columnWidth = width / columnCount;
   const left = doc.page.margins.left;
+  const fontSize = columnCount <= 5 ? 10 : columnCount <= 7 ? 9 : 8;
+  const horizontalPadding = 5;
+  const verticalPadding = 7;
   let currentY = doc.y;
+  const bottomLimit = () => doc.page.height - doc.page.margins.bottom - 22;
 
-  rows.forEach((row, rowIndex) => {
-    const normalizedRow = Array.from({ length: columnCount }, (_, index) => row[index] || "");
-    const cellHeights = normalizedRow.map((cell) =>
-      doc.heightOfString(cell || " ", { width: columnWidth - 10, align: "left" })
+  const getRowHeight = (row, isHeader) => {
+    doc.font(isHeader ? "Times-Bold" : "Times-Roman").fontSize(fontSize);
+    const cellHeights = row.map((cell) =>
+      doc.heightOfString(cell || " ", {
+        width: columnWidth - horizontalPadding * 2,
+        align: "left"
+      })
     );
-    const rowHeight = Math.max(...cellHeights, 16) + 10;
-    const bottomLimit = doc.page.height - doc.page.margins.bottom - 22;
+    return Math.max(...cellHeights, isHeader ? 20 : 24) + verticalPadding * 2;
+  };
 
-    if (currentY + rowHeight > bottomLimit) {
-      doc.addPage();
-      currentY = doc.y;
-    }
+  const drawRow = (row, isHeader) => {
+    const normalizedRow = Array.from({ length: columnCount }, (_, index) => row[index] || "");
+    const rowHeight = getRowHeight(normalizedRow, isHeader);
 
     normalizedRow.forEach((cell, cellIndex) => {
       const x = left + columnWidth * cellIndex;
-      doc.rect(x, currentY, columnWidth, rowHeight).lineWidth(0.8).strokeColor("#3f6b58").stroke();
+      doc.save();
+      doc.rect(x, currentY, columnWidth, rowHeight).lineWidth(0.8);
+      if (isHeader) {
+        doc.fillAndStroke("#e8f1ec", "#3f6b58");
+      } else {
+        doc.strokeColor("#3f6b58").stroke();
+      }
+      doc.restore();
       doc
-        .font(rowIndex === 0 ? "Times-Bold" : "Times-Roman")
-        .fontSize(11)
-        .fillColor("#111111")
-        .text(cell || " ", x + 5, currentY + 5, { width: columnWidth - 10, align: "left" });
+        .font(isHeader ? "Times-Bold" : "Times-Roman")
+        .fontSize(fontSize)
+        .fillColor(isHeader ? "#143427" : "#111111")
+        .text(cell || " ", x + horizontalPadding, currentY + verticalPadding, {
+          width: columnWidth - horizontalPadding * 2,
+          align: "left"
+        });
     });
 
     currentY += rowHeight;
+  };
+
+  const normalizedHeaders = Array.from({ length: columnCount }, (_, index) => headers[index] || "");
+  const firstBodyRow = dataRows[0] || Array(columnCount).fill("");
+  const openingHeight = getRowHeight(normalizedHeaders, true) + getRowHeight(firstBodyRow, false);
+  if (currentY + openingHeight > bottomLimit()) {
+    doc.addPage();
+    currentY = doc.y;
+  }
+  drawRow(normalizedHeaders, true);
+
+  dataRows.forEach((row) => {
+    const normalizedRow = Array.from({ length: columnCount }, (_, index) => row[index] || "");
+    const rowHeight = getRowHeight(normalizedRow, false);
+    if (currentY + rowHeight > bottomLimit()) {
+      doc.addPage();
+      currentY = doc.y;
+      drawRow(normalizedHeaders, true);
+    }
+    drawRow(normalizedRow, false);
   });
 
   doc.x = left;
@@ -438,6 +473,7 @@ function drawDataSection(doc, number, label, notes, sampleCalculations, tables) 
   const contentTables = normalizeTableList(tables).filter((table) => tableHasContent(table));
   if (contentTables.length > 0) {
     contentTables.forEach((table, index) => {
+      ensurePageSpace(doc, 100);
       if (table.title) {
         doc.font("Times-Bold").fontSize(11).fillColor("#124232").text(String(table.title));
         doc.moveDown(0.2);

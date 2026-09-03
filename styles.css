@@ -751,8 +751,16 @@ textarea {
   font-weight: 700;
 }
 
+.table-viewport {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  -webkit-overflow-scrolling: touch;
+}
+
 .table-grid {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border: 1px solid #9cb7ab;
 }
@@ -770,12 +778,30 @@ textarea {
 }
 
 .table-grid th input,
-.table-grid td input {
+.table-grid td input,
+.table-grid td textarea {
   border: 1px solid #bbd0c4;
   border-radius: 6px;
   padding: 8px;
   min-width: 98px;
   background: #ffffff;
+}
+
+.table-grid th input {
+  min-height: 48px;
+}
+
+.table-grid td textarea {
+  min-height: 72px;
+  resize: vertical;
+  line-height: 1.35;
+}
+
+.table-grid th:last-child,
+.table-grid td:last-child {
+  width: 96px;
+  text-align: center;
+  vertical-align: middle;
 }
 
 .header-input-wrap {
