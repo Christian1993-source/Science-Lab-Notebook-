@@ -530,6 +530,13 @@ body {
   color: #123828;
 }
 
+.data-loss-warning {
+  margin: 0 0 16px;
+  color: #b42318;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 .instructions-card h2 {
   font-size: 1.35rem;
 }
