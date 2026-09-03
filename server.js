@@ -133,7 +133,7 @@ function normalizeTable(table) {
     return Math.max(max, row.length);
   }, 0);
 
-  const width = Math.max(headers.length, maxRowColumns, 2);
+  const width = Math.max(headers.length, maxRowColumns, 1);
   if (headers.length === 0) {
     headers = Array.from({ length: width }, (_, index) => `Column ${index + 1}`);
   }

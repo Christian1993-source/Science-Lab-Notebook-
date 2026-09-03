@@ -385,7 +385,6 @@ function normalizeTable(table, tableKey = "generic") {
     : [];
 
   let rows = Array.isArray(table.rows) ? table.rows : [];
-  const minColumns = isScienceTable(tableKey) ? getTemplateHeaders(tableKey).length : 2;
   const maxColumns = rows.reduce((max, row) => {
     if (!Array.isArray(row)) {
       return max;
@@ -393,7 +392,7 @@ function normalizeTable(table, tableKey = "generic") {
     return Math.max(max, row.length);
   }, 0);
 
-  const width = Math.max(headers.length, maxColumns, minColumns);
+  const width = Math.max(headers.length, maxColumns, 1);
   const defaultHeaders = getDefaultHeaders(tableKey, width);
   if (headers.length === 0) {
     headers = defaultHeaders.slice();
