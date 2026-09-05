@@ -7,9 +7,9 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260905-numbered-materials-1" />
+    <meta name="notebook-release" content="20260905-materials-design-1" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260905-figure-spacing-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260905-materials-design-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -140,7 +140,11 @@
 
           <section class="card report-section" data-program="myp" data-section-key="materials" id="sec-materials">
             <div class="section-heading"><h2>V. Materials</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-materials" aria-label="Materials numbered list" placeholder="1. First material&#10;2. Second material&#10;3. Third material"></textarea>
+            <div class="materials-editor">
+              <div class="materials-editor-heading"><span class="materials-list-icon" aria-hidden="true">1.<br>2.<br>3.</span><div><h3>Equipment &amp; supplies</h3><p id="materials-help">One material per line. Include quantities and units where needed.</p></div></div>
+              <textarea id="section-materials" aria-label="Materials numbered list" aria-describedby="materials-help materials-tip" placeholder="1. Beaker (250 mL)&#10;2. Thermometer&#10;3. Distilled water (100 mL)"></textarea>
+              <p class="materials-tip" id="materials-tip"><span class="materials-number-badge">1 → 2 → 3</span><span>Press <kbd>Enter</kbd> to add the next material.</span></p>
+            </div>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="procedure" id="sec-procedure">
@@ -214,7 +218,11 @@
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpMaterials" id="sec-dpMaterials">
             <div class="section-heading"><h2>V. Materials</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-dpMaterials" aria-label="DP Materials numbered list" placeholder="1. First material&#10;2. Second material&#10;3. Third material"></textarea>
+            <div class="materials-editor">
+              <div class="materials-editor-heading"><span class="materials-list-icon" aria-hidden="true">1.<br>2.<br>3.</span><div><h3>Equipment &amp; supplies</h3><p id="dp-materials-help">One material per line. Include quantities and units where needed.</p></div></div>
+              <textarea id="section-dpMaterials" aria-label="DP Materials numbered list" aria-describedby="dp-materials-help dp-materials-tip" placeholder="1. Beaker (250 mL)&#10;2. Thermometer&#10;3. Distilled water (100 mL)"></textarea>
+              <p class="materials-tip" id="dp-materials-tip"><span class="materials-number-badge">1 → 2 → 3</span><span>Press <kbd>Enter</kbd> to add the next material.</span></p>
+            </div>
           </section>
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpProcedure" id="sec-dpProcedure">

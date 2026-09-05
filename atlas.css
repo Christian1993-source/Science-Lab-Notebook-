@@ -204,6 +204,22 @@ input:focus, textarea:focus {
 }
 .section-action, .restore-section-btn { border-radius: 8px; }
 
+.materials-editor { margin-top: 24px; padding: clamp(18px, 3vw, 28px); border: 1px solid #ccdcd5; border-radius: 16px; background: linear-gradient(135deg, #eef5f0, #f8f8f2); }
+.materials-editor-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }
+.materials-list-icon { flex: 0 0 42px; padding: 10px 0; border: 1px solid #c4d9d1; border-radius: 10px; background: #fffdf8; color: var(--atlas-teal-dark); text-align: center; font: 700 12px/1.25 system-ui, sans-serif; }
+.materials-editor-heading h3 { margin: 0 0 7px; color: var(--atlas-ink); font-size: 1.1rem; }
+.materials-editor-heading p { margin: 0; color: #526b68; font-size: 0.88rem; line-height: 1.55; }
+.materials-editor textarea { display: block; width: 100%; box-sizing: border-box; min-height: 230px; margin: 0; padding: 20px 24px; border: 1px solid #b9cfc6; border-radius: 12px; background: #fffefa; box-shadow: 0 3px 12px rgba(21, 49, 66, 0.035); font-size: 1rem; line-height: 2; font-variant-numeric: tabular-nums; resize: vertical; }
+.materials-editor textarea::placeholder { color: #74847e; opacity: 1; }
+.materials-editor textarea:focus { background: #fff; border-color: var(--atlas-teal); }
+.materials-tip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 18px 0 0; color: #526b68; font: 0.8rem/1.6 system-ui, sans-serif; }
+.materials-number-badge { padding: 4px 10px; border-radius: 6px; background: #dcece3; color: #226254; font-weight: 650; letter-spacing: 0.06em; }
+.materials-tip kbd { padding: 2px 5px; border: 1px solid #c7d2cf; border-bottom-width: 2px; border-radius: 4px; background: #fffdf8; font: inherit; }
+@media (max-width: 600px) {
+  .materials-editor-heading { align-items: flex-start; gap: 12px; }
+  .materials-editor textarea { padding: 16px; }
+}
+
 .action-card {
   border: 1px solid var(--atlas-line);
   background: rgba(255, 253, 248, 0.96);
