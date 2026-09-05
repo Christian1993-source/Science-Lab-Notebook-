@@ -161,6 +161,21 @@ body.program-dp {
 }
 .outline-panel a, label, .table-block-title { color: var(--atlas-ink); }
 .outline-panel li::marker { color: var(--atlas-teal); font-weight: 700; }
+.notebook-sidebar { min-width: 0; position: sticky; top: 18px; }
+.notebook-sidebar .outline-panel { position: static; }
+.lab-guides { margin-top: 18px; }
+.lab-guides h2 { margin: 8px 0 12px; }
+.lab-guides > p:not(.eyebrow) { color: #526b68; font-size: 0.9rem; line-height: 1.5; }
+.guide-choice { display: flex; width: 100%; align-items: center; gap: 12px; padding: 16px; border: 1px solid #b9d1c9; border-radius: 12px; background: #eef6f1; color: var(--atlas-ink); text-align: left; font: inherit; cursor: pointer; }
+.guide-choice:hover { background: #deeee5; }
+.guide-choice small { display: block; margin-top: 6px; color: #526b68; font-size: 0.78rem; line-height: 1.4; }
+.guide-pdf-badge { padding: 9px 6px; border-radius: 6px; background: #fffdf8; color: #086c6c; font: 700 0.7rem system-ui, sans-serif; }
+.guide-choice { box-sizing: border-box; text-decoration: none; }
+.guide-choice:focus-visible { outline: 3px solid var(--atlas-teal); outline-offset: 3px; }
+@media (max-height: 950px) { .notebook-sidebar { position: static; } }
+@media (max-width: 800px) {
+  .notebook-sidebar { position: static; }
+}
 .report-section {
   position: relative;
   overflow: hidden;

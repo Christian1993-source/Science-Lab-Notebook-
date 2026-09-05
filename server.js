@@ -83,6 +83,9 @@ app.use((_req, res, next) => {
   next();
 });
 
+app.get("/chemistry-lab-guide.pdf", (_req, res) => {
+  res.sendFile(path.join(__dirname, "chemistry-lab-guide.pdf"));
+});
 const publicFiles = new Set(["app.js", "figures.js", "loader.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
 app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
