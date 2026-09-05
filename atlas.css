@@ -179,13 +179,24 @@ input:focus, textarea:focus {
   border-color: var(--atlas-teal);
   background: #fff;
 }
-.graph-upload-panel { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--atlas-line); }
-.graph-upload-panel > p { color: var(--atlas-ink); }
-.graph-figure { margin: 18px 0; padding: 18px; border: 1px solid var(--atlas-line); border-radius: 12px; background: #f7f5ee; }
-.graph-figure img { display: block; width: auto; max-width: 100%; max-height: 360px; margin: 12px auto 18px; object-fit: contain; background: white; border-radius: 6px; }
-.graph-figure textarea { min-height: 100px; }
+.graph-upload-panel { margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--atlas-line); }
+.graph-upload-panel > h3 { margin: 0 0 14px; }
+.graph-upload-panel > p { color: var(--atlas-ink); line-height: 1.6; margin: 0 0 12px; }
+.graph-upload-panel #graphUploadHelp { font-size: 0.9rem; color: #58706d; }
+.graph-upload-panel #graphUploadStatus:empty { display: none; }
+.graph-figure { margin: 24px 0; padding: clamp(20px, 3vw, 32px); border: 1px solid var(--atlas-line); border-radius: 16px; background: #f7f5ee; box-shadow: 0 4px 16px rgba(21, 49, 66, 0.04); }
+.graph-figure h4 { margin: 0 0 24px; padding-bottom: 16px; border-bottom: 1px solid var(--atlas-line); color: var(--atlas-teal-dark); }
+.graph-figure > label { display: block; margin: 26px 0 10px; line-height: 1.5; font-size: 0.95rem; font-weight: 600; }
+.graph-figure > h4 + label { margin-top: 0; }
+.graph-figure > input, .graph-figure > textarea { display: block; width: 100%; box-sizing: border-box; margin: 0; padding: 13px 15px; line-height: 1.5; background: #fffdf8; }
+.graph-figure > input[type="file"] { padding: 14px; border: 1px dashed #9bbdb5; background: #edf5f1; font-size: 0.9rem; }
+.graph-figure > input[type="file"]::file-selector-button { margin: 0 14px 0 0; padding: 10px 16px; border: 1px solid #b7cfc8; border-radius: 8px; background: #fffdf8; color: var(--atlas-teal-dark); font: inherit; font-weight: 600; cursor: pointer; }
+.graph-figure > input[type="file"]::file-selector-button:hover { background: #ddeee7; }
+.graph-figure img { display: block; width: auto; max-width: 100%; max-height: 360px; margin: 22px auto; object-fit: contain; background: white; border: 1px solid var(--atlas-line); border-radius: 10px; }
+.graph-figure textarea { min-height: 140px; resize: vertical; }
 .graph-figure img[hidden] { display: none; }
-.graph-figure button { margin-top: 12px; }
+.graph-figure > button { margin-top: 24px; padding: 10px 16px; font-size: 0.9rem; }
+.graph-upload-panel > #addGraph { margin-top: 4px; }
 .table-set-controls button, .table-remove-btn, .table-controls button, .row-delete, .col-delete {
   border-color: #acc7c1;
   background: #edf6f3;
