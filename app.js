@@ -863,20 +863,7 @@ function resetAllReport({
 }
 
 function tableHasContent(table, tableKey = "generic") {
-  if (!table || !Array.isArray(table.headers) || !Array.isArray(table.rows)) {
-    return false;
-  }
-
-  const hasTitle = String(table.title || "").trim().length > 0;
-  const hasCellContent = table.rows.some((row) => Array.isArray(row) && row.some((cell) => String(cell || "").trim()));
-  const defaultHeaders = getDefaultHeaders(tableKey, table.headers.length);
-  const hasCustomHeader = table.headers.some((header, index) => {
-    const fallback = defaultHeaders[index] || `Column ${index + 1}`;
-    const genericFallback = `Column ${index + 1}`;
-    const clean = String(header || "").trim();
-    return clean && clean !== fallback && clean !== genericFallback;
-  });
-  return hasTitle || hasCellContent || hasCustomHeader;
+  return LabFigures.hasTableContent(table);
 }
 
 function buildPrintableSections(report) {

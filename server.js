@@ -83,7 +83,7 @@ app.use((_req, res, next) => {
   next();
 });
 
-const publicFiles = new Set(["app.js", "figures.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
+const publicFiles = new Set(["app.js", "figures.js", "loader.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
 app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
 app.get("/:publicFile", (req, res, next) => {
@@ -254,21 +254,7 @@ function reportForClient(report) {
 }
 
 function tableHasContent(table) {
-  if (!table) {
-    return false;
-  }
-
-  const hasTitle = cleanString(String(table.title || "")).length > 0;
-  const hasDataCells = table.rows.some((row) =>
-    row.some((cell) => cleanString(String(cell)).length > 0)
-  );
-
-  const hasCustomHeaders = table.headers.some((header, index) => {
-    const fallback = `Column ${index + 1}`;
-    return cleanString(header) !== "" && cleanString(header) !== fallback;
-  });
-
-  return hasTitle || hasDataCells || hasCustomHeaders;
+  return LabFigures.hasTableContent(table);
 }
 
 function tableListHasContent(tableList) {
@@ -501,13 +487,6 @@ function drawDataSection(doc, number, label, notes, sampleCalculations, tables) 
       }
       drawTableGrid(doc, table);
     });
-  } else if (!notes && !sampleCalculations) {
-    doc
-      .font("Times-Italic")
-      .fontSize(11)
-      .fillColor("#4a4a4a")
-      .text("No table data provided for this section.");
-    doc.moveDown(0.6);
   }
 }
 

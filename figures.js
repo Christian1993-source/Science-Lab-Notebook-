@@ -21,7 +21,21 @@
       };
     });
   }
-  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize };
+  function hasTableContent(table) {
+    if (!table || !Array.isArray(table.headers) || !Array.isArray(table.rows)) return false;
+    const clean = value => String(value ?? "").trim();
+    if (clean(table.title)) return true;
+    const customHeader = table.headers.some((value, column) => {
+      const text = clean(value);
+      return text && !/^Column\s+\d+$/i.test(text) && !(column === 0 && /^Trial$/i.test(text));
+    });
+    const data = table.rows.some(row => Array.isArray(row) && row.some((value, column) => {
+      const text = clean(value);
+      return text && !(column === 0 && /^Trial\s+\d+$/i.test(text));
+    }));
+    return customHeader || data;
+  }
+  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize, hasTableContent };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.LabFigures = api;
 })(typeof window !== "undefined" ? window : this);
