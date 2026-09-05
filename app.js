@@ -592,6 +592,36 @@ function maybeStartTimerFromStudentName() {
 }
 
 function attachInputListeners() {
+  [sectionInputs.materials, sectionInputs.dpMaterials].forEach(field => {
+    const update = (value, caret = value.length) => {
+      field.value = value;
+      field.dataset.safeTypedValue = value;
+      field.setSelectionRange(caret, caret);
+      persistLocalBackup();
+      queueIdleSave();
+    };
+    field.addEventListener("focus", () => {
+      if (state.status === "Submitted") return;
+      if (!field.value.trim()) update("1. ");
+    });
+    field.addEventListener("keydown", event => {
+      if (event.key !== "Enter" || event.isComposing || state.status === "Submitted") return;
+      event.preventDefault();
+      const start = field.selectionStart;
+      const end = field.selectionEnd;
+      const before = field.value.slice(0, start);
+      const currentLine = before.slice(before.lastIndexOf("\n") + 1);
+      if (!currentLine.replace(/^\s*\d+[.)]\s*/, "").trim()) return;
+      const nextLine = before.split("\n").length;
+      const lines = (before + "\n" + field.value.slice(end)).split("\n");
+      const numbered = lines.map((line, index) => `${index + 1}. ${line.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "")}`);
+      const caret = numbered.slice(0, nextLine).join("\n").length + 1 + `${nextLine + 1}. `.length;
+      update(numbered.join("\n"), caret);
+    });
+    field.addEventListener("blur", () => {
+      if (state.status !== "Submitted") update(LabFigures.numberedMaterials(field.value));
+    });
+  });
   const standardInputs = [elements.title, elements.teacher, elements.studentName, elements.date, elements.classCode, ...Object.values(sectionInputs)];
 
   standardInputs.forEach((input) => {
@@ -946,7 +976,11 @@ function generateBasicPdfBlob(report) {
   printableSections.forEach((section, index) => {
     lines.push(`${index + 1}. ${section.label}`);
     if (section.type === "text") {
-      lines.push(...wrapPlainText(section.text));
+      if (section.label === "Materials") {
+        section.text.split("\n").forEach(item => lines.push(...wrapPlainText(item)));
+      } else {
+        lines.push(...wrapPlainText(section.text));
+      }
       lines.push("");
       return;
     }
@@ -1583,7 +1617,9 @@ function formatDuration(seconds) {
 function collectReport() {
   const sections = {};
   sectionKeys.forEach((sectionKey) => {
-    sections[sectionKey] = sectionInputs[sectionKey].value.trim();
+    sections[sectionKey] = ["materials", "dpMaterials"].includes(sectionKey)
+      ? LabFigures.numberedMaterials(sectionInputs[sectionKey].value)
+      : sectionInputs[sectionKey].value.trim();
   });
 
   return {
@@ -1660,6 +1696,9 @@ function applyReportToUI(report) {
 
   sectionKeys.forEach((sectionKey) => {
     sectionInputs[sectionKey].value = normalizedReport.sections?.[sectionKey] || "";
+    if (["materials", "dpMaterials"].includes(sectionKey)) {
+      sectionInputs[sectionKey].value = LabFigures.numberedMaterials(sectionInputs[sectionKey].value);
+    }
   });
 
   state.tables.rawData = normalizeTableList(normalizedReport.tables?.rawData, "rawData");

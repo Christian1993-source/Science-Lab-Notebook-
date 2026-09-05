@@ -189,7 +189,9 @@ function sanitizeReport(rawReport) {
 
   sectionOrder.forEach((section) => {
     if (section.type === "text") {
-      sections[section.key] = cleanMultiline(report.sections?.[section.key]);
+      sections[section.key] = ["materials", "dpMaterials"].includes(section.key)
+        ? LabFigures.numberedMaterials(report.sections?.[section.key])
+        : cleanMultiline(report.sections?.[section.key]);
       return;
     }
     if (section.type === "data" && section.noteKey) {
@@ -446,7 +448,7 @@ function drawTextSection(doc, number, label, text) {
     .font("Times-Roman")
     .fontSize(12)
     .fillColor("#111111")
-    .text(text, { align: "justify", lineGap: 4 });
+    .text(text, { align: label === "Materials" ? "left" : "justify", lineGap: 4 });
   doc.moveDown(0.7);
 }
 
