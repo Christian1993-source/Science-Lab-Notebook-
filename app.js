@@ -5,6 +5,7 @@ const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 2;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
+const SESSION_DURATION_MS = 7 * 60 * 60 * 1000;
 
 const sectionKeys = [
   "researchQuestion",
@@ -238,6 +239,19 @@ function init() {
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
   }, 15000);
+  setInterval(checkSessionExpiry, 1000);
+  document.addEventListener("visibilitychange", checkSessionExpiry);
+  window.addEventListener("focus", checkSessionExpiry);
+  document.addEventListener("beforeinput", (event) => {
+    if (checkSessionExpiry()) event.preventDefault();
+  }, true);
+  document.addEventListener("click", (event) => {
+    if (checkSessionExpiry()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  }, true);
+  updateSessionGate();
 }
 
 function isLegacyExampleDraft(report) {
@@ -575,6 +589,23 @@ function normalizeTableList(tableValue, tableKey = "generic") {
   return defaultTableList(tableKey);
 }
 
+function updateSessionGate() {
+  const ready = Boolean(elements.studentName.value.trim() && elements.title.value.trim());
+  document.getElementById("sessionGateNotice").hidden = ready;
+  document.getElementById("reportFields").disabled = !ready || state.status === "Submitted";
+  elements.submitBtn.disabled = !ready || state.status === "Submitted";
+  document.querySelectorAll("#restoreSectionButtons button").forEach(button => { button.disabled = !ready; });
+}
+
+function checkSessionExpiry() {
+  if (state.startedAt > 0 && Date.now() - state.startedAt >= SESSION_DURATION_MS) {
+    resetAllReport({ requireConfirmation: false, statusMessage: "Session ended. Enter your information to start a new report." });
+    elements.studentName.focus();
+    return true;
+  }
+  return false;
+}
+
 function maybeStartTimerFromStudentName() {
   if (state.status === "Submitted") {
     return;
@@ -582,7 +613,7 @@ function maybeStartTimerFromStudentName() {
   if (state.startedAt > 0) {
     return;
   }
-  if (!elements.studentName.value.trim()) {
+  if (!elements.studentName.value.trim() || !elements.title.value.trim()) {
     return;
   }
 
@@ -632,8 +663,9 @@ function attachInputListeners() {
       if (state.status === "Submitted") {
         return;
       }
-      if (input === elements.studentName) {
+      if (input === elements.studentName || input === elements.title) {
         maybeStartTimerFromStudentName();
+        updateSessionGate();
       }
       if (input === elements.classCode) {
         state.classCode = input.value.trim().toUpperCase();
@@ -1683,6 +1715,11 @@ function collectReport() {
 
 function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
+  const draftStart = Number(normalizedReport.startedAt);
+  if (draftStart > 0 && Date.now() - draftStart >= SESSION_DURATION_MS) {
+    resetAllReport({ requireConfirmation: false, statusMessage: "This draft has expired. All work was cleared; start a new report." });
+    return;
+  }
   const figures = LabFigures.normalize(normalizedReport.figures);
 
   if (normalizedReport.id) {
@@ -1752,6 +1789,7 @@ function applyReportToUI(report) {
 }
 
 function persistLocalBackup() {
+  if (checkSessionExpiry()) return false;
   try {
   localStorage.setItem(REPORT_ID_KEY, state.reportId);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(collectReport()));
@@ -1902,6 +1940,7 @@ async function saveDraft(trigger) {
 }
 
 async function submitFinalReport() {
+  if (checkSessionExpiry()) return;
   if (state.imageUploadPending) {
     elements.saveState.textContent = "Wait for your graph images to finish uploading.";
     return;
@@ -1960,6 +1999,7 @@ async function submitFinalReport() {
       }
     }
 
+    if (checkSessionExpiry() || report.id !== state.reportId) return;
     downloadPdf(pdfBlob, `${safeFileName(report.title)}.pdf`);
 
     state.status = "Submitted";
@@ -2020,6 +2060,7 @@ function setFormLocked(locked) {
     control.disabled = locked;
   });
   applyLockedState();
+  updateSessionGate();
 }
 
 function applyLockedState() {
