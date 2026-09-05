@@ -163,7 +163,6 @@ const elements = {
   time: document.getElementById("time"),
   classCode: document.getElementById("classCode"),
   selectedProgram: document.getElementById("selectedProgram"),
-  programBadge: document.getElementById("programBadge"),
   outlineList: document.getElementById("outlineList"),
   removedSections: document.getElementById("removedSections"),
   restoreSectionButtons: document.getElementById("restoreSectionButtons"),
@@ -761,7 +760,6 @@ function renderProgramUI() {
     }
     placeholder.hidden = section.dataset.program !== state.program || active.includes(key);
   });
-  elements.programBadge.textContent = config.name;
   elements.outlineList.replaceChildren();
   const studentItem = document.createElement("li");
   studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
