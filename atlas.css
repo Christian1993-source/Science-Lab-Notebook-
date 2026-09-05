@@ -168,6 +168,8 @@ body.program-dp {
 .lab-guides > p:not(.eyebrow) { color: #526b68; font-size: 0.9rem; line-height: 1.5; }
 .guide-choice { display: flex; width: 100%; align-items: center; gap: 12px; padding: 16px; border: 1px solid #b9d1c9; border-radius: 12px; background: #eef6f1; color: var(--atlas-ink); text-align: left; font: inherit; cursor: pointer; }
 .guide-choice:hover { background: #deeee5; }
+#selectedProgram { width: 100%; padding: 12px; border: 1px solid #b9c8c5; border-radius: 9px; background: #faf8f2; color: var(--atlas-ink); font: inherit; }
+#selectedProgram:focus-visible { outline: 3px solid rgba(16,136,135,.2); border-color: var(--atlas-teal); }
 .guide-choice + .guide-choice { margin-top: 12px; }
 .guide-choice small { display: block; margin-top: 6px; color: #526b68; font-size: 0.78rem; line-height: 1.4; }
 .guide-pdf-badge { padding: 9px 6px; border-radius: 6px; background: #fffdf8; color: #086c6c; font: 700 0.7rem system-ui, sans-serif; }

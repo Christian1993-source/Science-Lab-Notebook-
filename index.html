@@ -7,9 +7,9 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260905-physics-guide-1" />
+    <meta name="notebook-release" content="20260905-unified-report-1" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260905-physics-guide-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260905-unified-report-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -33,25 +33,6 @@
         </div>
       </header>
 
-      <section class="session-launcher program-launcher" aria-labelledby="sessionTitle">
-        <div class="session-copy">
-          <p class="eyebrow">Choose your programme</p>
-          <h2 id="sessionTitle">Start today’s lab report</h2>
-          <p>Select the programme that applies to this investigation. The notebook is ready to use immediately.</p>
-        </div>
-        <div class="session-controls">
-          <div class="program-switch" role="group" aria-label="Academic program">
-            <button type="button" class="program-option is-active" data-program="myp" aria-pressed="true">
-              <span class="program-mark">MYP</span>
-              <span><strong>Middle Years</strong><small>Current laboratory format</small></span>
-            </button>
-            <button type="button" class="program-option" data-program="dp" aria-pressed="false">
-              <span class="program-mark">DP</span>
-              <span><strong>Diploma Programme</strong><small>Independent investigation</small></span>
-            </button>
-          </div>
-        </div>
-      </section>
 
       <section class="card instructions-card">
         <div class="card-header-row">
@@ -122,7 +103,7 @@
               </div>
               <div>
                 <label for="selectedProgram">Programme</label>
-                <input id="selectedProgram" type="text" value="MYP" readonly aria-readonly="true" />
+                <select id="selectedProgram"><option value="MYP">MYP</option><option value="DP">DP</option></select>
               </div>
             </div>
           </section>
@@ -204,6 +185,7 @@
             <textarea id="section-references"></textarea>
           </section>
 
+<div hidden inert id="legacy-dp-fields">
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpResearchQuestion" id="sec-dpResearchQuestion">
             <div class="section-heading"><h2>I. Research Question</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpResearchQuestion"></textarea>
@@ -254,12 +236,6 @@
             <div class="dp-graph-workspace">
               <h3>Graphing Workspace</h3>
               <p class="section-prompt">Create a scatter plot, label both axes and units, add uncertainty bars when appropriate, and include a best-fit line.</p>
-              <iframe
-                class="dp-graph-frame"
-                src="https://christian1993-source.github.io/Mr.-Mercado-Scatter-Plot-Error-Bars-Graph-Lab/?embed=dp"
-                title="DP Processed Data Graphing Workspace"
-                loading="lazy"
-              ></iframe>
             </div>
           </section>
 
@@ -282,6 +258,7 @@
             <div class="section-heading"><h2>XII. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpReferences"></textarea>
           </section>
+</div>
           <section class="card action-card">
             <div class="button-row">
               <button id="resetBtn" class="btn btn-secondary">Reset All</button>

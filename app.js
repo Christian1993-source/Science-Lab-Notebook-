@@ -129,7 +129,7 @@ const state = {
   reportToken: localStorage.getItem(REPORT_TOKEN_KEY) || generateId(),
   startedAt: 0,
   status: "Draft",
-  program: localStorage.getItem(PROGRAM_KEY) === "dp" ? "dp" : "myp",
+  program: "myp",
   classCode: "",
   activeSections: createDefaultActiveSections(),
   blockedAttempts: 0,
@@ -592,6 +592,10 @@ function maybeStartTimerFromStudentName() {
 }
 
 function attachInputListeners() {
+  elements.selectedProgram.addEventListener("change", () => {
+    persistLocalBackup();
+    queueIdleSave();
+  });
   [sectionInputs.materials, sectionInputs.dpMaterials].forEach(field => {
     const update = (value, caret = value.length) => {
       field.value = value;
@@ -682,6 +686,7 @@ function attachInputListeners() {
 }
 
 function setProgram(program) {
+  program = "myp";
   if (!PROGRAM_CONFIGS[program] || state.status === "Submitted") return;
   state.program = program;
   localStorage.setItem(PROGRAM_KEY, program);
@@ -757,7 +762,6 @@ function renderProgramUI() {
     placeholder.hidden = section.dataset.program !== state.program || active.includes(key);
   });
   elements.programBadge.textContent = config.name;
-  elements.selectedProgram.value = config.name;
   elements.outlineList.replaceChildren();
   const studentItem = document.createElement("li");
   studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
@@ -995,7 +999,7 @@ function generateBasicPdfBlob(report) {
   lines.push(`Student: ${report.studentName || ""}`);
   lines.push(`Date: ${report.date || ""}`);
   lines.push(`Time: ${report.time || ""}`);
-  lines.push(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}`);
+  lines.push(`Programme: ${report.studentProgramme || "MYP"}`);
   lines.push(`Class Code: ${report.classCode || ""}`);
   lines.push(`Copy and Paste Attempts: ${report.blockedAttempts || 0}`);
   lines.push(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`);
@@ -1119,7 +1123,7 @@ function generatePdfInBrowser(report) {
   drawParagraph(`Student: ${report.studentName || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Date: ${report.date || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Time: ${report.time || ""}`, { size: 12, align: "center", lineHeight: 16 });
-  drawParagraph(`Programme: ${PROGRAM_CONFIGS[report.program]?.name || "MYP"}  |  Class Code: ${report.classCode || ""}`, {
+  drawParagraph(`Programme: ${report.studentProgramme || "MYP"}  |  Class Code: ${report.classCode || ""}`, {
     size: 11,
     align: "center",
     lineHeight: 15
@@ -1657,6 +1661,7 @@ function collectReport() {
     teacherEmail: "",
     teacher: elements.teacher.value.trim(),
     classCode: state.classCode || elements.classCode.value.trim().toUpperCase(),
+    studentProgramme: elements.selectedProgram.value === "DP" ? "DP" : "MYP",
     program: state.program,
     activeSections: state.activeSections,
     blockedAttempts: state.blockedAttempts,
@@ -1699,7 +1704,8 @@ function applyReportToUI(report) {
   }
 
   state.programmaticUpdate = true;
-  state.program = PROGRAM_CONFIGS[normalizedReport.program] ? normalizedReport.program : state.program;
+  state.program = "myp";
+  elements.selectedProgram.value = normalizedReport.studentProgramme === "DP" || (!normalizedReport.studentProgramme && normalizedReport.program === "dp") ? "DP" : "MYP";
   if (Object.prototype.hasOwnProperty.call(normalizedReport, "classCode")) {
     state.classCode = String(normalizedReport.classCode || "").trim().toUpperCase();
   }
