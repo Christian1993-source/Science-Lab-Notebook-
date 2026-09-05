@@ -134,6 +134,8 @@ const state = {
   activeSections: createDefaultActiveSections(),
   blockedAttempts: 0,
   programmaticUpdate: false,
+  figures: [],
+  imageUploadPending: false,
   tables: {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData"),
@@ -209,6 +211,16 @@ const sectionInputs = {
 init();
 
 function init() {
+  document.getElementById("addGraph").addEventListener("click", () => {
+    if (state.status === "Submitted" || state.imageUploadPending) return;
+    if (state.figures.length >= LabFigures.MAX_COUNT) {
+      document.getElementById("graphUploadStatus").textContent = "You can add up to 6 graph images.";
+      return;
+    }
+    state.figures.push({ dataUrl: "", title: "", description: "" });
+    renderGraphFigures();
+    persistLocalBackup();
+  });
   attachRestrictions();
   attachInputListeners();
   renderTableEditor("rawData", elements.rawDataEditor);
@@ -268,6 +280,135 @@ function generateId() {
     return window.crypto.randomUUID();
   }
   return `report-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+async function prepareGraphImage(file) {
+  if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
+    throw new Error("Choose PNG, JPG or WebP images up to 8 MB each.");
+  }
+  const url = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("The selected image could not be read."));
+    reader.readAsDataURL(file);
+  });
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    if (!image.naturalWidth || image.naturalWidth * image.naturalHeight > 40000000) {
+      throw new Error("This image is too large. Export a smaller graph from your software.");
+    }
+    const canvas = document.createElement("canvas");
+    const scale = Math.min(1, 1800 / Math.max(image.naturalWidth, image.naturalHeight));
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const context = canvas.getContext("2d");
+    context.fillStyle = "white";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    let dataUrl = canvas.toDataURL("image/png");
+    for (const quality of [0.9, 0.8, 0.7]) {
+      if (dataUrl.length <= LabFigures.MAX_IMAGE_LENGTH) break;
+      dataUrl = canvas.toDataURL("image/jpeg", quality);
+    }
+    return LabFigures.normalize([{ dataUrl, title: "", description: "" }])[0];
+}
+
+async function uploadGraphImages(event) {
+  const input = event.target;
+  if (state.status === "Submitted" || state.imageUploadPending) return;
+  const files = Array.from(input.files || []);
+  if (!files.length) return;
+  const message = document.getElementById("graphUploadStatus");
+  const reportId = state.reportId;
+  state.imageUploadPending = true;
+  input.disabled = true;
+  message.textContent = "Preparing graph images…";
+  try {
+    const index = Number(input.dataset.figureIndex);
+    const target = state.figures[index];
+    const added = await prepareGraphImage(files[0]);
+    if (reportId !== state.reportId || state.status === "Submitted") return;
+    if (state.figures[index] !== target) return;
+    const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
+    // Check available draft storage before replacing the current figures.
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...collectReport(), figures: candidate }));
+    state.figures = candidate;
+    renderGraphFigures();
+    queueIdleSave();
+    message.textContent = "Graph image saved with your draft.";
+  } catch (error) {
+    message.textContent = error.name === "QuotaExceededError"
+      ? "Browser storage is full. Your existing figures are unchanged. Try a smaller image."
+      : error.message || "The image could not be opened. Try exporting it again.";
+  } finally {
+    input.value = "";
+    state.imageUploadPending = false;
+    input.disabled = state.status === "Submitted";
+  }
+}
+
+function renderGraphFigures() {
+  const container = document.getElementById("graphFigures");
+  container.replaceChildren();
+  if (!state.figures.length && state.status !== "Submitted") state.figures.push({ dataUrl: "", title: "", description: "" });
+  state.figures.forEach((figure, index) => {
+    const card = document.createElement("div");
+    card.className = "graph-figure";
+    const heading = document.createElement("h4");
+    heading.textContent = `Figure ${index + 1}`;
+    const preview = document.createElement("img");
+    if (figure.dataUrl) preview.src = figure.dataUrl;
+    preview.hidden = !figure.dataUrl;
+    preview.alt = figure.title || `Graph preview ${index + 1}`;
+    card.append(heading);
+    for (const [key, labelText, tag, limit] of [["title", "Graph title", "input", 160], ["description", "Image description", "textarea", 2000]]) {
+      const label = document.createElement("label");
+      const field = document.createElement(tag);
+      field.id = `graph-${index}-${key}`;
+      label.htmlFor = field.id;
+      label.textContent = `${labelText} — Figure ${index + 1}`;
+      field.value = figure[key];
+      field.maxLength = limit;
+      field.dataset.safeTypedValue = field.value;
+      field.disabled = state.status === "Submitted";
+      field.addEventListener("input", () => {
+        if (state.status === "Submitted") return;
+        figure[key] = field.value;
+        if (key === "title") preview.alt = field.value || `Graph preview ${index + 1}`;
+        persistLocalBackup();
+        queueIdleSave();
+      });
+      card.append(label, field);
+      if (key === "title") {
+        const uploadLabel = document.createElement("label");
+        const upload = document.createElement("input");
+        upload.id = `graph-${index}-image`;
+        uploadLabel.htmlFor = upload.id;
+        uploadLabel.textContent = `Upload image — Figure ${index + 1}`;
+        upload.type = "file";
+        upload.accept = "image/png,image/jpeg,image/webp";
+        upload.dataset.figureIndex = String(index);
+        upload.disabled = state.status === "Submitted";
+        upload.addEventListener("change", uploadGraphImages);
+        card.append(uploadLabel, upload, preview);
+      }
+    }
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "btn btn-secondary";
+    remove.textContent = `Remove Figure ${index + 1}`;
+    remove.disabled = state.status === "Submitted";
+    remove.addEventListener("click", () => {
+      if (state.status === "Submitted" || state.imageUploadPending) return;
+      state.figures.splice(index, 1);
+      renderGraphFigures();
+      persistLocalBackup();
+      queueIdleSave();
+    });
+    card.append(remove);
+    container.append(card);
+  });
 }
 
 function formatAutomaticDateTime(timestamp) {
@@ -761,14 +902,16 @@ function buildPrintableSections(report) {
     const sampleCalculations = String(report.sections?.[section.sampleCalculationsKey] || "").trim();
     const tableList = normalizeTableList(report.tables?.[section.key], section.key);
     const contentTables = tableList.filter((table) => tableHasContent(table, section.key));
-    if (notes || sampleCalculations || contentTables.length > 0) {
+    const figures = section.key === "processedData" ? LabFigures.normalize(report.figures).filter(figure => figure.dataUrl) : [];
+    if (notes || sampleCalculations || contentTables.length > 0 || figures.length) {
       sections.push({
         type: "data",
         tableKey: section.key,
         label: section.label,
         notes,
         sampleCalculations,
-        tables: contentTables
+        tables: contentTables,
+        figures
       });
     }
   });
@@ -889,6 +1032,9 @@ function generateBasicPdfBlob(report) {
 
 function generatePdfInBrowser(report) {
   if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") {
+    if (buildPrintableSections(report).some(section => section.figures?.length)) {
+      throw new Error("The PDF library could not load. Reload the notebook before downloading your graphs.");
+    }
     return generateBasicPdfBlob(report);
   }
 
@@ -1015,6 +1161,20 @@ function generatePdfInBrowser(report) {
     } else {
       y += 6;
     }
+    (section.figures || []).forEach((figure, figureIndex) => {
+      const properties = doc.getImageProperties(figure.dataUrl);
+      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+      const width = properties.width * scale;
+      const height = properties.height * scale;
+      const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+      const titleHeight = doc.setFont("times", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
+      ensureSpace(height + titleHeight + 24);
+      drawParagraph(title, { bold: true });
+      doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
+      y += height + 12;
+      if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
+      y += 12;
+    });
   });
 
   return doc.output("blob");
@@ -1082,7 +1242,7 @@ function attachRestrictions() {
   document.addEventListener("input", (event) => {
     if (state.programmaticUpdate || event.isComposing) return;
     const field = event.target;
-    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) || field.readOnly || field.type === "date") return;
+    if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) || field.readOnly || field.type === "date" || field.type === "file") return;
     const previous = field.dataset.safeTypedValue ?? "";
     const current = field.value;
     const insertedCount = Math.max(0, current.length - previous.length);
@@ -1453,6 +1613,7 @@ function collectReport() {
     studentName: elements.studentName.value.trim(),
     date: elements.date.value,
     time: elements.time.value,
+    figures: state.figures,
     startedAt: state.startedAt,
     timeSpentSeconds: getTimeSpentSeconds(),
     status: state.status,
@@ -1468,6 +1629,7 @@ function collectReport() {
 
 function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
+  const figures = LabFigures.normalize(normalizedReport.figures);
 
   if (normalizedReport.id) {
     state.reportId = normalizedReport.id;
@@ -1518,6 +1680,8 @@ function applyReportToUI(report) {
   state.tables.dpRawData = normalizeTableList(normalizedReport.tables?.dpRawData, "dpRawData");
   state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
   state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
+  state.figures = figures;
+  renderGraphFigures();
 
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
@@ -1530,8 +1694,14 @@ function applyReportToUI(report) {
 }
 
 function persistLocalBackup() {
+  try {
   localStorage.setItem(REPORT_ID_KEY, state.reportId);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(collectReport()));
+  return true;
+  } catch (_error) {
+    elements.saveState.textContent = "Draft could not be saved in this browser. Storage may be full; keep this page open.";
+    return false;
+  }
 }
 
 function loadLocalDraft() {
@@ -1617,7 +1787,7 @@ async function saveDraft(trigger) {
     return;
   }
 
-  persistLocalBackup();
+  if (!persistLocalBackup()) return;
   const report = collectReport();
   state.isSaving = true;
 
@@ -1674,6 +1844,10 @@ async function saveDraft(trigger) {
 }
 
 async function submitFinalReport() {
+  if (state.imageUploadPending) {
+    elements.saveState.textContent = "Wait for your graph images to finish uploading.";
+    return;
+  }
   if (state.status === "Submitted") {
     return;
   }
@@ -1682,6 +1856,10 @@ async function submitFinalReport() {
   if (!report.classCode) {
     window.alert("Enter the Class Code provided by your teacher before downloading the report.");
     elements.classCode.focus();
+    return;
+  }
+  if (report.program === "myp" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {
+    elements.saveState.textContent = "Upload an image for each graph with a title or description, or remove the unfinished graph.";
     return;
   }
   if (!report.title || !report.studentName || !report.date || !report.time) {

@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260902-3" />
+    <link rel="stylesheet" href="atlas.css?v=20260905-graphs" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -161,6 +161,14 @@
             <label for="section-processedDataSampleCalculations">Sample Calculations</label>
             <textarea id="section-processedDataSampleCalculations" class="data-notes"></textarea>
             <div id="processedDataEditor" class="table-editor"></div>
+            <section class="graph-upload-panel" aria-labelledby="graphUploadHeading">
+              <h3 id="graphUploadHeading">Graphs &amp; Figures</h3>
+              <p>Upload graphs exported from your software, then write a title and description for each figure.</p>
+              <p id="graphUploadHelp" class="meta">PNG, JPG or WebP · Up to 6 figures · 8 MB per original image.</p>
+              <p id="graphUploadStatus" role="status" aria-live="polite"></p>
+              <div id="graphFigures"></div>
+              <button id="addGraph" type="button" class="btn btn-secondary">Add another graph</button>
+            </section>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="conclusion" id="sec-conclusion">
@@ -258,7 +266,6 @@
             <div class="section-heading"><h2>XII. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpReferences"></textarea>
           </section>
-
           <section class="card action-card">
             <div class="button-row">
               <button id="resetBtn" class="btn btn-secondary">Reset All</button>
@@ -274,6 +281,7 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="app.js?v=20260903-9"></script>
+    <script src="figures.js?v=20260905-graphs"></script>
+    <script src="app.js?v=20260905-graphs"></script>
   </body>
 </html>

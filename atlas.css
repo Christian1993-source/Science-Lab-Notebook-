@@ -179,6 +179,13 @@ input:focus, textarea:focus {
   border-color: var(--atlas-teal);
   background: #fff;
 }
+.graph-upload-panel { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--atlas-line); }
+.graph-upload-panel > p { color: var(--atlas-ink); }
+.graph-figure { margin: 18px 0; padding: 18px; border: 1px solid var(--atlas-line); border-radius: 12px; background: #f7f5ee; }
+.graph-figure img { display: block; width: auto; max-width: 100%; max-height: 360px; margin: 12px auto 18px; object-fit: contain; background: white; border-radius: 6px; }
+.graph-figure textarea { min-height: 100px; }
+.graph-figure img[hidden] { display: none; }
+.graph-figure button { margin-top: 12px; }
 .table-set-controls button, .table-remove-btn, .table-controls button, .row-delete, .col-delete {
   border-color: #acc7c1;
   background: #edf6f3;

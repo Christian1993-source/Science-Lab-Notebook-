@@ -3,6 +3,7 @@ const { randomUUID, timingSafeEqual } = require("crypto");
 const express = require("express");
 const dotenv = require("dotenv");
 const PDFDocument = require("pdfkit");
+const LabFigures = require("./figures.js");
 const { createClient } = require("@supabase/supabase-js");
 
 dotenv.config();
@@ -82,7 +83,7 @@ app.use((_req, res, next) => {
   next();
 });
 
-const publicFiles = new Set(["app.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
+const publicFiles = new Set(["app.js", "figures.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
 app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
 app.get("/:publicFile", (req, res, next) => {
@@ -168,6 +169,21 @@ function normalizeTableList(tableValue) {
 
 function sanitizeReport(rawReport) {
   const report = rawReport && typeof rawReport === "object" ? rawReport : {};
+  let figures;
+  try {
+    figures = LabFigures.normalize(report.figures);
+    const probe = new PDFDocument({ autoFirstPage: false });
+    for (const figure of figures) {
+      if (!figure.dataUrl) continue;
+      const image = probe.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+      if (!image.width || !image.height || image.width * image.height > 4000000) throw new Error("Graph dimensions are too large.");
+    }
+    probe.end();
+  } catch (_error) {
+    const error = new Error("Invalid graph image. Upload a PNG, JPG or WebP using the graph image section.");
+    error.status = 400;
+    throw error;
+  }
   const sections = {};
   const program = programSections[report.program] ? report.program : "myp";
 
@@ -205,6 +221,7 @@ function sanitizeReport(rawReport) {
     studentName: cleanString(report.studentName),
     date: cleanString(report.date),
     time: cleanString(report.time),
+    figures,
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
     status: report.status === "Submitted" ? "Submitted" : "Draft",
@@ -514,8 +531,9 @@ function buildSectionsForPdf(report) {
       const notes = cleanMultiline(report.sections[section.noteKey]);
       const sampleCalculations = cleanMultiline(report.sections[section.sampleCalculationsKey]);
       const tables = normalizeTableList(report.tables?.[section.key]);
-      if (notes.length > 0 || sampleCalculations.length > 0 || tableListHasContent(tables)) {
-        ordered.push({ type: "data", label: section.label, notes, sampleCalculations, tables });
+      const figures = section.key === "processedData" ? (report.figures || []).filter(figure => figure.dataUrl) : [];
+      if (notes.length > 0 || sampleCalculations.length > 0 || tableListHasContent(tables) || figures.length) {
+        ordered.push({ type: "data", label: section.label, notes, sampleCalculations, tables, figures });
       }
     }
   });
@@ -571,6 +589,23 @@ function generatePdf(report) {
             section.sampleCalculations,
             section.tables
           );
+          (section.figures || []).forEach((figure, figureIndex) => {
+            const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+            const widthLimit = doc.page.width - 144;
+            const scale = Math.min(widthLimit / image.width, 300 / image.height);
+            const width = image.width * scale;
+            const height = image.height * scale;
+            const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+            doc.font("Times-Bold").fontSize(12);
+            ensurePageSpace(doc, height + doc.heightOfString(title, { width: widthLimit }) + 30);
+            doc.fillColor("#124232").text(title, 72, doc.y, { width: widthLimit });
+            doc.moveDown(0.4);
+            const imageY = doc.y;
+            doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
+            doc.y = imageY + height + 12;
+            if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
+            doc.moveDown(0.8);
+          });
         }
       });
     }
@@ -650,7 +685,7 @@ app.post("/api/draft", async (req, res) => {
       updatedAt: saved.updatedAt
     });
   } catch (error) {
-    return res.status(500).json({ error: error.message || "Failed to save draft." });
+    return res.status(error.status || 500).json({ error: error.message || "Failed to save draft." });
   }
 });
 
@@ -681,7 +716,7 @@ app.post("/api/submit", async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="${safeFileName(finalReport.title)}.pdf"`);
     return res.send(pdfBuffer);
   } catch (error) {
-    return res.status(500).json({ error: error.message || "Failed to submit report." });
+    return res.status(error.status || 500).json({ error: error.message || "Failed to submit report." });
   }
 });
 
