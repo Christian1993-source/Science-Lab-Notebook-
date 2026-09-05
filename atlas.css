@@ -203,6 +203,12 @@ input:focus, textarea:focus {
   color: var(--atlas-teal-dark);
 }
 .section-action, .restore-section-btn { border-radius: 8px; }
+.removed-part-placeholder { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 24px; border: 1px dashed #a9bfb6; border-radius: 14px; background: #f4f7f1; color: var(--atlas-ink); }
+.removed-part-placeholder { margin: 16px 0; }
+.removed-part-placeholder[hidden] { display: none; }
+.removed-part-placeholder p { margin: 8px 0 0; color: #526b68; font-size: 0.85rem; line-height: 1.5; }
+.removed-part-placeholder .restore-section-btn { width: auto; margin: 0; padding: 12px 18px; background: #086c6c; color: white; text-align: center; }
+@media (max-width: 600px) { .removed-part-placeholder { flex-direction: column; align-items: stretch; } }
 
 .materials-editor { margin-top: 24px; padding: clamp(18px, 3vw, 28px); border: 1px solid #ccdcd5; border-radius: 16px; background: linear-gradient(135deg, #eef5f0, #f8f8f2); }
 .materials-editor-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 22px; }

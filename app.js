@@ -691,6 +691,7 @@ function setProgram(program) {
 }
 
 function removeSection(sectionKey) {
+  if (state.status === "Submitted") return;
   const active = state.activeSections[state.program];
   if (!active.includes(sectionKey)) return;
   if (active.length === 1) {
@@ -700,15 +701,19 @@ function removeSection(sectionKey) {
   state.activeSections[state.program] = active.filter((key) => key !== sectionKey);
   renderProgramUI();
   persistLocalBackup();
+  document.getElementById(`removed-${sectionKey}`)?.querySelector("button")?.focus();
 }
 
 function restoreSection(sectionKey) {
+  if (state.status === "Submitted") return;
   const configured = PROGRAM_CONFIGS[state.program].sections;
   if (!configured.includes(sectionKey)) return;
   const activeSet = new Set([...state.activeSections[state.program], sectionKey]);
   state.activeSections[state.program] = configured.filter((key) => activeSet.has(key));
   renderProgramUI();
   persistLocalBackup();
+  const restored = document.getElementById(`sec-${sectionKey}`);
+  restored?.querySelector("textarea, input, button")?.focus();
 }
 
 function getSectionLabel(sectionKey) {
@@ -727,6 +732,29 @@ function renderProgramUI() {
   });
   document.querySelectorAll(".report-section").forEach((section) => {
     section.hidden = section.dataset.program !== state.program || !active.includes(section.dataset.sectionKey);
+    const key = section.dataset.sectionKey;
+    let placeholder = document.getElementById(`removed-${key}`);
+    if (!placeholder) {
+      placeholder = document.createElement("div");
+      placeholder.id = `removed-${key}`;
+      placeholder.className = "removed-part-placeholder";
+      const copy = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = `${getSectionLabel(key)} — removed from report`;
+      const help = document.createElement("p");
+      help.textContent = "Your work is kept while this notebook is open. Restore this part anytime.";
+      copy.append(title, help);
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "restore-section-btn";
+      button.dataset.action = "restore-section";
+      button.dataset.sectionKey = key;
+      button.textContent = "Restore part";
+      button.setAttribute("aria-label", `Restore ${getSectionLabel(key)}`);
+      placeholder.append(copy, button);
+      section.after(placeholder);
+    }
+    placeholder.hidden = section.dataset.program !== state.program || active.includes(key);
   });
   elements.programBadge.textContent = config.name;
   elements.selectedProgram.value = config.name;
@@ -751,7 +779,7 @@ function renderProgramUI() {
     button.className = "restore-section-btn";
     button.dataset.action = "restore-section";
     button.dataset.sectionKey = key;
-    button.textContent = `+ ${getSectionLabel(key)}`;
+    button.textContent = `+ Restore ${getSectionLabel(key)}`;
     elements.restoreSectionButtons.appendChild(button);
   });
 }
