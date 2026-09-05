@@ -4,6 +4,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const PDFDocument = require("pdfkit");
 const LabFigures = require("./figures.js");
+const ReportFonts = require("./report-fonts.js");
 const { createClient } = require("@supabase/supabase-js");
 
 dotenv.config();
@@ -70,7 +71,6 @@ const supabase =
 
 const memoryStore = new Map();
 
-app.use(express.json({ limit: "4mb" }));
 app.use((_req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
@@ -82,6 +82,15 @@ app.use((_req, res, next) => {
   );
   next();
 });
+app.use(express.json({ limit: "4mb" }));
+
+const REPORT_LIMITS = Object.freeze({ textLength: 100000, tablesPerSection: 20, rowsPerTable: 300, columnsPerTable: 12 });
+
+function invalidReport(message, status = 400) {
+  const error = new Error(message);
+  error.status = status;
+  return error;
+}
 
 app.get("/chemistry-lab-guide.pdf", (_req, res) => {
   res.sendFile(path.join(__dirname, "chemistry-lab-guide.pdf"));
@@ -89,7 +98,7 @@ app.get("/chemistry-lab-guide.pdf", (_req, res) => {
 app.get("/dp-physics-sl-lab-guide.pdf", (_req, res) => {
   res.sendFile(path.join(__dirname, "dp-physics-sl-lab-guide.pdf"));
 });
-const publicFiles = new Set(["app.js", "figures.js", "loader.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
+const publicFiles = new Set(["app.js", "figures.js", "loader.js", "report-fonts.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
 app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
 app.get("/:publicFile", (req, res, next) => {
@@ -98,11 +107,14 @@ app.get("/:publicFile", (req, res, next) => {
 });
 
 function cleanString(value) {
+  if (typeof value === "string" && value.length > REPORT_LIMITS.textLength) {
+    throw invalidReport(`Each text field supports up to ${REPORT_LIMITS.textLength.toLocaleString("en-US")} characters.`, 413);
+  }
   return typeof value === "string" ? value.trim() : "";
 }
 
 function cleanMultiline(value) {
-  return typeof value === "string" ? value.trim() : "";
+  return cleanString(value);
 }
 
 function cleanNumber(value) {
@@ -128,14 +140,24 @@ function normalizeTable(table) {
 
   const title = cleanString(String(table.title || ""));
 
+  if (Array.isArray(table.headers) && table.headers.length > REPORT_LIMITS.columnsPerTable) {
+    throw invalidReport(`Each table supports up to ${REPORT_LIMITS.columnsPerTable} columns.`);
+  }
+  if (Array.isArray(table.rows) && table.rows.length > REPORT_LIMITS.rowsPerTable) {
+    throw invalidReport(`Each table supports up to ${REPORT_LIMITS.rowsPerTable} rows.`);
+  }
+
   let headers = Array.isArray(table.headers)
-    ? table.headers.map((header) => cleanString(String(header || ""))).slice(0, 12)
+    ? table.headers.map((header) => cleanString(String(header || "")))
     : [];
 
-  let rows = Array.isArray(table.rows) ? table.rows.slice(0, 300) : [];
+  let rows = Array.isArray(table.rows) ? table.rows : [];
   const maxRowColumns = rows.reduce((max, row) => {
     if (!Array.isArray(row)) {
       return max;
+    }
+    if (row.length > REPORT_LIMITS.columnsPerTable) {
+      throw invalidReport(`Each table supports up to ${REPORT_LIMITS.columnsPerTable} columns.`);
     }
     return Math.max(max, row.length);
   }, 0);
@@ -164,6 +186,9 @@ function normalizeTable(table) {
 
 function normalizeTableList(tableValue) {
   if (Array.isArray(tableValue)) {
+    if (tableValue.length > REPORT_LIMITS.tablesPerSection) {
+      throw invalidReport(`Each data section supports up to ${REPORT_LIMITS.tablesPerSection} tables.`);
+    }
     const normalized = tableValue.map((table) => normalizeTable(table));
     return normalized.length > 0 ? normalized : defaultTableList();
   }
@@ -196,7 +221,7 @@ function sanitizeReport(rawReport) {
   sectionOrder.forEach((section) => {
     if (section.type === "text") {
       sections[section.key] = ["materials", "dpMaterials"].includes(section.key)
-        ? LabFigures.numberedMaterials(report.sections?.[section.key])
+        ? LabFigures.numberedMaterials(cleanMultiline(report.sections?.[section.key]))
         : cleanMultiline(report.sections?.[section.key]);
       return;
     }
@@ -427,7 +452,14 @@ function drawTableGrid(doc, table) {
 
   const normalizedHeaders = Array.from({ length: columnCount }, (_, index) => headers[index] || "");
   const firstBodyRow = dataRows[0] || Array(columnCount).fill("");
-  const openingHeight = getRowHeight(normalizedHeaders, true) + getRowHeight(firstBodyRow, false);
+  const headerHeight = getRowHeight(normalizedHeaders, true);
+  const fullPageHeight = bottomLimit() - doc.page.margins.top;
+  const bodyRowsToCheck = dataRows.length ? dataRows : [firstBodyRow];
+  if (bodyRowsToCheck.some(row => headerHeight + getRowHeight(row, false) > fullPageHeight)) {
+    doc.destroy();
+    throw invalidReport("A table row is too tall to fit on one PDF page. Shorten the table cells or move detailed explanations to the notes, then download again.");
+  }
+  const openingHeight = headerHeight + getRowHeight(firstBodyRow, false);
   if (currentY + openingHeight > bottomLimit()) {
     doc.addPage();
     currentY = doc.y;
@@ -536,6 +568,10 @@ function generatePdf(report) {
       margins: { top: 72, right: 72, bottom: 72, left: 72 }
     });
     const chunks = [];
+
+    // Embed the same Unicode serif fonts used by the browser PDF exporter.
+    doc.registerFont("Times-Roman", Buffer.from(ReportFonts.normal, "base64"));
+    doc.registerFont("Times-Bold", Buffer.from(ReportFonts.bold, "base64"));
 
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
@@ -713,6 +749,18 @@ app.use((req, res) => {
     return res.status(404).json({ error: "Not found." });
   }
   return res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// Parser and static-file errors must not reveal stack traces or local paths.
+app.use((error, _req, res, _next) => {
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ error: "The report is too large. The maximum request size is 4 MB." });
+  }
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "The report must contain valid JSON." });
+  }
+  const status = error.status >= 400 && error.status < 500 ? error.status : 500;
+  return res.status(status).json({ error: status === 404 ? "Not found." : "The request could not be processed." });
 });
 
 app.listen(PORT, () => {

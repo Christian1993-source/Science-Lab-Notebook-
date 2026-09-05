@@ -341,20 +341,28 @@ async function uploadGraphImages(event) {
     const index = Number(input.dataset.figureIndex);
     const target = state.figures[index];
     const added = await prepareGraphImage(files[0]);
-    if (reportId !== state.reportId || state.status === "Submitted") return;
+    if (reportId !== state.reportId || state.status === "Submitted" || checkSessionExpiry()) return;
     if (state.figures[index] !== target) return;
     const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
     // Check available draft storage before replacing the current figures.
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...collectReport(), figures: candidate }));
-    state.figures = candidate;
-    renderGraphFigures();
+    // Keep the existing fields and their listeners while the student is typing.
+    target.dataUrl = added.dataUrl;
+    const preview = input.parentElement.querySelector("img");
+    if (preview) {
+      preview.src = added.dataUrl;
+      preview.alt = target.title || `Graph preview ${index + 1}`;
+      preview.hidden = false;
+    }
     queueIdleSave();
     message.textContent = "Graph image saved with your draft.";
   } catch (error) {
+    if (reportId !== state.reportId) return;
     message.textContent = error.name === "QuotaExceededError"
       ? "Browser storage is full. Your existing figures are unchanged. Try a smaller image."
       : error.message || "The image could not be opened. Try exporting it again.";
   } finally {
+    if (reportId !== state.reportId) return;
     input.value = "";
     state.imageUploadPending = false;
     input.disabled = state.status === "Submitted";
@@ -910,6 +918,9 @@ function resetAllReport({
   state.status = "Draft";
   state.classCode = "";
   state.blockedAttempts = 0;
+  state.isSaving = false;
+  state.pendingSave = false;
+  state.imageUploadPending = false;
   state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
@@ -1115,14 +1126,22 @@ function generateBasicPdfBlob(report) {
 
 function generatePdfInBrowser(report) {
   if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") {
-    if (buildPrintableSections(report).some(section => section.figures?.length)) {
-      throw new Error("The PDF library could not load. Reload the notebook before downloading your graphs.");
-    }
-    return generateBasicPdfBlob(report);
+    throw new Error("The PDF library is unavailable. Keep this page open so you do not lose your work, and try downloading again when it is available.");
   }
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ unit: "pt", format: "letter" });
+  if (!window.LabReportFonts?.normal || !window.LabReportFonts?.bold) {
+    throw new Error("The PDF fonts are unavailable. Keep this page open so you do not lose your work, and try downloading again when they are available.");
+  }
+  doc.addFileToVFS("LiberationSerif-Regular.ttf", window.LabReportFonts.normal);
+  doc.addFileToVFS("LiberationSerif-Bold.ttf", window.LabReportFonts.bold);
+  doc.addFont("LiberationSerif-Regular.ttf", "LabReportSerif", "normal");
+  doc.addFont("LiberationSerif-Bold.ttf", "LabReportSerif", "bold");
+  const printableSections = buildPrintableSections(report);
+  if (printableSections.some(section => section.tables?.length) && typeof doc.autoTable !== "function") {
+    throw new Error("The PDF table library is unavailable. Keep this page open so you do not lose your work, and try downloading again when it is available.");
+  }
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 72;
@@ -1137,11 +1156,23 @@ function generatePdfInBrowser(report) {
   };
 
   const drawParagraph = (text, { bold = false, size = 12, lineHeight = 16, align = "left" } = {}) => {
-    const lines = doc.setFont("times", bold ? "bold" : "normal").setFontSize(size).splitTextToSize(text, maxTextWidth);
-    const needed = lines.length * lineHeight + 4;
-    ensureSpace(needed);
-    doc.text(lines, align === "center" ? pageWidth / 2 : margin, y, { align, baseline: "top" });
-    y += needed;
+    const lines = doc.setFont("LabReportSerif", bold ? "bold" : "normal").setFontSize(size).splitTextToSize(text, maxTextWidth);
+    let nextLine = 0;
+    // A paragraph can be longer than one page. Render only the lines that fit,
+    // then continue on another page instead of drawing text below its edge.
+    while (nextLine < lines.length) {
+      ensureSpace(lineHeight + 4);
+      const availableLines = Math.max(1, Math.floor((pageHeight - margin - y - 4) / lineHeight));
+      const pageLines = lines.slice(nextLine, nextLine + availableLines);
+      doc.text(pageLines, align === "center" ? pageWidth / 2 : margin, y, {
+        align,
+        baseline: "top",
+        lineHeightFactor: lineHeight / size
+      });
+      y += pageLines.length * lineHeight;
+      nextLine += pageLines.length;
+    }
+    y += 4;
   };
 
   drawParagraph(report.title || "Lab Report", { bold: true, size: 20, lineHeight: 24, align: "center" });
@@ -1170,7 +1201,6 @@ function generatePdfInBrowser(report) {
   });
   y += 8;
 
-  const printableSections = buildPrintableSections(report);
   printableSections.forEach((section, index) => {
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
 
@@ -1218,7 +1248,7 @@ function generatePdfInBrowser(report) {
           pageBreak: "auto",
           rowPageBreak: "avoid",
           styles: {
-            font: "times",
+            font: "LabReportSerif",
             fontSize: tableFontSize,
             cellPadding: { top: 7, right: 5, bottom: 7, left: 5 },
             minCellHeight: 32,
@@ -1250,7 +1280,7 @@ function generatePdfInBrowser(report) {
       const width = properties.width * scale;
       const height = properties.height * scale;
       const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
-      const titleHeight = doc.setFont("times", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
+      const titleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
       ensureSpace(height + titleHeight + 24);
       drawParagraph(title, { bold: true });
       doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
@@ -1786,6 +1816,7 @@ function applyReportToUI(report) {
   updateStatusBadge();
   setFormLocked(state.status === "Submitted");
   state.programmaticUpdate = false;
+  maybeStartTimerFromStudentName();
 }
 
 function persistLocalBackup() {
@@ -1909,6 +1940,7 @@ async function saveDraft(trigger) {
     });
 
     const payload = await readResponse(response);
+    if (report.id !== state.reportId || state.status === "Submitted") return;
     if (!response.ok) {
       const serverError = new Error(payload.error || "Failed to save draft.");
       serverError.isServerResponse = true;
@@ -1920,6 +1952,7 @@ async function saveDraft(trigger) {
     updateStatusBadge();
     elements.saveState.textContent = `Draft saved at ${new Date().toLocaleTimeString()}.`;
   } catch (error) {
+    if (report.id !== state.reportId || state.status === "Submitted") return;
     if (error && error.isServerResponse) {
       if ([404, 405, 501].includes(Number(error.status))) {
         state.remoteDraftEnabled = false;
@@ -1931,6 +1964,7 @@ async function saveDraft(trigger) {
       elements.saveState.textContent = `Draft saved locally at ${new Date().toLocaleTimeString()}.`;
     }
   } finally {
+    if (report.id !== state.reportId) return;
     state.isSaving = false;
     if (state.pendingSave) {
       state.pendingSave = false;
@@ -2013,8 +2047,9 @@ async function submitFinalReport() {
     elements.saveState.textContent = "Final report downloaded. Editing is now locked.";
     window.alert("Final report downloaded successfully.");
   } catch (error) {
+    if (report.id !== state.reportId || checkSessionExpiry()) return;
     elements.saveState.textContent = error.message || "Failed to generate final PDF.";
-    elements.submitBtn.disabled = false;
+    updateSessionGate();
   }
 }
 
@@ -2049,7 +2084,7 @@ function updateStatusBadge() {
 }
 
 function setFormLocked(locked) {
-  const controls = document.querySelectorAll("input, textarea, button");
+  const controls = document.querySelectorAll("input, textarea, select, button");
   controls.forEach((control) => {
     if (control === elements.statusBadge) {
       return;

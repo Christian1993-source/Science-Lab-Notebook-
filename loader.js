@@ -27,7 +27,7 @@
     }
   }
   try {
-    for (const file of ["figures.js", "app.js"]) {
+    for (const file of ["figures.js", "report-fonts.js", "app.js"]) {
       await new Promise((resolve, reject) => {
         const script = document.createElement("script");
         script.src = `${file}?v=${encodeURIComponent(version)}`;
