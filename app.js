@@ -5,7 +5,6 @@ const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 2;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
-const SESSION_DURATION_MS = 7 * 60 * 60 * 1000;
 
 const sectionKeys = [
   "researchQuestion",
@@ -239,18 +238,6 @@ function init() {
   state.intervalTimer = setInterval(() => {
     void saveDraft("interval");
   }, 15000);
-  setInterval(checkSessionExpiry, 1000);
-  document.addEventListener("visibilitychange", checkSessionExpiry);
-  window.addEventListener("focus", checkSessionExpiry);
-  document.addEventListener("beforeinput", (event) => {
-    if (checkSessionExpiry()) event.preventDefault();
-  }, true);
-  document.addEventListener("click", (event) => {
-    if (checkSessionExpiry()) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-    }
-  }, true);
   updateSessionGate();
 }
 
@@ -341,7 +328,7 @@ async function uploadGraphImages(event) {
     const index = Number(input.dataset.figureIndex);
     const target = state.figures[index];
     const added = await prepareGraphImage(files[0]);
-    if (reportId !== state.reportId || state.status === "Submitted" || checkSessionExpiry()) return;
+    if (reportId !== state.reportId || state.status === "Submitted") return;
     if (state.figures[index] !== target) return;
     const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
     // Check available draft storage before replacing the current figures.
@@ -603,15 +590,6 @@ function updateSessionGate() {
   document.getElementById("reportFields").disabled = !ready || state.status === "Submitted";
   elements.submitBtn.disabled = !ready || state.status === "Submitted";
   document.querySelectorAll("#restoreSectionButtons button").forEach(button => { button.disabled = !ready; });
-}
-
-function checkSessionExpiry() {
-  if (state.startedAt > 0 && Date.now() - state.startedAt >= SESSION_DURATION_MS) {
-    resetAllReport({ requireConfirmation: false, statusMessage: "Session ended. Enter your information to start a new report." });
-    elements.studentName.focus();
-    return true;
-  }
-  return false;
 }
 
 function maybeStartTimerFromStudentName() {
@@ -1745,11 +1723,6 @@ function collectReport() {
 
 function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
-  const draftStart = Number(normalizedReport.startedAt);
-  if (draftStart > 0 && Date.now() - draftStart >= SESSION_DURATION_MS) {
-    resetAllReport({ requireConfirmation: false, statusMessage: "This draft has expired. All work was cleared; start a new report." });
-    return;
-  }
   const figures = LabFigures.normalize(normalizedReport.figures);
 
   if (normalizedReport.id) {
@@ -1820,7 +1793,6 @@ function applyReportToUI(report) {
 }
 
 function persistLocalBackup() {
-  if (checkSessionExpiry()) return false;
   try {
   localStorage.setItem(REPORT_ID_KEY, state.reportId);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(collectReport()));
@@ -1974,7 +1946,6 @@ async function saveDraft(trigger) {
 }
 
 async function submitFinalReport() {
-  if (checkSessionExpiry()) return;
   if (state.imageUploadPending) {
     elements.saveState.textContent = "Wait for your graph images to finish uploading.";
     return;
@@ -2033,7 +2004,7 @@ async function submitFinalReport() {
       }
     }
 
-    if (checkSessionExpiry() || report.id !== state.reportId) return;
+    if (report.id !== state.reportId) return;
     downloadPdf(pdfBlob, `${safeFileName(report.title)}.pdf`);
 
     state.status = "Submitted";
@@ -2047,7 +2018,7 @@ async function submitFinalReport() {
     elements.saveState.textContent = "Final report downloaded. Editing is now locked.";
     window.alert("Final report downloaded successfully.");
   } catch (error) {
-    if (report.id !== state.reportId || checkSessionExpiry()) return;
+    if (report.id !== state.reportId) return;
     elements.saveState.textContent = error.message || "Failed to generate final PDF.";
     updateSessionGate();
   }
