@@ -63,7 +63,7 @@ const sectionOrder = [
   { type: "text", key: "hypothesis", label: "Hypothesis" },
   { type: "text", key: "materials", label: "Materials" },
   { type: "text", key: "procedure", label: "Procedure" },
-  { type: "diagram", key: "experimentalSetup", label: "Experimental Setup / Diagram" },
+  { type: "diagram", key: "experimentalSetup", label: "Experimental Setup / Diagram", dpOnly: true },
   { type: "data", key: "rawData", notesKey: "rawDataNotes", label: "Raw Data" },
   {
     type: "data",
@@ -75,7 +75,7 @@ const sectionOrder = [
   { type: "text", key: "conclusion", label: "Conclusion" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
-  { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations" },
+  { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations", dpOnly: true },
   { type: "text", key: "pilotObservations", label: "Pilot Test / Preliminary Observations (DP)", dpOnly: true },
   { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
   { type: "text", key: "dpResearchQuestion", label: "Research Question", program: "dp" },
