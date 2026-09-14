@@ -218,6 +218,13 @@ input:focus, textarea:focus {
 .graph-figure img[hidden] { display: none; }
 .graph-figure > button { margin-top: 24px; padding: 10px 16px; font-size: 0.9rem; }
 .graph-upload-panel > #addGraph { margin-top: 4px; }
+.variables-fields { display: grid; gap: 20px; }
+.variables-fields > div { padding: 20px; border: 1px solid var(--atlas-line); border-radius: 14px; background: #f7f5ee; }
+.variables-fields label { display: block; margin: 0 0 10px; font-weight: 700; }
+.variables-fields textarea { display: block; width: 100%; min-height: 130px; box-sizing: border-box; }
+.diagram-upload-card { margin-bottom: 0; }
+.diagram-upload-card #experimentalSetupStatus { margin-top: 12px; }
+.diagram-upload-card #experimentalSetupStatus:empty { display: none; }
 .table-set-controls button, .table-remove-btn, .table-controls button, .row-delete, .col-delete {
   border-color: #acc7c1;
   background: #edf6f3;

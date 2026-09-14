@@ -3,13 +3,16 @@ const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
-const REPORT_SCHEMA_VERSION = 2;
+const REPORT_SCHEMA_VERSION = 3;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
 
 const sectionKeys = [
   "researchQuestion",
   "backgroundInformation",
   "variables",
+  "independentVariable",
+  "dependentVariable",
+  "controlledVariables",
   "hypothesis",
   "materials",
   "procedure",
@@ -19,6 +22,8 @@ const sectionKeys = [
   "conclusion",
   "evaluation",
   "improvements",
+  "safetyConsiderations",
+  "pilotObservations",
   "references",
   "dpResearchQuestion",
   "dpBackgroundInformation",
@@ -39,10 +44,16 @@ const SELECTABLE_INPUT_TYPES = new Set(["text", "search", "url", "tel", "passwor
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
   { type: "text", key: "backgroundInformation", label: "Background Information" },
-  { type: "text", key: "variables", label: "Variables" },
+  {
+    type: "variables",
+    key: "variables",
+    label: "Variables",
+    fieldKeys: ["independentVariable", "dependentVariable", "controlledVariables"]
+  },
   { type: "text", key: "hypothesis", label: "Hypothesis" },
   { type: "text", key: "materials", label: "Materials" },
   { type: "text", key: "procedure", label: "Procedure" },
+  { type: "diagram", key: "experimentalSetup", label: "Experimental Setup / Diagram" },
   { type: "data", key: "rawData", notesKey: "rawDataNotes", label: "Raw Data" },
   {
     type: "data",
@@ -54,6 +65,8 @@ const sectionOrder = [
   { type: "text", key: "conclusion", label: "Conclusion" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
+  { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations" },
+  { type: "text", key: "pilotObservations", label: "Pilot Test / Preliminary Observations (DP)", dpOnly: true },
   { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
   { type: "text", key: "dpResearchQuestion", label: "Research Question", program: "dp" },
   { type: "text", key: "dpBackgroundInformation", label: "Background Information", program: "dp" },
@@ -88,7 +101,8 @@ const PROGRAM_CONFIGS = {
     fullName: "Middle Years Programme",
     sections: [
       "researchQuestion", "backgroundInformation", "variables", "hypothesis", "materials", "procedure",
-      "rawData", "processedData", "conclusion", "evaluation", "improvements", "references"
+      "experimentalSetup", "rawData", "processedData", "conclusion", "evaluation", "improvements",
+      "safetyConsiderations", "pilotObservations", "references"
     ]
   },
   dp: {
@@ -135,6 +149,7 @@ const state = {
   blockedAttempts: 0,
   programmaticUpdate: false,
   figures: [],
+  setupDiagram: { dataUrl: "", title: "", description: "" },
   imageUploadPending: false,
   tables: {
     rawData: defaultTableList("rawData"),
@@ -163,6 +178,12 @@ const elements = {
   time: document.getElementById("time"),
   classCode: document.getElementById("classCode"),
   selectedProgram: document.getElementById("selectedProgram"),
+  experimentalSetupImage: document.getElementById("experimentalSetupImage"),
+  experimentalSetupPreview: document.getElementById("experimentalSetupPreview"),
+  experimentalSetupTitle: document.getElementById("experimentalSetupTitle"),
+  experimentalSetupDescription: document.getElementById("experimentalSetupDescription"),
+  experimentalSetupStatus: document.getElementById("experimentalSetupStatus"),
+  removeExperimentalSetupImage: document.getElementById("removeExperimentalSetupImage"),
   outlineList: document.getElementById("outlineList"),
   removedSections: document.getElementById("removedSections"),
   restoreSectionButtons: document.getElementById("restoreSectionButtons"),
@@ -182,6 +203,9 @@ const sectionInputs = {
   researchQuestion: document.getElementById("section-researchQuestion"),
   backgroundInformation: document.getElementById("section-backgroundInformation"),
   variables: document.getElementById("section-variables"),
+  independentVariable: document.getElementById("section-independentVariable"),
+  dependentVariable: document.getElementById("section-dependentVariable"),
+  controlledVariables: document.getElementById("section-controlledVariables"),
   hypothesis: document.getElementById("section-hypothesis"),
   materials: document.getElementById("section-materials"),
   procedure: document.getElementById("section-procedure"),
@@ -191,6 +215,8 @@ const sectionInputs = {
   conclusion: document.getElementById("section-conclusion"),
   evaluation: document.getElementById("section-evaluation"),
   improvements: document.getElementById("section-improvements"),
+  safetyConsiderations: document.getElementById("section-safetyConsiderations"),
+  pilotObservations: document.getElementById("section-pilotObservations"),
   references: document.getElementById("section-references"),
   dpResearchQuestion: document.getElementById("section-dpResearchQuestion"),
   dpBackgroundInformation: document.getElementById("section-dpBackgroundInformation"),
@@ -210,6 +236,24 @@ const sectionInputs = {
 init();
 
 function init() {
+  elements.experimentalSetupImage.addEventListener("change", uploadExperimentalSetupImage);
+  elements.removeExperimentalSetupImage.addEventListener("click", () => {
+    if (state.status === "Submitted" || state.imageUploadPending) return;
+    state.setupDiagram = { dataUrl: "", title: "", description: "" };
+    renderExperimentalSetup();
+    persistLocalBackup();
+    queueIdleSave();
+    elements.experimentalSetupStatus.textContent = "Diagram image removed.";
+  });
+  [[elements.experimentalSetupTitle, "title"], [elements.experimentalSetupDescription, "description"]].forEach(([field, key]) => {
+    field.addEventListener("input", () => {
+      if (state.status === "Submitted") return;
+      state.setupDiagram[key] = field.value;
+      if (key === "title") elements.experimentalSetupPreview.alt = field.value || "Experimental setup diagram preview";
+      persistLocalBackup();
+      queueIdleSave();
+    });
+  });
   document.getElementById("addGraph").addEventListener("click", () => {
     if (state.status === "Submitted" || state.imageUploadPending) return;
     if (state.figures.length >= LabFigures.MAX_COUNT) {
@@ -312,6 +356,61 @@ async function prepareGraphImage(file) {
       dataUrl = canvas.toDataURL("image/jpeg", quality);
     }
     return LabFigures.normalize([{ dataUrl, title: "", description: "" }])[0];
+}
+
+function normalizeSingleFigure(value) {
+  return LabFigures.normalize(value && typeof value === "object" ? [value] : [])[0]
+    || { dataUrl: "", title: "", description: "" };
+}
+
+async function uploadExperimentalSetupImage(event) {
+  const input = event.target;
+  if (state.status === "Submitted" || state.imageUploadPending || !input.files?.length) return;
+  const reportId = state.reportId;
+  state.imageUploadPending = true;
+  input.disabled = true;
+  elements.experimentalSetupStatus.textContent = "Preparing diagram image…";
+  try {
+    const prepared = await prepareGraphImage(input.files[0]);
+    if (reportId !== state.reportId || state.status === "Submitted") return;
+    const candidate = normalizeSingleFigure({
+      dataUrl: prepared.dataUrl,
+      title: elements.experimentalSetupTitle.value,
+      description: elements.experimentalSetupDescription.value
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...collectReport(), setupDiagram: candidate }));
+    state.setupDiagram = candidate;
+    renderExperimentalSetup();
+    queueIdleSave();
+    elements.experimentalSetupStatus.textContent = "Diagram image saved with your draft.";
+  } catch (error) {
+    if (reportId !== state.reportId) return;
+    elements.experimentalSetupStatus.textContent = error.name === "QuotaExceededError"
+      ? "Browser storage is full. The existing diagram is unchanged. Try a smaller image."
+      : error.message || "The diagram image could not be opened.";
+  } finally {
+    if (reportId !== state.reportId) return;
+    input.value = "";
+    state.imageUploadPending = false;
+    input.disabled = state.status === "Submitted";
+  }
+}
+
+function renderExperimentalSetup() {
+  const diagram = normalizeSingleFigure(state.setupDiagram);
+  state.setupDiagram = diagram;
+  elements.experimentalSetupTitle.value = diagram.title;
+  elements.experimentalSetupDescription.value = diagram.description;
+  elements.experimentalSetupTitle.dataset.safeTypedValue = diagram.title;
+  elements.experimentalSetupDescription.dataset.safeTypedValue = diagram.description;
+  if (diagram.dataUrl) {
+    elements.experimentalSetupPreview.src = diagram.dataUrl;
+  } else {
+    elements.experimentalSetupPreview.removeAttribute("src");
+  }
+  elements.experimentalSetupPreview.alt = diagram.title || "Experimental setup diagram preview";
+  elements.experimentalSetupPreview.hidden = !diagram.dataUrl;
+  elements.removeExperimentalSetupImage.disabled = state.status === "Submitted" || !diagram.dataUrl;
 }
 
 async function uploadGraphImages(event) {
@@ -609,6 +708,7 @@ function maybeStartTimerFromStudentName() {
 
 function attachInputListeners() {
   elements.selectedProgram.addEventListener("change", () => {
+    renderProgramUI();
     persistLocalBackup();
     queueIdleSave();
   });
@@ -742,9 +842,27 @@ function getSectionLabel(sectionKey) {
   return sectionOrder.find((section) => section.key === sectionKey)?.label || sectionKey;
 }
 
+function toRoman(number) {
+  const values = [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]];
+  let remaining = Math.max(1, Math.floor(number));
+  let result = "";
+  values.forEach(([value, numeral]) => {
+    while (remaining >= value) {
+      result += numeral;
+      remaining -= value;
+    }
+  });
+  return result;
+}
+
 function renderProgramUI() {
   const config = PROGRAM_CONFIGS[state.program];
   const active = state.activeSections[state.program];
+  const isDp = elements.selectedProgram.value === "DP";
+  const visibleSections = config.sections.filter((key) => {
+    const definition = sectionOrder.find((section) => section.key === key && section.program === state.program);
+    return !definition?.dpOnly || isDp;
+  });
   document.body.classList.toggle("program-myp", state.program === "myp");
   document.body.classList.toggle("program-dp", state.program === "dp");
   document.querySelectorAll(".program-option").forEach((button) => {
@@ -753,8 +871,14 @@ function renderProgramUI() {
     button.setAttribute("aria-pressed", String(selected));
   });
   document.querySelectorAll(".report-section").forEach((section) => {
-    section.hidden = section.dataset.program !== state.program || !active.includes(section.dataset.sectionKey);
     const key = section.dataset.sectionKey;
+    const belongsToProgram = section.dataset.program === state.program;
+    const availableForStudent = visibleSections.includes(key);
+    section.hidden = !belongsToProgram || !availableForStudent || !active.includes(key);
+    if (belongsToProgram && availableForStudent) {
+      const heading = section.querySelector(".section-heading h2");
+      if (heading) heading.textContent = `${toRoman(visibleSections.indexOf(key) + 1)}. ${getSectionLabel(key)}`;
+    }
     let placeholder = document.getElementById(`removed-${key}`);
     if (!placeholder) {
       placeholder = document.createElement("div");
@@ -776,13 +900,13 @@ function renderProgramUI() {
       placeholder.append(copy, button);
       section.after(placeholder);
     }
-    placeholder.hidden = section.dataset.program !== state.program || active.includes(key);
+    placeholder.hidden = !belongsToProgram || !availableForStudent || active.includes(key);
   });
   elements.outlineList.replaceChildren();
   const studentItem = document.createElement("li");
   studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
   elements.outlineList.appendChild(studentItem);
-  active.forEach((key) => {
+  visibleSections.filter((key) => active.includes(key)).forEach((key) => {
     const item = document.createElement("li");
     const link = document.createElement("a");
     link.href = `#sec-${key}`;
@@ -790,7 +914,7 @@ function renderProgramUI() {
     item.appendChild(link);
     elements.outlineList.appendChild(item);
   });
-  const removed = config.sections.filter((key) => !active.includes(key));
+  const removed = visibleSections.filter((key) => !active.includes(key));
   elements.removedSections.hidden = removed.length === 0;
   elements.restoreSectionButtons.replaceChildren();
   removed.forEach((key) => {
@@ -899,6 +1023,7 @@ function resetAllReport({
   state.isSaving = false;
   state.pendingSave = false;
   state.imageUploadPending = false;
+  state.setupDiagram = { dataUrl: "", title: "", description: "" };
   state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
@@ -923,6 +1048,7 @@ function resetAllReport({
     studentName: "",
     date: "",
     status: "Draft",
+    setupDiagram: state.setupDiagram,
     sections: {},
     tables: {
       rawData: defaultTableList("rawData"),
@@ -955,7 +1081,26 @@ function buildPrintableSections(report) {
     : PROGRAM_CONFIGS[program].sections;
 
   sectionOrder.forEach((section) => {
-    if (section.program !== program || !active.includes(section.key)) {
+    if (section.program !== program || !active.includes(section.key) || (section.dpOnly && report.studentProgramme !== "DP")) {
+      return;
+    }
+    if (section.type === "variables") {
+      const labels = {
+        independentVariable: "Independent Variable",
+        dependentVariable: "Dependent Variable",
+        controlledVariables: "Controlled Variables"
+      };
+      const parts = section.fieldKeys
+        .map((key) => ({ label: labels[key], text: String(report.sections?.[key] || "").trim() }))
+        .filter((part) => part.text);
+      const legacyText = String(report.sections?.variables || "").trim();
+      if (legacyText && parts.length === 0) parts.push({ label: "Variables", text: legacyText });
+      if (parts.length) sections.push({ type: "variables", label: section.label, parts });
+      return;
+    }
+    if (section.type === "diagram") {
+      const diagram = normalizeSingleFigure(report.setupDiagram);
+      if (diagram.dataUrl) sections.push({ type: "diagram", label: section.label, figure: diagram });
       return;
     }
     if (section.type === "text") {
@@ -1026,6 +1171,20 @@ function generateBasicPdfBlob(report) {
 
   printableSections.forEach((section, index) => {
     lines.push(`${index + 1}. ${section.label}`);
+    if (section.type === "variables") {
+      section.parts.forEach((part) => {
+        lines.push(part.label);
+        lines.push(...wrapPlainText(part.text));
+      });
+      lines.push("");
+      return;
+    }
+    if (section.type === "diagram") {
+      lines.push(section.figure.title || "Experimental setup diagram");
+      if (section.figure.description) lines.push(...wrapPlainText(section.figure.description));
+      lines.push("");
+      return;
+    }
     if (section.type === "text") {
       if (section.label === "Materials") {
         section.text.split("\n").forEach(item => lines.push(...wrapPlainText(item)));
@@ -1153,6 +1312,23 @@ function generatePdfInBrowser(report) {
     y += 4;
   };
 
+  let figureNumber = 1;
+  const drawFigure = (figure) => {
+    const properties = doc.getImageProperties(figure.dataUrl);
+    const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+    const width = properties.width * scale;
+    const height = properties.height * scale;
+    const title = `Figure ${figureNumber}${figure.title ? `. ${figure.title}` : ""}`;
+    const titleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
+    ensureSpace(height + titleHeight + 24);
+    drawParagraph(title, { bold: true });
+    doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
+    y += height + 12;
+    if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
+    y += 12;
+    figureNumber += 1;
+  };
+
   drawParagraph(report.title || "Lab Report", { bold: true, size: 20, lineHeight: 24, align: "center" });
   drawParagraph(`Teacher: ${report.teacher || "Not specified"}`, {
     size: 12,
@@ -1180,7 +1356,28 @@ function generatePdfInBrowser(report) {
   y += 8;
 
   printableSections.forEach((section, index) => {
+    if (section.type === "diagram") {
+      const properties = doc.getImageProperties(section.figure.dataUrl);
+      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+      const figureTitle = `Figure ${figureNumber}${section.figure.title ? `. ${section.figure.title}` : ""}`;
+      const figureTitleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(figureTitle, maxTextWidth).length * 16 + 4;
+      ensureSpace(properties.height * scale + figureTitleHeight + 66);
+    }
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
+
+    if (section.type === "variables") {
+      section.parts.forEach((part) => {
+        drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
+        drawParagraph(part.text, { size: 12, lineHeight: 17 });
+      });
+      y += 6;
+      return;
+    }
+
+    if (section.type === "diagram") {
+      drawFigure(section.figure);
+      return;
+    }
 
     if (section.type === "text") {
       drawParagraph(section.text, { size: 12, lineHeight: 17 });
@@ -1252,20 +1449,7 @@ function generatePdfInBrowser(report) {
     } else {
       y += 6;
     }
-    (section.figures || []).forEach((figure, figureIndex) => {
-      const properties = doc.getImageProperties(figure.dataUrl);
-      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
-      const width = properties.width * scale;
-      const height = properties.height * scale;
-      const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
-      const titleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
-      ensureSpace(height + titleHeight + 24);
-      drawParagraph(title, { bold: true });
-      doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
-      y += height + 12;
-      if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
-      y += 12;
-    });
+    (section.figures || []).forEach(drawFigure);
   });
 
   return doc.output("blob");
@@ -1708,6 +1892,11 @@ function collectReport() {
     date: elements.date.value,
     time: elements.time.value,
     figures: state.figures,
+    setupDiagram: normalizeSingleFigure({
+      dataUrl: state.setupDiagram.dataUrl,
+      title: elements.experimentalSetupTitle.value,
+      description: elements.experimentalSetupDescription.value
+    }),
     startedAt: state.startedAt,
     timeSpentSeconds: getTimeSpentSeconds(),
     status: state.status,
@@ -1724,6 +1913,7 @@ function collectReport() {
 function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
   const figures = LabFigures.normalize(normalizedReport.figures);
+  const setupDiagram = normalizeSingleFigure(normalizedReport.setupDiagram);
 
   if (normalizedReport.id) {
     state.reportId = normalizedReport.id;
@@ -1751,7 +1941,7 @@ function applyReportToUI(report) {
   const defaults = createDefaultActiveSections();
   state.activeSections = Object.fromEntries(Object.keys(PROGRAM_CONFIGS).map((program) => {
     const source = normalizedReport.activeSections?.[program];
-    if (program === "dp" && Number(normalizedReport.schemaVersion) < REPORT_SCHEMA_VERSION) {
+    if (Number(normalizedReport.schemaVersion) < REPORT_SCHEMA_VERSION) {
       return [program, defaults[program]];
     }
     const valid = Array.isArray(source) ? defaults[program].filter((key) => source.includes(key)) : defaults[program];
@@ -1772,6 +1962,10 @@ function applyReportToUI(report) {
       sectionInputs[sectionKey].value = LabFigures.numberedMaterials(sectionInputs[sectionKey].value);
     }
   });
+  if (!sectionInputs.independentVariable.value && !sectionInputs.dependentVariable.value && !sectionInputs.controlledVariables.value && sectionInputs.variables.value) {
+    sectionInputs.independentVariable.value = sectionInputs.variables.value;
+    sectionInputs.variables.value = "";
+  }
 
   state.tables.rawData = normalizeTableList(normalizedReport.tables?.rawData, "rawData");
   state.tables.processedData = normalizeTableList(normalizedReport.tables?.processedData, "processedData");
@@ -1779,6 +1973,8 @@ function applyReportToUI(report) {
   state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
   state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
   state.figures = figures;
+  state.setupDiagram = setupDiagram;
+  renderExperimentalSetup();
   renderGraphFigures();
 
   renderTableEditor("rawData", elements.rawDataEditor);
@@ -1958,6 +2154,10 @@ async function submitFinalReport() {
   if (!report.classCode) {
     window.alert("Enter the Class Code provided by your teacher before downloading the report.");
     elements.classCode.focus();
+    return;
+  }
+  if (report.activeSections.myp.includes("experimentalSetup") && !report.setupDiagram.dataUrl && (report.setupDiagram.title || report.setupDiagram.description)) {
+    elements.saveState.textContent = "Upload the experimental setup image, or clear its unfinished title and explanation.";
     return;
   }
   if (report.program === "myp" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {

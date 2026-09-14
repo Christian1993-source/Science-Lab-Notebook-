@@ -18,10 +18,16 @@ app.disable("x-powered-by");
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
   { type: "text", key: "backgroundInformation", label: "Background Information" },
-  { type: "text", key: "variables", label: "Variables" },
+  {
+    type: "variables",
+    key: "variables",
+    label: "Variables",
+    fieldKeys: ["independentVariable", "dependentVariable", "controlledVariables"]
+  },
   { type: "text", key: "hypothesis", label: "Hypothesis" },
   { type: "text", key: "materials", label: "Materials" },
   { type: "text", key: "procedure", label: "Procedure" },
+  { type: "diagram", key: "experimentalSetup", label: "Experimental Setup / Diagram" },
   { type: "data", key: "rawData", noteKey: "rawDataNotes", label: "Raw Data" },
   {
     type: "data",
@@ -33,6 +39,8 @@ const sectionOrder = [
   { type: "text", key: "conclusion", label: "Conclusion" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
+  { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations" },
+  { type: "text", key: "pilotObservations", label: "Pilot Test / Preliminary Observations (DP)", dpOnly: true },
   { type: "text", key: "references", label: "References (APA 7)", program: "myp" },
   { type: "text", key: "dpResearchQuestion", label: "Research Question", program: "dp" },
   { type: "text", key: "dpBackgroundInformation", label: "Background Information", program: "dp" },
@@ -201,17 +209,20 @@ function normalizeTableList(tableValue) {
 function sanitizeReport(rawReport) {
   const report = rawReport && typeof rawReport === "object" ? rawReport : {};
   let figures;
+  let setupDiagram;
   try {
     figures = LabFigures.normalize(report.figures);
+    setupDiagram = LabFigures.normalize(report.setupDiagram && typeof report.setupDiagram === "object" ? [report.setupDiagram] : [])[0]
+      || { dataUrl: "", title: "", description: "" };
     const probe = new PDFDocument({ autoFirstPage: false });
-    for (const figure of figures) {
+    for (const figure of [...figures, setupDiagram]) {
       if (!figure.dataUrl) continue;
       const image = probe.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
       if (!image.width || !image.height || image.width * image.height > 4000000) throw new Error("Graph dimensions are too large.");
     }
     probe.end();
   } catch (_error) {
-    const error = new Error("Invalid graph image. Upload a PNG, JPG or WebP using the graph image section.");
+    const error = new Error("Invalid uploaded image. Upload a PNG, JPG or WebP using an image section.");
     error.status = 400;
     throw error;
   }
@@ -219,6 +230,13 @@ function sanitizeReport(rawReport) {
   const program = programSections[report.program] ? report.program : "myp";
 
   sectionOrder.forEach((section) => {
+    if (section.type === "variables") {
+      sections.variables = cleanMultiline(report.sections?.variables);
+      section.fieldKeys.forEach((key) => {
+        sections[key] = cleanMultiline(report.sections?.[key]);
+      });
+      return;
+    }
     if (section.type === "text") {
       sections[section.key] = ["materials", "dpMaterials"].includes(section.key)
         ? LabFigures.numberedMaterials(cleanMultiline(report.sections?.[section.key]))
@@ -256,6 +274,7 @@ function sanitizeReport(rawReport) {
     date: cleanString(report.date),
     time: cleanString(report.time),
     figures,
+    setupDiagram,
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
     status: report.status === "Submitted" ? "Submitted" : "Draft",
@@ -538,7 +557,25 @@ function buildSectionsForPdf(report) {
     : programSections[report.program];
 
   sectionOrder.forEach((section) => {
-    if (section.program !== report.program || !active.includes(section.key)) return;
+    if (section.program !== report.program || !active.includes(section.key) || (section.dpOnly && report.studentProgramme !== "DP")) return;
+    if (section.type === "variables") {
+      const labels = {
+        independentVariable: "Independent Variable",
+        dependentVariable: "Dependent Variable",
+        controlledVariables: "Controlled Variables"
+      };
+      const parts = section.fieldKeys
+        .map((key) => ({ label: labels[key], value: cleanMultiline(report.sections[key]) }))
+        .filter((part) => part.value);
+      const legacyValue = cleanMultiline(report.sections.variables);
+      if (legacyValue && parts.length === 0) parts.push({ label: "Variables", value: legacyValue });
+      if (parts.length) ordered.push({ type: "variables", label: section.label, parts });
+      return;
+    }
+    if (section.type === "diagram") {
+      if (report.setupDiagram?.dataUrl) ordered.push({ type: "diagram", label: section.label, figure: report.setupDiagram });
+      return;
+    }
     if (section.type === "text") {
       const text = cleanMultiline(report.sections[section.key]);
       if (text.length > 0) {
@@ -595,6 +632,25 @@ function generatePdf(report) {
     doc.moveDown(1);
 
     const printableSections = buildSectionsForPdf(report);
+    let figureNumber = 1;
+    const drawUploadedFigure = (figure) => {
+      const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+      const widthLimit = doc.page.width - 144;
+      const scale = Math.min(widthLimit / image.width, 300 / image.height);
+      const width = image.width * scale;
+      const height = image.height * scale;
+      const title = `Figure ${figureNumber}${figure.title ? `. ${figure.title}` : ""}`;
+      doc.font("Times-Bold").fontSize(12);
+      ensurePageSpace(doc, height + doc.heightOfString(title, { width: widthLimit }) + 30);
+      doc.fillColor("#124232").text(title, 72, doc.y, { width: widthLimit });
+      doc.moveDown(0.4);
+      const imageY = doc.y;
+      doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
+      doc.y = imageY + height + 12;
+      if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
+      doc.moveDown(0.8);
+      figureNumber += 1;
+    };
     if (printableSections.length === 0) {
       doc.font("Times-Italic").fontSize(12).fillColor("#333333").text("No sections with content.", {
         align: "left"
@@ -604,6 +660,23 @@ function generatePdf(report) {
         const number = index + 1;
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
+        } else if (section.type === "variables") {
+          drawSectionHeading(doc, number, section.label);
+          section.parts.forEach((part) => {
+            ensurePageSpace(doc, 54);
+            doc.font("Times-Bold").fontSize(11).fillColor("#124232").text(part.label);
+            doc.font("Times-Roman").fontSize(12).fillColor("#111111").text(part.value, { lineGap: 4 });
+            doc.moveDown(0.5);
+          });
+        } else if (section.type === "diagram") {
+          const image = doc.openImage(Buffer.from(section.figure.dataUrl.split(",")[1], "base64"));
+          const widthLimit = doc.page.width - 144;
+          const scale = Math.min(widthLimit / image.width, 300 / image.height);
+          const figureTitle = `Figure ${figureNumber}${section.figure.title ? `. ${section.figure.title}` : ""}`;
+          doc.font("Times-Bold").fontSize(12);
+          ensurePageSpace(doc, image.height * scale + doc.heightOfString(figureTitle, { width: widthLimit }) + 72);
+          drawSectionHeading(doc, number, section.label);
+          drawUploadedFigure(section.figure);
         } else {
           drawDataSection(
             doc,
@@ -613,23 +686,7 @@ function generatePdf(report) {
             section.sampleCalculations,
             section.tables
           );
-          (section.figures || []).forEach((figure, figureIndex) => {
-            const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
-            const widthLimit = doc.page.width - 144;
-            const scale = Math.min(widthLimit / image.width, 300 / image.height);
-            const width = image.width * scale;
-            const height = image.height * scale;
-            const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
-            doc.font("Times-Bold").fontSize(12);
-            ensurePageSpace(doc, height + doc.heightOfString(title, { width: widthLimit }) + 30);
-            doc.fillColor("#124232").text(title, 72, doc.y, { width: widthLimit });
-            doc.moveDown(0.4);
-            const imageY = doc.y;
-            doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
-            doc.y = imageY + height + 12;
-            if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
-            doc.moveDown(0.8);
-          });
+          (section.figures || []).forEach(drawUploadedFigure);
         }
       });
     }

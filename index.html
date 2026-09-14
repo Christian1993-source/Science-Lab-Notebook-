@@ -8,9 +8,9 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260908-no-session-timeout-1" />
+    <meta name="notebook-release" content="20260914-expanded-sections-1" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260905-deep-audit-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260914-expanded-sections-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -122,7 +122,21 @@
 
           <section class="card report-section" data-program="myp" data-section-key="variables" id="sec-variables">
             <div class="section-heading"><h2>III. Variables</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-variables"></textarea>
+            <textarea id="section-variables" hidden aria-hidden="true" tabindex="-1"></textarea>
+            <div class="variables-fields">
+              <div>
+                <label for="section-independentVariable">Independent Variable</label>
+                <textarea id="section-independentVariable"></textarea>
+              </div>
+              <div>
+                <label for="section-dependentVariable">Dependent Variable</label>
+                <textarea id="section-dependentVariable"></textarea>
+              </div>
+              <div>
+                <label for="section-controlledVariables">Controlled Variables</label>
+                <textarea id="section-controlledVariables"></textarea>
+              </div>
+            </div>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="hypothesis" id="sec-hypothesis">
@@ -143,15 +157,31 @@
             <textarea id="section-procedure"></textarea>
           </section>
 
+          <section class="card report-section" data-program="myp" data-section-key="experimentalSetup" id="sec-experimentalSetup">
+            <div class="section-heading"><h2>VII. Experimental Setup / Diagram</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <p class="section-prompt">Upload one image of the experimental setup, add a figure title, and explain the diagram.</p>
+            <div class="graph-figure diagram-upload-card">
+              <label for="experimentalSetupImage">Upload diagram image</label>
+              <input id="experimentalSetupImage" type="file" accept="image/png,image/jpeg,image/webp" />
+              <img id="experimentalSetupPreview" alt="Experimental setup diagram preview" hidden />
+              <label for="experimentalSetupTitle">Figure title</label>
+              <input id="experimentalSetupTitle" type="text" maxlength="160" />
+              <label for="experimentalSetupDescription">Explanation of the diagram</label>
+              <textarea id="experimentalSetupDescription" maxlength="2000"></textarea>
+              <button id="removeExperimentalSetupImage" type="button" class="btn btn-secondary">Remove image</button>
+              <p id="experimentalSetupStatus" class="meta" role="status" aria-live="polite"></p>
+            </div>
+          </section>
+
           <section class="card report-section" data-program="myp" data-section-key="rawData" id="sec-rawData">
-            <div class="section-heading"><h2>VII. Raw Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>VIII. Raw Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <label for="section-rawDataNotes">Written Analysys/ Notes</label>
             <textarea id="section-rawDataNotes" class="data-notes"></textarea>
             <div id="rawDataEditor" class="table-editor"></div>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="processedData" id="sec-processedData">
-            <div class="section-heading"><h2>VIII. Processed Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>IX. Processed Data</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <label for="section-processedDataNotes">Written Analysys/ Notes</label>
             <textarea id="section-processedDataNotes" class="data-notes"></textarea>
             <label for="section-processedDataSampleCalculations">Sample Calculations</label>
@@ -168,22 +198,32 @@
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="conclusion" id="sec-conclusion">
-            <div class="section-heading"><h2>IX. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>X. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-conclusion"></textarea>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="evaluation" id="sec-evaluation">
-            <div class="section-heading"><h2>X. Evaluation</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>XI. Evaluation</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-evaluation"></textarea>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="improvements" id="sec-improvements">
-            <div class="section-heading"><h2>XI. Improvements</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>XII. Improvements</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-improvements"></textarea>
           </section>
 
+          <section class="card report-section" data-program="myp" data-section-key="safetyConsiderations" id="sec-safetyConsiderations">
+            <div class="section-heading"><h2>XIII. Safety, Ethical &amp; Environmental Considerations</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-safetyConsiderations"></textarea>
+          </section>
+
+          <section class="card report-section" data-program="myp" data-section-key="pilotObservations" data-dp-only="true" id="sec-pilotObservations" hidden>
+            <div class="section-heading"><h2>XIV. Pilot Test / Preliminary Observations (DP)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <textarea id="section-pilotObservations"></textarea>
+          </section>
+
           <section class="card report-section" data-program="myp" data-section-key="references" id="sec-references">
-            <div class="section-heading"><h2>XII. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>XIV. References (APA 7)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-references"></textarea>
           </section>
 
@@ -277,6 +317,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260908-no-session-timeout-1"></script>
+    <script src="loader.js?v=20260914-expanded-sections-1"></script>
   </body>
 </html>
