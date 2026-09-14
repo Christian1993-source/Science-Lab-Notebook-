@@ -6,6 +6,7 @@ const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 4;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
+const MAX_REFERENCE_COUNT = 30;
 
 const sectionKeys = [
   "researchQuestion",
@@ -127,6 +128,10 @@ function createDefaultActiveSections() {
   return Object.fromEntries(Object.entries(PROGRAM_CONFIGS).map(([program, config]) => [program, config.sections.slice()]));
 }
 
+function defaultReferenceEntries() {
+  return [{ citation: "", url: "" }];
+}
+
 const scienceTableTemplates = {
   rawData: ["Trial", "", "", "", ""],
   processedData: ["Trial", "", "", "", ""],
@@ -157,6 +162,7 @@ const state = {
   blockedAttempts: 0,
   programmaticUpdate: false,
   figures: [],
+  references: defaultReferenceEntries(),
   setupDiagram: { dataUrl: "", title: "", description: "" },
   imageUploadPending: false,
   tables: {
@@ -200,6 +206,9 @@ const elements = {
   loadSavedDraftBtn: document.getElementById("loadSavedDraftBtn"),
   loadPhysicsExampleBtn: document.getElementById("loadPhysicsExampleBtn"),
   submitBtn: document.getElementById("submitBtn"),
+  referenceEntries: document.getElementById("referenceEntries"),
+  addReference: document.getElementById("addReference"),
+  referenceStatus: document.getElementById("referenceStatus"),
   saveState: document.getElementById("saveState"),
   statusBadge: document.getElementById("documentStatus"),
   rawDataEditor: document.getElementById("rawDataEditor"),
@@ -275,6 +284,18 @@ function init() {
     renderGraphFigures();
     persistLocalBackup();
   });
+  elements.addReference.addEventListener("click", () => {
+    if (state.status === "Submitted") return;
+    if (state.references.length >= MAX_REFERENCE_COUNT) {
+      elements.referenceStatus.textContent = `You can add up to ${MAX_REFERENCE_COUNT} references.`;
+      return;
+    }
+    state.references.push({ citation: "", url: "" });
+    renderReferenceEntries();
+    persistLocalBackup();
+    queueIdleSave();
+    elements.referenceEntries.querySelector(".reference-entry:last-child textarea")?.focus();
+  });
   attachRestrictions();
   attachInputListeners();
   renderTableEditor("rawData", elements.rawDataEditor);
@@ -322,6 +343,7 @@ function clearLegacyExampleDraft() {
   state.classCode = "";
   state.activeSections = createDefaultActiveSections();
   state.blockedAttempts = 0;
+  state.references = defaultReferenceEntries();
   state.tables = {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData"),
@@ -531,6 +553,130 @@ function renderGraphFigures() {
     card.append(remove);
     container.append(card);
   });
+}
+
+function normalizeReferenceUrl(value) {
+  const raw = String(value || "").trim();
+  if (!raw || /\s/.test(raw)) return "";
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const parsed = new URL(candidate);
+    return ["http:", "https:"].includes(parsed.protocol) && parsed.hostname ? parsed.href : "";
+  } catch (_error) {
+    return "";
+  }
+}
+
+function normalizeReferenceEntries(value, legacyText = "") {
+  let source = Array.isArray(value) ? value.slice(0, MAX_REFERENCE_COUNT) : [];
+  if (!source.length && String(legacyText || "").trim()) {
+    source = String(legacyText)
+      .split(/\n+/)
+      .map((citation) => ({ citation, url: "" }));
+  }
+  const entries = source.map((entry) => ({
+    citation: String(entry?.citation || "").trim(),
+    url: String(entry?.url || "").trim()
+  }));
+  return entries.length ? entries : defaultReferenceEntries();
+}
+
+function renderReferenceEntries() {
+  state.references = normalizeReferenceEntries(state.references, sectionInputs.references.value);
+  sectionInputs.references.value = state.references.map((entry) => entry.citation).filter(Boolean).join("\n");
+  elements.referenceEntries.replaceChildren();
+  elements.referenceStatus.textContent = "";
+
+  state.references.forEach((reference, index) => {
+    const card = document.createElement("div");
+    card.className = "reference-entry";
+
+    const header = document.createElement("div");
+    header.className = "reference-entry-header";
+    const heading = document.createElement("h3");
+    heading.textContent = `Reference ${index + 1}`;
+    header.append(heading);
+
+    if (state.references.length > 1) {
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "reference-remove";
+      remove.textContent = "Remove reference";
+      remove.disabled = state.status === "Submitted";
+      remove.addEventListener("click", () => {
+        if (state.status === "Submitted") return;
+        state.references.splice(index, 1);
+        renderReferenceEntries();
+        persistLocalBackup();
+        queueIdleSave();
+      });
+      header.append(remove);
+    }
+
+    const citationLabel = document.createElement("label");
+    citationLabel.htmlFor = `reference-${index}-citation`;
+    citationLabel.textContent = "APA 7 reference - type manually";
+    const citation = document.createElement("textarea");
+    citation.id = citationLabel.htmlFor;
+    citation.value = reference.citation;
+    citation.maxLength = 4000;
+    citation.placeholder = "Author, A. A. (Year). Title of the work. Publisher or Journal.";
+    citation.dataset.safeTypedValue = citation.value;
+    citation.disabled = state.status === "Submitted";
+    citation.addEventListener("input", () => {
+      if (state.status === "Submitted") return;
+      reference.citation = citation.value;
+      sectionInputs.references.value = state.references.map((entry) => entry.citation).filter(Boolean).join("\n");
+      persistLocalBackup();
+      queueIdleSave();
+    });
+
+    const linkLabel = document.createElement("label");
+    linkLabel.htmlFor = `reference-${index}-url`;
+    linkLabel.textContent = "Source link - paste allowed";
+    const link = document.createElement("input");
+    link.id = linkLabel.htmlFor;
+    link.className = "reference-link-input";
+    link.type = "url";
+    link.inputMode = "url";
+    link.value = reference.url;
+    link.maxLength = 2048;
+    link.placeholder = "https://example.com/source";
+    link.dataset.allowPaste = "true";
+    link.dataset.safeTypedValue = link.value;
+    link.disabled = state.status === "Submitted";
+    link.addEventListener("input", () => {
+      if (state.status === "Submitted") return;
+      reference.url = link.value;
+      link.setCustomValidity("");
+      persistLocalBackup();
+      queueIdleSave();
+    });
+    link.addEventListener("blur", () => {
+      if (!link.value.trim()) return;
+      const normalized = normalizeReferenceUrl(link.value);
+      if (!normalized) {
+        link.setCustomValidity("Paste or type a valid source link.");
+        elements.referenceStatus.textContent = `Reference ${index + 1} needs a valid source link.`;
+        return;
+      }
+      link.value = normalized;
+      link.dataset.safeTypedValue = normalized;
+      reference.url = normalized;
+      link.setCustomValidity("");
+      elements.referenceStatus.textContent = "";
+      persistLocalBackup();
+    });
+
+    const pasteNote = document.createElement("p");
+    pasteNote.className = "reference-paste-note";
+    pasteNote.textContent = "Only this link field accepts paste. The APA 7 reference above must be typed by the student.";
+
+    card.append(header, citationLabel, citation, linkLabel, link, pasteNote);
+    elements.referenceEntries.append(card);
+  });
+
+  elements.addReference.disabled = state.status === "Submitted" || state.references.length >= MAX_REFERENCE_COUNT;
 }
 
 function formatAutomaticDateTime(timestamp) {
@@ -1299,6 +1445,7 @@ function resetAllReport({
   state.pendingSave = false;
   state.imageUploadPending = false;
   state.setupDiagram = { dataUrl: "", title: "", description: "" };
+  state.references = defaultReferenceEntries();
   state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
@@ -1327,6 +1474,7 @@ function resetAllReport({
     date: "",
     status: "Draft",
     setupDiagram: state.setupDiagram,
+    references: state.references,
     sections: {},
     tables: {
       rawData: defaultTableList("rawData"),
@@ -1420,6 +1568,16 @@ function buildPrintableSections(report) {
       }
       return;
     }
+    if (["references", "dpReferences"].includes(section.key)) {
+      const entries = normalizeReferenceEntries(
+        report.references,
+        report.sections?.[section.key]
+      ).filter((entry) => entry.citation);
+      if (entries.length) {
+        sections.push({ type: "references", label: section.label, entries });
+      }
+      return;
+    }
     if (section.type === "text") {
       const text = String(report.sections?.[section.key] || "").trim();
       if (text) {
@@ -1492,6 +1650,14 @@ function generateBasicPdfBlob(report) {
       section.parts.forEach((part) => {
         lines.push(part.label);
         lines.push(...wrapPlainText(part.text));
+        lines.push("");
+      });
+      return;
+    }
+    if (section.type === "references") {
+      section.entries.forEach((entry, entryIndex) => {
+        lines.push(...wrapPlainText(`${entryIndex + 1}. ${entry.citation}`));
+        if (entry.url) lines.push(...wrapPlainText(entry.url));
         lines.push("");
       });
       return;
@@ -1623,6 +1789,19 @@ function generatePdfInBrowser(report) {
     y += 4;
   };
 
+  const drawLinkedParagraph = (url, { size = 11, lineHeight = 15 } = {}) => {
+    const lines = doc.setFont("LabReportSerif", "normal").setFontSize(size).splitTextToSize(url, maxTextWidth);
+    lines.forEach((line) => {
+      ensureSpace(lineHeight + 4);
+      doc.setTextColor(8, 108, 108);
+      doc.text(line, margin, y, { baseline: "top" });
+      doc.link(margin, y, Math.min(maxTextWidth, doc.getTextWidth(line)), lineHeight, { url });
+      y += lineHeight;
+    });
+    doc.setTextColor(17, 17, 17);
+    y += 6;
+  };
+
   const measureParagraphHeight = (text, { bold = false, size = 12, lineHeight = 16 } = {}) => {
     const lines = doc
       .setFont("LabReportSerif", bold ? "bold" : "normal")
@@ -1684,6 +1863,14 @@ function generatePdfInBrowser(report) {
 
     if (section.type === "text") {
       return height + measureParagraphHeight(section.text, { size: 12, lineHeight: 17 }) + 12;
+    }
+    if (section.type === "references") {
+      section.entries.forEach((entry, entryIndex) => {
+        height += measureParagraphHeight(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineHeight: 17 });
+        if (entry.url) height += measureParagraphHeight(entry.url, { size: 11, lineHeight: 15 });
+        height += 8;
+      });
+      return height + 6;
     }
     if (section.type === "structuredText") {
       section.parts.forEach((part) => {
@@ -1753,6 +1940,15 @@ function generatePdfInBrowser(report) {
     startSectionOnWholePageWhenPossible(section, index);
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
 
+    if (section.type === "references") {
+      section.entries.forEach((entry, entryIndex) => {
+        drawParagraph(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineHeight: 17 });
+        if (entry.url) drawLinkedParagraph(normalizeReferenceUrl(entry.url));
+        y += 4;
+      });
+      y += 2;
+      return;
+    }
     if (section.type === "text") {
       drawParagraph(section.text, { size: 12, lineHeight: 17 });
       y += 6;
@@ -1852,6 +2048,9 @@ function generatePdfInBrowser(report) {
 }
 
 function attachRestrictions() {
+  const isReferenceLinkField = (target) =>
+    target instanceof HTMLInputElement && target.dataset.allowPaste === "true";
+
   const blockEvent = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -1861,7 +2060,13 @@ function attachRestrictions() {
   };
 
   ["paste", "copy", "cut", "drop", "dragstart"].forEach((eventName) => {
-    document.addEventListener(eventName, blockEvent, true);
+    document.addEventListener(eventName, (event) => {
+      if (eventName === "paste" && isReferenceLinkField(event.target)) {
+        const pastedText = event.clipboardData?.getData("text") || "";
+        if (normalizeReferenceUrl(pastedText)) return;
+      }
+      blockEvent(event);
+    }, true);
   });
 
   document.addEventListener(
@@ -1874,7 +2079,7 @@ function attachRestrictions() {
         "deleteByCut",
         "insertFromPasteAsQuotation"
       ]);
-      if (blockedTypes.has(event.inputType)) {
+      if (blockedTypes.has(event.inputType) && !(isReferenceLinkField(event.target) && String(event.inputType).includes("Paste"))) {
         blockEvent(event);
       }
     },
@@ -1891,6 +2096,9 @@ function attachRestrictions() {
       if (refreshShortcut) {
         return;
       }
+      if (isReferenceLinkField(event.target) && withCommandKey && key === "v") {
+        return;
+      }
       const blockedShortcuts = withCommandKey && ["c", "v", "x", "insert"].includes(key);
       const shiftInsert = event.shiftKey && key === "insert";
       if (blockedShortcuts || shiftInsert) {
@@ -1900,8 +2108,12 @@ function attachRestrictions() {
     true
   );
 
-  document.addEventListener("contextmenu", blockEvent, true);
-  document.addEventListener("selectstart", blockEvent, true);
+  document.addEventListener("contextmenu", (event) => {
+    if (!isReferenceLinkField(event.target)) blockEvent(event);
+  }, true);
+  document.addEventListener("selectstart", (event) => {
+    if (!isReferenceLinkField(event.target)) blockEvent(event);
+  }, true);
 
   document.addEventListener("focusin", (event) => {
     const field = event.target;
@@ -1916,6 +2128,10 @@ function attachRestrictions() {
     if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) || field.readOnly || field.type === "date" || field.type === "file") return;
     const previous = field.dataset.safeTypedValue ?? "";
     const current = field.value;
+    if (isReferenceLinkField(field)) {
+      field.dataset.safeTypedValue = current;
+      return;
+    }
     const insertedCount = Math.max(0, current.length - previous.length);
     const inputType = String(event.inputType || "");
     const prohibitedInput = /insertFromPaste|insertFromDrop|insertFromYank|insertReplacementText/i.test(inputType);
@@ -2288,6 +2504,7 @@ function collectReport() {
     date: elements.date.value,
     time: elements.time.value,
     figures: state.figures,
+    references: normalizeReferenceEntries(state.references),
     setupDiagram: normalizeSingleFigure({
       dataUrl: state.setupDiagram.dataUrl,
       title: elements.experimentalSetupTitle.value,
@@ -2373,9 +2590,14 @@ function applyReportToUI(report) {
   state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
   state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
   state.figures = figures;
+  state.references = normalizeReferenceEntries(
+    normalizedReport.references,
+    sectionInputs.references.value || sectionInputs.dpReferences.value
+  );
   state.setupDiagram = setupDiagram;
   renderExperimentalSetup();
   renderGraphFigures();
+  renderReferenceEntries();
 
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
@@ -2573,6 +2795,14 @@ async function submitFinalReport() {
   }
   if (report.program === "myp" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {
     elements.saveState.textContent = "Upload an image for each graph with a title or description, or remove the unfinished graph.";
+    return;
+  }
+  const invalidReferenceIndex = report.references.findIndex((reference) =>
+    (reference.url && !reference.citation) || (reference.url && !normalizeReferenceUrl(reference.url))
+  );
+  if (invalidReferenceIndex >= 0) {
+    elements.referenceStatus.textContent = `Reference ${invalidReferenceIndex + 1} needs typed citation text and a valid source link.`;
+    document.getElementById(`reference-${invalidReferenceIndex}-citation`)?.focus();
     return;
   }
   if (!report.title || !report.studentName || !report.date || !report.time) {

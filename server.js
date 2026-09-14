@@ -97,7 +97,14 @@ app.use((_req, res, next) => {
 });
 app.use(express.json({ limit: "4mb" }));
 
-const REPORT_LIMITS = Object.freeze({ textLength: 100000, tablesPerSection: 20, rowsPerTable: 300, columnsPerTable: 12 });
+const REPORT_LIMITS = Object.freeze({
+  textLength: 100000,
+  tablesPerSection: 20,
+  rowsPerTable: 300,
+  columnsPerTable: 12,
+  references: 30,
+  referenceUrlLength: 2048
+});
 
 function invalidReport(message, status = 400) {
   const error = new Error(message);
@@ -150,6 +157,45 @@ function cleanNumber(value) {
     return 0;
   }
   return parsed;
+}
+
+function normalizeReferenceUrl(value) {
+  const raw = cleanString(value);
+  if (!raw) return "";
+  if (raw.length > REPORT_LIMITS.referenceUrlLength || /\s/.test(raw)) {
+    throw invalidReport("Each reference link must be a valid web address up to 2,048 characters.");
+  }
+  const candidate = /^[a-z][a-z0-9+.-]*:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const parsed = new URL(candidate);
+    if (!["http:", "https:"].includes(parsed.protocol) || !parsed.hostname) throw new Error("Invalid protocol");
+    return parsed.href;
+  } catch (_error) {
+    throw invalidReport("Each reference link must be a valid http or https web address.");
+  }
+}
+
+function normalizeReferences(value, legacyText = "") {
+  if (Array.isArray(value) && value.length > REPORT_LIMITS.references) {
+    throw invalidReport(`A report supports up to ${REPORT_LIMITS.references} references.`);
+  }
+  let source = Array.isArray(value) ? value : [];
+  if (!source.length && cleanMultiline(legacyText)) {
+    source = cleanMultiline(legacyText).split(/\n+/).map((citation) => ({ citation, url: "" }));
+  }
+  return source
+    .slice(0, REPORT_LIMITS.references)
+    .map((entry) => ({
+      citation: cleanMultiline(entry?.citation),
+      url: normalizeReferenceUrl(entry?.url)
+    }))
+    .filter((entry) => entry.citation || entry.url)
+    .map((entry) => {
+      if (entry.url && !entry.citation) {
+        throw invalidReport("Every reference link must have typed APA 7 reference text.");
+      }
+      return entry;
+    });
 }
 
 function defaultTable() {
@@ -277,6 +323,11 @@ function sanitizeReport(rawReport) {
     }
   });
 
+  const references = normalizeReferences(
+    report.references,
+    sections.references || sections.dpReferences
+  );
+
   return {
     schemaVersion: Math.max(1, Math.floor(cleanNumber(report.schemaVersion) || 1)),
     id: cleanString(report.id) || randomUUID(),
@@ -300,6 +351,7 @@ function sanitizeReport(rawReport) {
     date: cleanString(report.date),
     time: cleanString(report.time),
     figures,
+    references,
     setupDiagram,
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
@@ -472,6 +524,14 @@ function measureSectionHeight(doc, number, section) {
   if (section.type === "text") {
     return height + textHeight(section.value, { size: 12, lineGap: 4 }) + 18;
   }
+  if (section.type === "references") {
+    section.entries.forEach((entry, entryIndex) => {
+      height += textHeight(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineGap: 4 }) + 6;
+      if (entry.url) height += textHeight(entry.url, { size: 11, lineGap: 2 }) + 8;
+      height += 8;
+    });
+    return height + 6;
+  }
   if (section.type === "structuredText") {
     section.parts.forEach((part) => {
       height += textHeight(part.label, { font: "Times-Bold", size: 12 }) + 6;
@@ -635,6 +695,26 @@ function drawStructuredTextSection(doc, number, label, parts) {
   });
 }
 
+function drawReferencesSection(doc, number, label, entries) {
+  drawSectionHeading(doc, number, label);
+  entries.forEach((entry, entryIndex) => {
+    doc
+      .font("Times-Roman")
+      .fontSize(12)
+      .fillColor("#111111")
+      .text(`${entryIndex + 1}. ${entry.citation}`, { align: "left", lineGap: 4 });
+    if (entry.url) {
+      doc.moveDown(0.15);
+      doc
+        .font("Times-Roman")
+        .fontSize(11)
+        .fillColor("#086c6c")
+        .text(entry.url, { link: entry.url, underline: true, lineGap: 2 });
+    }
+    doc.moveDown(0.7);
+  });
+}
+
 function drawDataSection(doc, number, label, notes, sampleCalculations, tables) {
   drawSectionHeading(doc, number, label);
 
@@ -740,6 +820,13 @@ function buildSectionsForPdf(report) {
       }
       return;
     }
+    if (["references", "dpReferences"].includes(section.key)) {
+      const entries = normalizeReferences(report.references, report.sections[section.key]);
+      if (entries.length) {
+        ordered.push({ type: "references", label: section.label, entries });
+      }
+      return;
+    }
     if (section.type === "text") {
       const text = cleanMultiline(report.sections[section.key]);
       if (text.length > 0) {
@@ -806,6 +893,8 @@ function generatePdf(report) {
         startSectionOnWholePageWhenPossible(doc, number, section);
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
+        } else if (section.type === "references") {
+          drawReferencesSection(doc, number, section.label, section.entries);
         } else if (section.type === "structuredText") {
           drawStructuredTextSection(doc, number, section.label, section.parts);
         } else {
