@@ -339,7 +339,7 @@ function sanitizeReport(rawReport) {
     }
     if (section.type === "text") {
       sections[section.key] = ["materials", "dpMaterials"].includes(section.key)
-        ? LabFigures.numberedMaterials(cleanMultiline(report.sections?.[section.key]))
+        ? LabFigures.bulletedMaterials(cleanMultiline(report.sections?.[section.key]))
         : cleanMultiline(report.sections?.[section.key]);
       return;
     }

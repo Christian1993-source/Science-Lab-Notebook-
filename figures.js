@@ -35,12 +35,12 @@
     }));
     return customHeader || data;
   }
-  function numberedMaterials(value) {
+  function bulletedMaterials(value) {
     return String(value || "").split(/\r?\n/)
       .map(line => line.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "").trim())
-      .filter(Boolean).map((line, index) => `${index + 1}. ${line}`).join("\n");
+      .filter(Boolean).map(line => `• ${line}`).join("\n");
   }
-  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize, hasTableContent, numberedMaterials };
+  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize, hasTableContent, bulletedMaterials };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.LabFigures = api;
 })(typeof window !== "undefined" ? window : this);

@@ -1025,7 +1025,7 @@ function attachInputListeners() {
     };
     field.addEventListener("focus", () => {
       if (state.status === "Submitted") return;
-      if (!field.value.trim()) update("1. ");
+      if (!field.value.trim()) update("• ");
     });
     field.addEventListener("keydown", event => {
       if (event.key !== "Enter" || event.isComposing || state.status === "Submitted") return;
@@ -1034,15 +1034,15 @@ function attachInputListeners() {
       const end = field.selectionEnd;
       const before = field.value.slice(0, start);
       const currentLine = before.slice(before.lastIndexOf("\n") + 1);
-      if (!currentLine.replace(/^\s*\d+[.)]\s*/, "").trim()) return;
+      if (!currentLine.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "").trim()) return;
       const nextLine = before.split("\n").length;
       const lines = (before + "\n" + field.value.slice(end)).split("\n");
-      const numbered = lines.map((line, index) => `${index + 1}. ${line.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "")}`);
-      const caret = numbered.slice(0, nextLine).join("\n").length + 1 + `${nextLine + 1}. `.length;
-      update(numbered.join("\n"), caret);
+      const bulleted = lines.map(line => `• ${line.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "")}`);
+      const caret = bulleted.slice(0, nextLine).join("\n").length + 1 + "• ".length;
+      update(bulleted.join("\n"), caret);
     });
     field.addEventListener("blur", () => {
-      if (state.status !== "Submitted") update(LabFigures.numberedMaterials(field.value));
+      if (state.status !== "Submitted") update(LabFigures.bulletedMaterials(field.value));
     });
   });
   const standardInputs = [elements.title, elements.teacher, elements.studentName, elements.date, elements.classCode, ...Object.values(sectionInputs)];
@@ -2735,7 +2735,7 @@ function collectReport() {
   const sections = {};
   sectionKeys.forEach((sectionKey) => {
     sections[sectionKey] = ["materials", "dpMaterials"].includes(sectionKey)
-      ? LabFigures.numberedMaterials(sectionInputs[sectionKey].value)
+      ? LabFigures.bulletedMaterials(sectionInputs[sectionKey].value)
       : sectionInputs[sectionKey].value.trim();
   });
 
@@ -2824,7 +2824,7 @@ function applyReportToUI(report) {
   sectionKeys.forEach((sectionKey) => {
     sectionInputs[sectionKey].value = normalizedReport.sections?.[sectionKey] || "";
     if (["materials", "dpMaterials"].includes(sectionKey)) {
-      sectionInputs[sectionKey].value = LabFigures.numberedMaterials(sectionInputs[sectionKey].value);
+      sectionInputs[sectionKey].value = LabFigures.bulletedMaterials(sectionInputs[sectionKey].value);
     }
   });
   if (!sectionInputs.backgroundPurpose.value && !sectionInputs.backgroundScience.value && sectionInputs.backgroundInformation.value) {
