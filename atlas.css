@@ -236,6 +236,10 @@ input:focus, textarea:focus {
 .diagram-upload-card { margin-bottom: 0; }
 .diagram-upload-card #experimentalSetupStatus { margin-top: 12px; }
 .diagram-upload-card #experimentalSetupStatus:empty { display: none; }
+.calculation-upload-card { margin: 16px 0 28px; }
+.calculation-upload-card > p:first-child { margin: 0 0 18px; color: #526b68; font: 0.9rem/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.calculation-upload-card > p[role="status"] { margin: 12px 0 0; }
+.calculation-upload-card > p[role="status"]:empty { display: none; }
 .table-set-controls button, .table-remove-btn, .table-controls button, .row-delete, .col-delete {
   border-color: #acc7c1;
   background: #edf6f3;

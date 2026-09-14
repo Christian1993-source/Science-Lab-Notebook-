@@ -303,15 +303,26 @@ function sanitizeReport(rawReport) {
   const report = rawReport && typeof rawReport === "object" ? rawReport : {};
   let figures;
   let setupDiagram;
+  let sampleCalculationImages;
   try {
     figures = LabFigures.normalize(report.figures);
     setupDiagram = LabFigures.normalize(report.setupDiagram && typeof report.setupDiagram === "object" ? [report.setupDiagram] : [])[0]
       || { dataUrl: "", title: "", description: "" };
+    const calculationSource = report.sampleCalculationImages && typeof report.sampleCalculationImages === "object"
+      ? report.sampleCalculationImages
+      : {};
+    sampleCalculationImages = Object.fromEntries(
+      ["processedData", "dpProcessedData"].map((key) => [
+        key,
+        LabFigures.normalize(calculationSource[key] && typeof calculationSource[key] === "object" ? [calculationSource[key]] : [])[0]
+          || { dataUrl: "", title: "", description: "" }
+      ])
+    );
     const probe = new PDFDocument({ autoFirstPage: false });
-    for (const figure of [...figures, setupDiagram]) {
+    for (const figure of [...figures, setupDiagram, ...Object.values(sampleCalculationImages)]) {
       if (!figure.dataUrl) continue;
       const image = probe.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
-      if (!image.width || !image.height || image.width * image.height > 4000000) throw new Error("Graph dimensions are too large.");
+      if (!image.width || !image.height || image.width * image.height > 4000000) throw new Error("Uploaded image dimensions are too large.");
     }
     probe.end();
   } catch (_error) {
@@ -386,6 +397,7 @@ function sanitizeReport(rawReport) {
     references,
     controlledVariables,
     setupDiagram,
+    sampleCalculationImages,
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
     status: report.status === "Submitted" ? "Submitted" : "Draft",
@@ -546,6 +558,15 @@ function measureTableGridHeight(doc, table) {
   return getRowHeight(headers, true) + dataRows.reduce((total, row) => total + getRowHeight(row, false), 0) + 12;
 }
 
+function measureCalculationImageHeight(doc, figure) {
+  if (!figure?.dataUrl) return 0;
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+  const scale = Math.min(width / image.width, 300 / image.height);
+  doc.font("Times-Bold").fontSize(12);
+  return doc.heightOfString("Handwritten Sample Calculations", { width }) + image.height * scale + 30;
+}
+
 function measureSectionHeight(doc, number, section) {
   const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
   const textHeight = (text, { font = "Times-Roman", size = 12, lineGap = 0 } = {}) => {
@@ -591,6 +612,7 @@ function measureSectionHeight(doc, number, section) {
     height += textHeight("Sample Calculations", { font: "Times-Bold", size: 12 }) + 6;
     height += textHeight(section.sampleCalculations, { size: 12, lineGap: 4 }) + 12;
   }
+  height += measureCalculationImageHeight(doc, section.calculationImage);
 
   const contentTables = normalizeTableList(section.tables).filter((table) => tableHasContent(table));
   contentTables.forEach((table) => {
@@ -633,7 +655,7 @@ function startSectionWithContent(doc, number, section) {
     );
   } else if (!["text", "variables", "references", "structuredText"].includes(section.type)) {
     const contentTables = normalizeTableList(section.tables).filter((table) => tableHasContent(table));
-    const hasLeadingText = Boolean(section.notes || section.sampleCalculations);
+    const hasLeadingText = Boolean(section.notes || section.sampleCalculations || section.calculationImage?.dataUrl);
     if (!hasLeadingText && contentTables.length) {
       const firstTable = contentTables[0];
       const tableLabelsHeight = (firstTable.title ? 24 : 0) + (contentTables.length > 1 ? 24 : 0);
@@ -646,6 +668,8 @@ function startSectionWithContent(doc, number, section) {
       doc.font("Times-Bold").fontSize(12);
       const title = `Figure 1${figure.title ? `. ${figure.title}` : ""}`;
       openingHeight = headingHeight + doc.heightOfString(title, { width }) + image.height * scale + 36;
+    } else if (!section.notes && !section.sampleCalculations && section.calculationImage?.dataUrl) {
+      openingHeight = headingHeight + measureCalculationImageHeight(doc, section.calculationImage);
     }
   }
 
@@ -809,7 +833,7 @@ function drawReferencesSection(doc, number, label, entries) {
   });
 }
 
-function drawDataSection(doc, number, label, notes, sampleCalculations, tables) {
+function drawDataSection(doc, number, label, notes, sampleCalculations, calculationImage, tables) {
   drawSectionHeading(doc, number, label);
 
   if (notes) {
@@ -831,6 +855,20 @@ function drawDataSection(doc, number, label, notes, sampleCalculations, tables) 
       .fillColor("#111111")
       .text(sampleCalculations, { align: "justify", lineGap: 4 });
     doc.moveDown(0.5);
+  }
+
+  if (calculationImage?.dataUrl) {
+    const image = doc.openImage(Buffer.from(calculationImage.dataUrl.split(",")[1], "base64"));
+    const widthLimit = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+    const scale = Math.min(widthLimit / image.width, 300 / image.height);
+    const width = image.width * scale;
+    const height = image.height * scale;
+    ensurePageSpace(doc, measureCalculationImageHeight(doc, calculationImage));
+    doc.font("Times-Bold").fontSize(12).fillColor("#124232").text("Handwritten Sample Calculations");
+    doc.moveDown(0.35);
+    const imageY = doc.y;
+    doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
+    doc.y = imageY + height + 12;
   }
 
   const contentTables = normalizeTableList(tables).filter((table) => tableHasContent(table));
@@ -940,8 +978,10 @@ function buildSectionsForPdf(report) {
       const sampleCalculations = cleanMultiline(report.sections[section.sampleCalculationsKey]);
       const tables = normalizeTableList(report.tables?.[section.key]);
       const figures = section.key === "processedData" ? (report.figures || []).filter(figure => figure.dataUrl) : [];
-      if (notes.length > 0 || sampleCalculations.length > 0 || tableListHasContent(tables) || figures.length) {
-        ordered.push({ type: "data", label: section.label, notes, sampleCalculations, tables, figures });
+      const calculationImage = report.sampleCalculationImages?.[section.key]
+        || { dataUrl: "", title: "", description: "" };
+      if (notes.length > 0 || sampleCalculations.length > 0 || calculationImage.dataUrl || tableListHasContent(tables) || figures.length) {
+        ordered.push({ type: "data", label: section.label, notes, sampleCalculations, calculationImage, tables, figures });
       }
     }
   });
@@ -1006,6 +1046,7 @@ function generatePdf(report) {
             section.label,
             section.notes,
             section.sampleCalculations,
+            section.calculationImage,
             section.tables
           );
           (section.figures || []).forEach((figure, figureIndex) => {

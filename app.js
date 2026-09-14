@@ -170,6 +170,10 @@ const state = {
   references: defaultReferenceEntries(),
   controlledVariables: defaultControlledVariables(),
   setupDiagram: { dataUrl: "", title: "", description: "" },
+  sampleCalculationImages: {
+    processedData: { dataUrl: "", title: "", description: "" },
+    dpProcessedData: { dataUrl: "", title: "", description: "" }
+  },
   imageUploadPending: false,
   tables: {
     rawData: defaultTableList("rawData"),
@@ -281,6 +285,20 @@ function init() {
       queueIdleSave();
     });
   });
+  document.querySelectorAll("[data-calculation-image-input]").forEach((input) => {
+    input.addEventListener("change", uploadSampleCalculationImage);
+  });
+  document.querySelectorAll("[data-remove-calculation-image]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.removeCalculationImage;
+      if (state.status === "Submitted" || state.imageUploadPending || !state.sampleCalculationImages[key]) return;
+      state.sampleCalculationImages[key] = { dataUrl: "", title: "", description: "" };
+      renderSampleCalculationImages();
+      persistLocalBackup();
+      queueIdleSave();
+      document.querySelector(`[data-calculation-image-status="${key}"]`).textContent = "Handwritten calculations image removed.";
+    });
+  });
   document.getElementById("addGraph").addEventListener("click", () => {
     if (state.status === "Submitted" || state.imageUploadPending) return;
     if (state.figures.length >= LabFigures.MAX_COUNT) {
@@ -352,6 +370,8 @@ function clearLegacyExampleDraft() {
   state.blockedAttempts = 0;
   state.references = defaultReferenceEntries();
   state.controlledVariables = defaultControlledVariables();
+  state.setupDiagram = { dataUrl: "", title: "", description: "" };
+  state.sampleCalculationImages = normalizeSampleCalculationImages();
   state.tables = {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData"),
@@ -371,7 +391,7 @@ function generateId() {
   return `report-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-async function prepareGraphImage(file) {
+async function prepareUploadedImage(file) {
   if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
     throw new Error("Choose PNG, JPG or WebP images up to 8 MB each.");
   }
@@ -385,7 +405,7 @@ async function prepareGraphImage(file) {
     image.src = url;
     await image.decode();
     if (!image.naturalWidth || image.naturalWidth * image.naturalHeight > 40000000) {
-      throw new Error("This image is too large. Export a smaller graph from your software.");
+      throw new Error("This image is too large. Choose a smaller image.");
     }
     const canvas = document.createElement("canvas");
     const scale = Math.min(1, 1800 / Math.max(image.naturalWidth, image.naturalHeight));
@@ -408,6 +428,14 @@ function normalizeSingleFigure(value) {
     || { dataUrl: "", title: "", description: "" };
 }
 
+function normalizeSampleCalculationImages(value) {
+  const source = value && typeof value === "object" ? value : {};
+  return {
+    processedData: normalizeSingleFigure(source.processedData),
+    dpProcessedData: normalizeSingleFigure(source.dpProcessedData)
+  };
+}
+
 async function uploadExperimentalSetupImage(event) {
   const input = event.target;
   if (state.status === "Submitted" || state.imageUploadPending || !input.files?.length) return;
@@ -416,7 +444,7 @@ async function uploadExperimentalSetupImage(event) {
   input.disabled = true;
   elements.experimentalSetupStatus.textContent = "Preparing diagram image…";
   try {
-    const prepared = await prepareGraphImage(input.files[0]);
+    const prepared = await prepareUploadedImage(input.files[0]);
     if (reportId !== state.reportId || state.status === "Submitted") return;
     const candidate = normalizeSingleFigure({
       dataUrl: prepared.dataUrl,
@@ -458,6 +486,61 @@ function renderExperimentalSetup() {
   elements.removeExperimentalSetupImage.disabled = state.status === "Submitted" || !diagram.dataUrl;
 }
 
+async function uploadSampleCalculationImage(event) {
+  const input = event.target;
+  const key = input.dataset.calculationImageInput;
+  const status = document.querySelector(`[data-calculation-image-status="${key}"]`);
+  if (!state.sampleCalculationImages[key] || state.status === "Submitted" || state.imageUploadPending || !input.files?.length) return;
+  const reportId = state.reportId;
+  state.imageUploadPending = true;
+  input.disabled = true;
+  status.textContent = "Preparing handwritten calculations image…";
+  try {
+    const prepared = await prepareUploadedImage(input.files[0]);
+    if (reportId !== state.reportId || state.status === "Submitted") return;
+    const candidate = normalizeSingleFigure({
+      dataUrl: prepared.dataUrl,
+      title: "Handwritten Sample Calculations",
+      description: ""
+    });
+    const nextImages = { ...state.sampleCalculationImages, [key]: candidate };
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+      ...collectReport(),
+      sampleCalculationImages: nextImages
+    }));
+    state.sampleCalculationImages = nextImages;
+    renderSampleCalculationImages();
+    queueIdleSave();
+    status.textContent = "Handwritten calculations image saved with your draft.";
+  } catch (error) {
+    if (reportId !== state.reportId) return;
+    status.textContent = error.name === "QuotaExceededError"
+      ? "Browser storage is full. The existing image is unchanged. Try a smaller image."
+      : error.message || "The handwritten calculations image could not be opened.";
+  } finally {
+    if (reportId !== state.reportId) return;
+    input.value = "";
+    state.imageUploadPending = false;
+    input.disabled = state.status === "Submitted";
+  }
+}
+
+function renderSampleCalculationImages() {
+  ["processedData", "dpProcessedData"].forEach((key) => {
+    const image = normalizeSingleFigure(state.sampleCalculationImages[key]);
+    state.sampleCalculationImages[key] = image;
+    const preview = document.querySelector(`[data-calculation-image-preview="${key}"]`);
+    const removeButton = document.querySelector(`[data-remove-calculation-image="${key}"]`);
+    if (image.dataUrl) {
+      preview.src = image.dataUrl;
+    } else {
+      preview.removeAttribute("src");
+    }
+    preview.hidden = !image.dataUrl;
+    removeButton.disabled = state.status === "Submitted" || !image.dataUrl;
+  });
+}
+
 async function uploadGraphImages(event) {
   const input = event.target;
   if (state.status === "Submitted" || state.imageUploadPending) return;
@@ -471,7 +554,7 @@ async function uploadGraphImages(event) {
   try {
     const index = Number(input.dataset.figureIndex);
     const target = state.figures[index];
-    const added = await prepareGraphImage(files[0]);
+    const added = await prepareUploadedImage(files[0]);
     if (reportId !== state.reportId || state.status === "Submitted") return;
     if (state.figures[index] !== target) return;
     const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
@@ -1590,6 +1673,7 @@ function resetAllReport({
   state.pendingSave = false;
   state.imageUploadPending = false;
   state.setupDiagram = { dataUrl: "", title: "", description: "" };
+  state.sampleCalculationImages = normalizeSampleCalculationImages();
   state.references = defaultReferenceEntries();
   state.controlledVariables = defaultControlledVariables();
   state.activeSections = createDefaultActiveSections();
@@ -1620,6 +1704,7 @@ function resetAllReport({
     date: "",
     status: "Draft",
     setupDiagram: state.setupDiagram,
+    sampleCalculationImages: state.sampleCalculationImages,
     references: state.references,
     controlledVariables: state.controlledVariables,
     sections: {},
@@ -1743,13 +1828,15 @@ function buildPrintableSections(report) {
     const tableList = normalizeTableList(report.tables?.[section.key], section.key);
     const contentTables = tableList.filter((table) => tableHasContent(table, section.key));
     const figures = section.key === "processedData" ? LabFigures.normalize(report.figures).filter(figure => figure.dataUrl) : [];
-    if (notes || sampleCalculations || contentTables.length > 0 || figures.length) {
+    const calculationImage = normalizeSingleFigure(report.sampleCalculationImages?.[section.key]);
+    if (notes || sampleCalculations || calculationImage.dataUrl || contentTables.length > 0 || figures.length) {
       sections.push({
         type: "data",
         tableKey: section.key,
         label: section.label,
         notes,
         sampleCalculations,
+        calculationImage,
         tables: contentTables,
         figures
       });
@@ -1843,6 +1930,9 @@ function generateBasicPdfBlob(report) {
     }
     if (section.sampleCalculations) {
       lines.push(...wrapPlainText(`Sample Calculations: ${section.sampleCalculations}`));
+    }
+    if (section.calculationImage?.dataUrl) {
+      lines.push("Handwritten Sample Calculations: image included in the full PDF renderer.");
     }
 
     const tables = Array.isArray(section.tables) ? section.tables : [];
@@ -2020,6 +2110,17 @@ function generatePdfInBrowser(report) {
     return height;
   };
 
+  const measureCalculationImageHeight = (figure) => {
+    if (!figure?.dataUrl) return 0;
+    const properties = doc.getImageProperties(figure.dataUrl);
+    const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+    return measureParagraphHeight("Handwritten Sample Calculations", {
+      bold: true,
+      size: 12,
+      lineHeight: 16
+    }) + properties.height * scale + 18;
+  };
+
   const measureSectionHeight = (section, index) => {
     let height = measureParagraphHeight(`${index + 1}. ${section.label}`, {
       bold: true,
@@ -2064,6 +2165,7 @@ function generatePdfInBrowser(report) {
       height += measureParagraphHeight("Sample Calculations", { bold: true, size: 12, lineHeight: 16 });
       height += measureParagraphHeight(section.sampleCalculations, { size: 12, lineHeight: 17 }) + 4;
     }
+    height += measureCalculationImageHeight(section.calculationImage);
 
     const sectionTables = Array.isArray(section.tables) ? section.tables : [];
     sectionTables.forEach((table) => {
@@ -2099,11 +2201,13 @@ function generatePdfInBrowser(report) {
         + measureTableHeight(section.controlledVariablesTable, false);
     } else if (!["text", "variables", "references", "structuredText"].includes(section.type)) {
       const sectionTables = Array.isArray(section.tables) ? section.tables : [];
-      const hasLeadingText = Boolean(section.notes || section.sampleCalculations);
+      const hasLeadingText = Boolean(section.notes || section.sampleCalculations || section.calculationImage?.dataUrl);
       if (!hasLeadingText && sectionTables.length) {
         openingHeight = headingHeight + measureTableHeight(sectionTables[0], sectionTables.length > 1);
       } else if (!hasLeadingText && !sectionTables.length && section.figures?.length) {
         openingHeight = headingHeight + measureFigureHeight(section.figures[0], 0);
+      } else if (!section.notes && !section.sampleCalculations && section.calculationImage?.dataUrl) {
+        openingHeight = headingHeight + measureCalculationImageHeight(section.calculationImage);
       }
     }
 
@@ -2224,6 +2328,25 @@ function generatePdfInBrowser(report) {
       drawParagraph("Sample Calculations", { bold: true, size: 12, lineHeight: 16 });
       drawParagraph(section.sampleCalculations, { size: 12, lineHeight: 17 });
       y += 4;
+    }
+
+    if (section.calculationImage?.dataUrl) {
+      const properties = doc.getImageProperties(section.calculationImage.dataUrl);
+      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+      const width = properties.width * scale;
+      const height = properties.height * scale;
+      const blockHeight = measureCalculationImageHeight(section.calculationImage);
+      ensureWholeBlockFitsPage(blockHeight, "The handwritten calculations image");
+      drawParagraph("Handwritten Sample Calculations", { bold: true, size: 12, lineHeight: 16 });
+      doc.addImage(
+        section.calculationImage.dataUrl,
+        properties.fileType,
+        (pageWidth - width) / 2,
+        y,
+        width,
+        height
+      );
+      y += height + 14;
     }
 
     const sectionTables = Array.isArray(section.tables) ? section.tables : [];
@@ -2762,6 +2885,7 @@ function collectReport() {
       title: elements.experimentalSetupTitle.value,
       description: elements.experimentalSetupDescription.value
     }),
+    sampleCalculationImages: normalizeSampleCalculationImages(state.sampleCalculationImages),
     startedAt: state.startedAt,
     timeSpentSeconds: getTimeSpentSeconds(),
     status: state.status,
@@ -2779,6 +2903,7 @@ function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
   const figures = LabFigures.normalize(normalizedReport.figures);
   const setupDiagram = normalizeSingleFigure(normalizedReport.setupDiagram);
+  const sampleCalculationImages = normalizeSampleCalculationImages(normalizedReport.sampleCalculationImages);
 
   if (normalizedReport.id) {
     state.reportId = normalizedReport.id;
@@ -2851,7 +2976,9 @@ function applyReportToUI(report) {
     sectionInputs.controlledVariables.value
   );
   state.setupDiagram = setupDiagram;
+  state.sampleCalculationImages = sampleCalculationImages;
   renderExperimentalSetup();
+  renderSampleCalculationImages();
   renderGraphFigures();
   renderReferenceEntries();
   renderControlledVariables();
@@ -3033,7 +3160,7 @@ async function saveDraft(trigger) {
 
 async function submitFinalReport() {
   if (state.imageUploadPending) {
-    elements.saveState.textContent = "Wait for your graph images to finish uploading.";
+    elements.saveState.textContent = "Wait for your images to finish uploading.";
     return;
   }
   if (state.status === "Submitted") {

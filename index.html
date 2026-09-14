@@ -8,13 +8,13 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260914-control-explanation-1" />
+    <meta name="notebook-release" content="20260914-handwritten-calculations-1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
     <link rel="mask-icon" href="safari-pinned-tab.svg?v=20260914-chemistry-favicon-1" color="#0f8f8d" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260914-control-explanation-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260914-handwritten-calculations-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -203,6 +203,14 @@
             <textarea id="section-processedDataNotes" class="data-notes"></textarea>
             <label for="section-processedDataSampleCalculations">Sample Calculations</label>
             <textarea id="section-processedDataSampleCalculations" class="data-notes"></textarea>
+            <div class="graph-figure calculation-upload-card" data-calculation-image-key="processedData">
+              <p>Upload a clear photo of sample calculations completed by hand in pen.</p>
+              <label for="processedDataCalculationImage">Upload handwritten calculations image</label>
+              <input id="processedDataCalculationImage" type="file" accept="image/png,image/jpeg,image/webp" data-calculation-image-input="processedData" />
+              <img id="processedDataCalculationPreview" alt="Handwritten sample calculations preview" data-calculation-image-preview="processedData" hidden />
+              <button type="button" class="btn btn-secondary" data-remove-calculation-image="processedData">Remove image</button>
+              <p class="meta" role="status" aria-live="polite" data-calculation-image-status="processedData"></p>
+            </div>
             <div id="processedDataEditor" class="table-editor"></div>
             <section class="graph-upload-panel" aria-labelledby="graphUploadHeading">
               <h3 id="graphUploadHeading">Graphs &amp; Figures</h3>
@@ -297,6 +305,14 @@
             <textarea id="section-dpProcessedDataNotes" class="data-notes"></textarea>
             <label for="section-dpProcessedDataSampleCalculations">Sample Calculations</label>
             <textarea id="section-dpProcessedDataSampleCalculations" class="data-notes"></textarea>
+            <div class="graph-figure calculation-upload-card" data-calculation-image-key="dpProcessedData">
+              <p>Upload a clear photo of sample calculations completed by hand in pen.</p>
+              <label for="dpProcessedDataCalculationImage">Upload handwritten calculations image</label>
+              <input id="dpProcessedDataCalculationImage" type="file" accept="image/png,image/jpeg,image/webp" data-calculation-image-input="dpProcessedData" />
+              <img id="dpProcessedDataCalculationPreview" alt="Handwritten sample calculations preview" data-calculation-image-preview="dpProcessedData" hidden />
+              <button type="button" class="btn btn-secondary" data-remove-calculation-image="dpProcessedData">Remove image</button>
+              <p class="meta" role="status" aria-live="polite" data-calculation-image-status="dpProcessedData"></p>
+            </div>
             <div id="dpProcessedDataEditor" class="table-editor"></div>
             <div class="dp-graph-workspace">
               <h3>Graphing Workspace</h3>
@@ -341,6 +357,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260914-control-explanation-1"></script>
+    <script src="loader.js?v=20260914-handwritten-calculations-1"></script>
   </body>
 </html>
