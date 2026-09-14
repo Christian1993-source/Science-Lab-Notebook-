@@ -1370,7 +1370,11 @@ function buildPrintableSections(report) {
         parts.push({ label: labels.backgroundPurpose, text: legacyText });
       }
       if (parts.length) {
-        sections.push({ type: "structuredText", label: section.label, parts });
+        sections.push({
+          type: "text",
+          label: section.label,
+          text: parts.map((part) => part.text).join("\n\n")
+        });
       }
       return;
     }

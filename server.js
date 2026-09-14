@@ -682,7 +682,11 @@ function buildSectionsForPdf(report) {
         parts.push({ label: labels.backgroundPurpose, value: legacyValue });
       }
       if (parts.length) {
-        ordered.push({ type: "structuredText", label: section.label, parts });
+        ordered.push({
+          type: "text",
+          label: section.label,
+          value: parts.map((part) => part.value).join("\n\n")
+        });
       }
       return;
     }
