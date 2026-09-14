@@ -1,4 +1,5 @@
 const STORAGE_KEY = "libretaLaboratorio.draft";
+const SESSION_STORAGE_KEY = "libretaLaboratorio.currentSession";
 const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const PROGRAM_KEY = "libretaLaboratorio.program";
@@ -392,7 +393,7 @@ async function uploadExperimentalSetupImage(event) {
       title: elements.experimentalSetupTitle.value,
       description: elements.experimentalSetupDescription.value
     });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...collectReport(), setupDiagram: candidate }));
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ ...collectReport(), setupDiagram: candidate }));
     state.setupDiagram = candidate;
     renderExperimentalSetup();
     queueIdleSave();
@@ -445,7 +446,7 @@ async function uploadGraphImages(event) {
     if (state.figures[index] !== target) return;
     const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
     // Check available draft storage before replacing the current figures.
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...collectReport(), figures: candidate }));
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ ...collectReport(), figures: candidate }));
     // Keep the existing fields and their listeners while the student is typing.
     target.dataUrl = added.dataUrl;
     const preview = input.parentElement.querySelector("img");
@@ -1271,6 +1272,7 @@ function getPhysicsExampleReport() {
 
 function resetAllReport({
   requireConfirmation = true,
+  clearSavedDraft = requireConfirmation,
   restartTimer = true,
   statusMessage = "Report reset. You can start a new draft."
 } = {}) {
@@ -1305,7 +1307,10 @@ function resetAllReport({
     dpProcessedData: defaultTableList("dpProcessedData")
   };
 
-  localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  if (clearSavedDraft) {
+    localStorage.removeItem(STORAGE_KEY);
+  }
   localStorage.setItem(REPORT_ID_KEY, state.reportId);
   localStorage.setItem(REPORT_TOKEN_KEY, state.reportToken);
   localStorage.setItem(REPORT_STARTED_AT_KEY, String(state.startedAt));
@@ -2385,11 +2390,21 @@ function applyReportToUI(report) {
 
 function persistLocalBackup() {
   try {
-  localStorage.setItem(REPORT_ID_KEY, state.reportId);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(collectReport()));
-  return true;
+    localStorage.setItem(REPORT_ID_KEY, state.reportId);
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(collectReport()));
+    return true;
   } catch (_error) {
-    elements.saveState.textContent = "Draft could not be saved in this browser. Storage may be full; keep this page open.";
+    elements.saveState.textContent = "The current session backup could not be updated. Keep this page open or use Save Draft.";
+    return false;
+  }
+}
+
+function persistSavedDraft(report) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(report));
+    return true;
+  } catch (_error) {
+    elements.saveState.textContent = "Draft could not be saved on this device. Browser storage may be full.";
     return false;
   }
 }
@@ -2479,6 +2494,7 @@ async function saveDraft(trigger) {
 
   if (!persistLocalBackup()) return;
   const report = collectReport();
+  if (trigger === "manual" && !persistSavedDraft(report)) return;
   state.isSaving = true;
 
   if (trigger === "manual") {
