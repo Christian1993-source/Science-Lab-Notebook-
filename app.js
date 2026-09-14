@@ -190,6 +190,7 @@ const elements = {
   resetBtn: document.getElementById("resetBtn"),
   saveDraftBtn: document.getElementById("saveDraftBtn"),
   loadSavedDraftBtn: document.getElementById("loadSavedDraftBtn"),
+  loadPhysicsExampleBtn: document.getElementById("loadPhysicsExampleBtn"),
   submitBtn: document.getElementById("submitBtn"),
   saveState: document.getElementById("saveState"),
   statusBadge: document.getElementById("documentStatus"),
@@ -793,6 +794,15 @@ function attachInputListeners() {
     });
   }
 
+  elements.loadPhysicsExampleBtn.addEventListener("click", () => {
+    if (!window.confirm("Load the complete physics example? This will replace all information currently entered in the notebook.")) {
+      return;
+    }
+    applyReportToUI(getPhysicsExampleReport());
+    persistLocalBackup();
+    elements.saveState.textContent = "Complete physics example loaded. You can review, edit, or download it.";
+  });
+
   elements.resetBtn.addEventListener("click", () => {
     resetAllReport();
   });
@@ -992,6 +1002,252 @@ function getChemistryExampleReport() {
           ["Mean", "Unknown Solid", "8.80", "0.02", "1.70", "0.95"]
         ]
       }
+    }
+  };
+}
+
+function createPhysicsExampleImages() {
+  const makeCanvas = (width, height, draw) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, width, height);
+    draw(context, width, height);
+    return canvas.toDataURL("image/png");
+  };
+
+  const diagram = makeCanvas(900, 560, (context) => {
+    context.strokeStyle = "#143b2f";
+    context.fillStyle = "#143b2f";
+    context.lineWidth = 8;
+    context.lineCap = "round";
+    context.beginPath();
+    context.moveTo(170, 485);
+    context.lineTo(730, 485);
+    context.moveTo(260, 485);
+    context.lineTo(260, 90);
+    context.moveTo(210, 90);
+    context.lineTo(650, 90);
+    context.stroke();
+
+    const pivotX = 520;
+    const pivotY = 90;
+    const bobX = 625;
+    const bobY = 390;
+    context.fillStyle = "#0f8f8c";
+    context.beginPath();
+    context.arc(pivotX, pivotY, 13, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = "#1f2937";
+    context.lineWidth = 5;
+    context.beginPath();
+    context.moveTo(pivotX, pivotY + 10);
+    context.lineTo(bobX, bobY - 24);
+    context.stroke();
+    context.fillStyle = "#b53b3b";
+    context.beginPath();
+    context.arc(bobX, bobY, 30, 0, Math.PI * 2);
+    context.fill();
+
+    context.setLineDash([10, 10]);
+    context.strokeStyle = "#7b8790";
+    context.lineWidth = 3;
+    context.beginPath();
+    context.moveTo(pivotX, pivotY + 15);
+    context.lineTo(pivotX, 430);
+    context.stroke();
+    context.setLineDash([]);
+
+    context.strokeStyle = "#0f8f8c";
+    context.lineWidth = 5;
+    context.strokeRect(690, 325, 70, 100);
+    context.beginPath();
+    context.moveTo(725, 425);
+    context.lineTo(725, 485);
+    context.stroke();
+
+    context.fillStyle = "#143b2f";
+    context.font = "bold 28px Arial";
+    context.fillText("Clamp stand", 75, 70);
+    context.fillText("Pivot", 545, 78);
+    context.fillText("String length, L", 555, 240);
+    context.fillText("50 g bob", 650, 390);
+    context.fillText("Photogate", 680, 310);
+    context.font = "24px Arial";
+    context.fillText("Release angle = 10°", 300, 455);
+  });
+
+  const graph = makeCanvas(900, 560, (context, width, height) => {
+    const left = 110;
+    const right = width - 60;
+    const top = 55;
+    const bottom = height - 90;
+    const plotWidth = right - left;
+    const plotHeight = bottom - top;
+    const points = [[0.2, 0.81], [0.4, 1.61], [0.6, 2.42], [0.8, 3.22], [1.0, 4.03]];
+    const xPosition = (value) => left + value * plotWidth;
+    const yPosition = (value) => bottom - (value / 4.2) * plotHeight;
+
+    context.strokeStyle = "#d5ded9";
+    context.lineWidth = 2;
+    context.font = "20px Arial";
+    context.fillStyle = "#374151";
+    context.textAlign = "center";
+    for (let index = 0; index <= 5; index += 1) {
+      const xValue = index * 0.2;
+      const x = xPosition(xValue);
+      context.beginPath();
+      context.moveTo(x, top);
+      context.lineTo(x, bottom);
+      context.stroke();
+      context.fillText(xValue.toFixed(1), x, bottom + 30);
+    }
+    context.textAlign = "right";
+    for (let index = 0; index <= 4; index += 1) {
+      const y = yPosition(index);
+      context.beginPath();
+      context.moveTo(left, y);
+      context.lineTo(right, y);
+      context.stroke();
+      context.fillText(String(index), left - 18, y + 7);
+    }
+
+    context.strokeStyle = "#143b2f";
+    context.lineWidth = 5;
+    context.beginPath();
+    context.moveTo(left, top);
+    context.lineTo(left, bottom);
+    context.lineTo(right, bottom);
+    context.stroke();
+
+    context.strokeStyle = "#b53b3b";
+    context.lineWidth = 5;
+    context.beginPath();
+    context.moveTo(xPosition(0), yPosition(0));
+    context.lineTo(xPosition(1), yPosition(4.03));
+    context.stroke();
+
+    context.fillStyle = "#0f8f8c";
+    points.forEach(([xValue, yValue]) => {
+      context.beginPath();
+      context.arc(xPosition(xValue), yPosition(yValue), 10, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    context.fillStyle = "#143b2f";
+    context.font = "bold 25px Arial";
+    context.textAlign = "center";
+    context.fillText("Pendulum length, L (m)", (left + right) / 2, height - 30);
+    context.save();
+    context.translate(35, (top + bottom) / 2);
+    context.rotate(-Math.PI / 2);
+    context.fillText("Period squared, T² (s²)", 0, 0);
+    context.restore();
+    context.font = "22px Arial";
+    context.textAlign = "left";
+    context.fillStyle = "#b53b3b";
+    context.fillText("Best-fit line: T² = 4.03L", 500, 95);
+    context.fillText("R² = 0.999", 500, 125);
+  });
+
+  return { diagram, graph };
+}
+
+function getPhysicsExampleReport() {
+  const images = createPhysicsExampleImages();
+  const studentProgramme = elements.selectedProgram.value === "DP" ? "DP" : "MYP";
+  return {
+    schemaVersion: REPORT_SCHEMA_VERSION,
+    id: generateId(),
+    accessToken: generateId(),
+    teacherEmail: "",
+    teacher: "Physics Department",
+    classCode: "EXAMPLE",
+    program: "myp",
+    studentProgramme,
+    activeSections: createDefaultActiveSections(),
+    blockedAttempts: 0,
+    startedAt: Date.now(),
+    title: "Investigating the Relationship Between Pendulum Length and Period",
+    studentName: "Sample Student",
+    date: elements.date.value,
+    time: elements.time.value,
+    status: "Draft",
+    sections: {
+      researchQuestion:
+        "How does changing the length of a simple pendulum from 0.20 m to 1.00 m affect its period, while the bob mass, release angle, measurement method, and testing location are controlled?",
+      backgroundInformation:
+        "For small release angles, a simple pendulum follows T = 2π√(L/g), where T is period, L is pendulum length, and g is gravitational field strength. Squaring the relationship gives T² = (4π²/g)L, so a graph of T² against L should be linear. Its slope can be used to calculate an experimental value of g. Timing several oscillations reduces the percentage effect of human reaction time on one period.",
+      independentVariable:
+        "Pendulum length, L (m), measured from the pivot to the center of the bob and changed through 0.20, 0.40, 0.60, 0.80, and 1.00 m.",
+      dependentVariable:
+        "Period, T (s), calculated by timing 10 complete oscillations and dividing the measured time by 10. T² (s²) is used for graphical analysis.",
+      controlledVariables:
+        "Bob mass (50 g), release angle (10°), same string and pivot, same photogate position, same release method, same room, and three trials at every length.",
+      hypothesis:
+        "If pendulum length increases, then the period will increase in proportion to the square root of length. Therefore, T² plotted against L will form a straight line through or close to the origin.",
+      materials:
+        "Retort stand with heavy base\nClamp and pivot support\nInextensible string (at least 1.10 m)\n50 g pendulum bob\nMeter ruler (+/- 0.001 m)\nProtractor (+/- 1°)\nPhotogate and electronic timer (+/- 0.01 s)\nSafety goggles",
+      procedure:
+        "1. Assemble the clamp stand on a level bench and attach the string and 50 g bob.\n2. Measure 0.20 m from the pivot to the center of the bob.\n3. Position the photogate at the equilibrium point.\n4. Use a protractor to displace the bob by 10° and release it without pushing.\n5. Record the time for 10 complete oscillations.\n6. Repeat the measurement three times at the same length.\n7. Repeat steps 2–6 for 0.40, 0.60, 0.80, and 1.00 m.\n8. Calculate the mean time, period, and period squared for every length.\n9. Plot T² against L and add a best-fit line.",
+      rawDataNotes:
+        "The pendulum motion remained in one vertical plane. No trial showed contact between the bob and the photogate. The amplitude decreased slightly during each timed set but remained below 10°.",
+      processedDataNotes:
+        "T² increased linearly as pendulum length increased. The best-fit line T² = 4.03L had R² = 0.999, indicating a very strong positive linear relationship. No point was an obvious outlier.",
+      processedDataSampleCalculations:
+        "For L = 0.60 m: mean time for 10 oscillations = (15.54 + 15.58 + 15.55) / 3 = 15.56 s. Period T = 15.56 / 10 = 1.556 s. T² = (1.556)² = 2.42 s². From slope m = 4.03 s²/m, g = 4π²/m = 9.80 m/s².",
+      conclusion:
+        "The results support the hypothesis. Increasing pendulum length increased the period, and the linear T² versus L graph agreed with the simple-pendulum model. The calculated gravitational field strength was 9.80 m/s², which is close to the accepted local value of approximately 9.81 m/s².",
+      evaluation:
+        "The strongest feature was the repeated timing across five evenly spaced lengths. Remaining limitations include uncertainty in locating the bob's center, small variation in release angle, pivot friction, and slight damping. The very high R² shows strong consistency, but it does not eliminate possible systematic error in length measurement.",
+      improvements:
+        "Use a fixed mechanical release to keep the starting angle constant, measure length with a set square at the pivot and bob center, collect five trials per length, and include additional lengths to strengthen the regression.",
+      safetyConsiderations:
+        "Wear goggles, secure the stand with a heavy base, keep faces and hands outside the bob's path, and stop the bob before adjusting length. No human or animal participants are involved. Reuse the string and bob, switch off the photogate after use, and avoid unnecessary material waste.",
+      pilotObservations:
+        "A pilot test at L = 0.60 m showed that timing one oscillation produced excessive relative uncertainty. Timing 10 oscillations gave repeatable values near 15.6 s. A 10° release angle produced stable motion and remained within the small-angle approximation.",
+      references:
+        "Ling, S. J., Moebs, W., & Sanny, J. (2016). University physics volume 1. OpenStax.\nSerway, R. A., & Jewett, J. W. (2018). Physics for scientists and engineers with modern physics (10th ed.). Cengage Learning."
+    },
+    setupDiagram: {
+      dataUrl: images.diagram,
+      title: "Simple pendulum experimental setup",
+      description:
+        "The string is attached to a fixed pivot on a secured clamp stand. Length L is measured from the pivot to the center of the 50 g bob. The bob is released from 10°, and a photogate at equilibrium records the oscillation time."
+    },
+    figures: [{
+      dataUrl: images.graph,
+      title: "Period squared versus pendulum length",
+      description:
+        "The data form a straight-line pattern with a positive slope of 4.03 s²/m and R² = 0.999. No measured point is an obvious outlier."
+    }],
+    tables: {
+      rawData: [{
+        title: "Table 1. Raw Timing Data for 10 Oscillations",
+        headers: ["Length L (m)", "Trial 1 (s)", "Trial 2 (s)", "Trial 3 (s)", "Qualitative observation"],
+        rows: [
+          ["0.20", "8.99", "9.05", "9.02", "Stable, small amplitude"],
+          ["0.40", "12.68", "12.73", "12.70", "Stable, small amplitude"],
+          ["0.60", "15.54", "15.58", "15.55", "Stable, small amplitude"],
+          ["0.80", "17.95", "18.00", "17.97", "Stable, small amplitude"],
+          ["1.00", "20.04", "20.10", "20.07", "Stable, small amplitude"]
+        ]
+      }],
+      processedData: [{
+        title: "Table 2. Processed Pendulum Data",
+        headers: ["Length L (m)", "Mean time for 10 (s)", "Period T (s)", "T² (s²)", "Time uncertainty (s)"],
+        rows: [
+          ["0.20", "9.02", "0.902", "0.81", "+/- 0.03"],
+          ["0.40", "12.70", "1.270", "1.61", "+/- 0.03"],
+          ["0.60", "15.56", "1.556", "2.42", "+/- 0.02"],
+          ["0.80", "17.97", "1.797", "3.22", "+/- 0.03"],
+          ["1.00", "20.07", "2.007", "4.03", "+/- 0.03"]
+        ]
+      }],
+      dpRawData: defaultTableList("dpRawData"),
+      dpProcessedData: defaultTableList("dpProcessedData")
     }
   };
 }
