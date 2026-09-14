@@ -3,12 +3,14 @@ const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
-const REPORT_SCHEMA_VERSION = 3;
+const REPORT_SCHEMA_VERSION = 4;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
 
 const sectionKeys = [
   "researchQuestion",
   "backgroundInformation",
+  "backgroundPurpose",
+  "backgroundScience",
   "variables",
   "independentVariable",
   "dependentVariable",
@@ -43,7 +45,12 @@ const sectionKeys = [
 const SELECTABLE_INPUT_TYPES = new Set(["text", "search", "url", "tel", "password", "email", "number"]);
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
-  { type: "text", key: "backgroundInformation", label: "Background Information" },
+  {
+    type: "background",
+    key: "backgroundInformation",
+    label: "Background Information",
+    fieldKeys: ["backgroundPurpose", "backgroundScience"]
+  },
   {
     type: "variables",
     key: "variables",
@@ -203,6 +210,8 @@ const elements = {
 const sectionInputs = {
   researchQuestion: document.getElementById("section-researchQuestion"),
   backgroundInformation: document.getElementById("section-backgroundInformation"),
+  backgroundPurpose: document.getElementById("section-backgroundPurpose"),
+  backgroundScience: document.getElementById("section-backgroundScience"),
   variables: document.getElementById("section-variables"),
   independentVariable: document.getElementById("section-independentVariable"),
   dependentVariable: document.getElementById("section-dependentVariable"),
@@ -291,7 +300,11 @@ function isLegacyExampleDraft(report) {
     return false;
   }
   const title = String(report.title || "").trim().toLowerCase();
-  const background = String(report.sections?.backgroundInformation || "").toLowerCase();
+  const background = [
+    report.sections?.backgroundInformation,
+    report.sections?.backgroundPurpose,
+    report.sections?.backgroundScience
+  ].join(" ").toLowerCase();
   return (title.includes("analysis of motion on an inclined track") || background.includes("linear velocity-time relationship v = v0 + at"));
 }
 
@@ -953,8 +966,10 @@ function getChemistryExampleReport() {
     sections: {
       researchQuestion:
         "How accurately can the density of an unknown liquid and an irregular solid be determined when the independent variable is sample type (liquid vs. solid) and the dependent variable is calculated density (g/mL or g/cm^3)?",
-      backgroundInformation:
-        "Density is an intensive property defined by rho = m/V and does not depend on sample size when temperature and pressure are controlled (Brown et al., 2018). Accurate density determination requires reliable mass and volume measurements and careful uncertainty handling (Harris, 2020). For liquids, volumetric glassware and consistent meniscus reading reduce systematic error (Skoog et al., 2018). For irregular solids, water displacement provides experimental volume, but trapped air and wet-surface effects can bias results (Zumdahl & Zumdahl, 2017). Repeated trials and uncertainty reporting improve confidence in final density values and allow meaningful comparison with accepted reference data (Atkins et al., 2018).",
+      backgroundPurpose:
+        "The purpose of this investigation is to determine the density of unknown liquid and solid samples and compare the experimental values with accepted reference data. Repeated trials and uncertainty reporting improve confidence in the calculated results (Atkins et al., 2018).",
+      backgroundScience:
+        "Density is an intensive property defined by rho = m/V and does not depend on sample size when temperature and pressure are controlled (Brown et al., 2018). Accurate density determination requires reliable mass and volume measurements (Harris, 2020). For liquids, consistent meniscus readings reduce systematic error, while water displacement can determine the volume of irregular solids (Skoog et al., 2018; Zumdahl & Zumdahl, 2017).",
       variables:
         "Independent variable: sample type and trial repetition. Dependent variable: calculated density (g/mL for liquid, g/cm^3 for solid). Controlled variables: calibrated balance, constant room temperature, meniscus-reading technique, and identical displacement method for all solid trials.",
       hypothesis:
@@ -1178,8 +1193,10 @@ function getPhysicsExampleReport() {
     sections: {
       researchQuestion:
         "How does changing the length of a simple pendulum from 0.20 m to 1.00 m affect its period, while the bob mass, release angle, measurement method, and testing location are controlled?",
-      backgroundInformation:
-        "For small release angles, a simple pendulum follows T = 2π√(L/g), where T is period, L is pendulum length, and g is gravitational field strength. Squaring the relationship gives T² = (4π²/g)L, so a graph of T² against L should be linear. Its slope can be used to calculate an experimental value of g. Timing several oscillations reduces the percentage effect of human reaction time on one period.",
+      backgroundPurpose:
+        "The purpose of this investigation is to determine how pendulum length affects period and to use the relationship between T² and L to calculate an experimental value of gravitational field strength. Timing several oscillations reduces the percentage effect of reaction time on a single period (Ling et al., 2016).",
+      backgroundScience:
+        "The independent variable is pendulum length, L, and the dependent variable is period, T. For small release angles, a simple pendulum follows T = 2π√(L/g), where g is gravitational field strength. Squaring the equation gives T² = (4π²/g)L, predicting a direct linear relationship between T² and L (Serway & Jewett, 2018).",
       independentVariable:
         "Pendulum length, L (m), measured from the pivot to the center of the bob and changed through 0.20, 0.40, 0.60, 0.80, and 1.00 m.",
       dependentVariable:
@@ -1340,6 +1357,23 @@ function buildPrintableSections(report) {
     if (section.program !== program || !active.includes(section.key) || (section.dpOnly && report.studentProgramme !== "DP")) {
       return;
     }
+    if (section.type === "background") {
+      const labels = {
+        backgroundPurpose: "Paragraph 1 - Purpose of the Investigation",
+        backgroundScience: "Paragraph 2 - Scientific Information About the IV, DV, and Their Relationship"
+      };
+      const parts = section.fieldKeys
+        .map((key) => ({ label: labels[key], text: String(report.sections?.[key] || "").trim() }))
+        .filter((part) => part.text);
+      const legacyText = String(report.sections?.backgroundInformation || "").trim();
+      if (legacyText && parts.length === 0) {
+        parts.push({ label: labels.backgroundPurpose, text: legacyText });
+      }
+      if (parts.length) {
+        sections.push({ type: "structuredText", label: section.label, parts });
+      }
+      return;
+    }
     if (section.type === "variables") {
       const labels = {
         independentVariable: "Independent Variable",
@@ -1445,6 +1479,14 @@ function generateBasicPdfBlob(report) {
 
   printableSections.forEach((section, index) => {
     lines.push(`${index + 1}. ${section.label}`);
+    if (section.type === "structuredText") {
+      section.parts.forEach((part) => {
+        lines.push(part.label);
+        lines.push(...wrapPlainText(part.text));
+        lines.push("");
+      });
+      return;
+    }
     if (section.type === "text") {
       if (section.label === "Materials") {
         section.text.split("\n").forEach(item => lines.push(...wrapPlainText(item)));
@@ -1634,6 +1676,13 @@ function generatePdfInBrowser(report) {
     if (section.type === "text") {
       return height + measureParagraphHeight(section.text, { size: 12, lineHeight: 17 }) + 12;
     }
+    if (section.type === "structuredText") {
+      section.parts.forEach((part) => {
+        height += measureParagraphHeight(part.label, { bold: true, size: 12, lineHeight: 16 });
+        height += measureParagraphHeight(part.text, { size: 12, lineHeight: 17 }) + 8;
+      });
+      return height + 8;
+    }
 
     if (section.notes) {
       height += measureParagraphHeight(section.notes, { size: 12, lineHeight: 17 }) + 4;
@@ -1698,6 +1747,15 @@ function generatePdfInBrowser(report) {
     if (section.type === "text") {
       drawParagraph(section.text, { size: 12, lineHeight: 17 });
       y += 6;
+      return;
+    }
+    if (section.type === "structuredText") {
+      section.parts.forEach((part) => {
+        drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
+        drawParagraph(part.text, { size: 12, lineHeight: 17 });
+        y += 4;
+      });
+      y += 2;
       return;
     }
 
@@ -2291,6 +2349,10 @@ function applyReportToUI(report) {
       sectionInputs[sectionKey].value = LabFigures.numberedMaterials(sectionInputs[sectionKey].value);
     }
   });
+  if (!sectionInputs.backgroundPurpose.value && !sectionInputs.backgroundScience.value && sectionInputs.backgroundInformation.value) {
+    sectionInputs.backgroundScience.value = sectionInputs.backgroundInformation.value;
+    sectionInputs.backgroundInformation.value = "";
+  }
   if (!sectionInputs.independentVariable.value && !sectionInputs.dependentVariable.value && !sectionInputs.controlledVariables.value && sectionInputs.variables.value) {
     sectionInputs.independentVariable.value = sectionInputs.variables.value;
     sectionInputs.variables.value = "";

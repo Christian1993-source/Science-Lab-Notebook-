@@ -17,7 +17,12 @@ app.disable("x-powered-by");
 
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
-  { type: "text", key: "backgroundInformation", label: "Background Information" },
+  {
+    type: "background",
+    key: "backgroundInformation",
+    label: "Background Information",
+    fieldKeys: ["backgroundPurpose", "backgroundScience"]
+  },
   {
     type: "variables",
     key: "variables",
@@ -230,6 +235,13 @@ function sanitizeReport(rawReport) {
   const program = programSections[report.program] ? report.program : "myp";
 
   sectionOrder.forEach((section) => {
+    if (section.type === "background") {
+      sections.backgroundInformation = cleanMultiline(report.sections?.backgroundInformation);
+      section.fieldKeys.forEach((key) => {
+        sections[key] = cleanMultiline(report.sections?.[key]);
+      });
+      return;
+    }
     if (section.type === "variables") {
       sections.variables = cleanMultiline(report.sections?.variables);
       section.fieldKeys.forEach((key) => {
@@ -446,6 +458,13 @@ function measureSectionHeight(doc, number, section) {
   if (section.type === "text") {
     return height + textHeight(section.value, { size: 12, lineGap: 4 }) + 18;
   }
+  if (section.type === "structuredText") {
+    section.parts.forEach((part) => {
+      height += textHeight(part.label, { font: "Times-Bold", size: 12 }) + 6;
+      height += textHeight(part.value, { size: 12, lineGap: 4 }) + 12;
+    });
+    return height + 8;
+  }
 
   if (section.notes) {
     height += textHeight(section.notes, { size: 12, lineGap: 4 }) + 12;
@@ -588,6 +607,20 @@ function drawTextSection(doc, number, label, text) {
   doc.moveDown(0.7);
 }
 
+function drawStructuredTextSection(doc, number, label, parts) {
+  drawSectionHeading(doc, number, label);
+  parts.forEach((part) => {
+    doc.font("Times-Bold").fontSize(12).fillColor("#124232").text(part.label);
+    doc.moveDown(0.2);
+    doc
+      .font("Times-Roman")
+      .fontSize(12)
+      .fillColor("#111111")
+      .text(part.value, { align: "justify", lineGap: 4 });
+    doc.moveDown(0.6);
+  });
+}
+
 function drawDataSection(doc, number, label, notes, sampleCalculations, tables) {
   drawSectionHeading(doc, number, label);
 
@@ -636,6 +669,23 @@ function buildSectionsForPdf(report) {
 
   sectionOrder.forEach((section) => {
     if (section.program !== report.program || !active.includes(section.key) || (section.dpOnly && report.studentProgramme !== "DP")) return;
+    if (section.type === "background") {
+      const labels = {
+        backgroundPurpose: "Paragraph 1 - Purpose of the Investigation",
+        backgroundScience: "Paragraph 2 - Scientific Information About the IV, DV, and Their Relationship"
+      };
+      const parts = section.fieldKeys
+        .map((key) => ({ label: labels[key], value: cleanMultiline(report.sections[key]) }))
+        .filter((part) => part.value);
+      const legacyValue = cleanMultiline(report.sections.backgroundInformation);
+      if (legacyValue && parts.length === 0) {
+        parts.push({ label: labels.backgroundPurpose, value: legacyValue });
+      }
+      if (parts.length) {
+        ordered.push({ type: "structuredText", label: section.label, parts });
+      }
+      return;
+    }
     if (section.type === "variables") {
       const labels = {
         independentVariable: "Independent Variable",
@@ -738,6 +788,8 @@ function generatePdf(report) {
         startSectionOnWholePageWhenPossible(doc, number, section);
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
+        } else if (section.type === "structuredText") {
+          drawStructuredTextSection(doc, number, section.label, section.parts);
         } else {
           drawDataSection(
             doc,

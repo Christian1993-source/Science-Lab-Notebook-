@@ -8,9 +8,9 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260914-pdf-section-pagination-1" />
+    <meta name="notebook-release" content="20260914-background-paragraphs-1" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260914-pdf-section-pagination-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260914-background-paragraphs-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -117,7 +117,18 @@
 
           <section class="card report-section" data-program="myp" data-section-key="backgroundInformation" id="sec-backgroundInformation">
             <div class="section-heading"><h2>II. Background Information</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-backgroundInformation"></textarea>
+            <textarea id="section-backgroundInformation" hidden aria-hidden="true" tabindex="-1"></textarea>
+            <p class="section-prompt"><strong>APA 7:</strong> Include in-text citations in both paragraphs using the author-date format.</p>
+            <div class="variables-fields background-fields">
+              <div>
+                <label for="section-backgroundPurpose">Paragraph 1 - Purpose of the Investigation</label>
+                <textarea id="section-backgroundPurpose" placeholder="Explain the purpose of the investigation and include an APA 7 in-text citation, for example: (Author, year)."></textarea>
+              </div>
+              <div>
+                <label for="section-backgroundScience">Paragraph 2 - Scientific Information About the IV, DV, and Their Relationship</label>
+                <textarea id="section-backgroundScience" placeholder="Explain the IV, DV, and their scientific relationship. Support the explanation with APA 7 in-text citations."></textarea>
+              </div>
+            </div>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="variables" id="sec-variables">
@@ -318,6 +329,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260914-pdf-section-pagination-1"></script>
+    <script src="loader.js?v=20260914-background-paragraphs-1"></script>
   </body>
 </html>
