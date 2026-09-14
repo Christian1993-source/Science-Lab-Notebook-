@@ -1572,6 +1572,99 @@ function generatePdfInBrowser(report) {
     y += 4;
   };
 
+  const measureParagraphHeight = (text, { bold = false, size = 12, lineHeight = 16 } = {}) => {
+    const lines = doc
+      .setFont("LabReportSerif", bold ? "bold" : "normal")
+      .setFontSize(size)
+      .splitTextToSize(String(text || " "), maxTextWidth);
+    return Math.max(1, lines.length) * lineHeight + 4;
+  };
+
+  const measureTableHeight = (table, includeTableNumber) => {
+    let height = 14;
+    if (table.title) {
+      height += measureParagraphHeight(String(table.title), { bold: true, size: 11, lineHeight: 15 });
+    }
+    if (includeTableNumber) {
+      height += measureParagraphHeight("Table 1", { bold: true, size: 11, lineHeight: 15 });
+    }
+
+    const columnCount = Math.max(1, table.headers.length);
+    const columnWidth = maxTextWidth / columnCount;
+    const tableFontSize = columnCount <= 5 ? 10 : columnCount <= 7 ? 9 : 8;
+    const rowHeight = (row, minimumHeight, bold) => {
+      doc.setFont("LabReportSerif", bold ? "bold" : "normal").setFontSize(tableFontSize);
+      const contentHeight = Math.max(...Array.from({ length: columnCount }, (_, columnIndex) => {
+        const cell = String(row[columnIndex] || " ");
+        const lines = doc.splitTextToSize(cell, Math.max(12, columnWidth - 10));
+        return Math.max(1, lines.length) * tableFontSize * 1.2 + 14;
+      }));
+      return Math.max(minimumHeight, contentHeight);
+    };
+
+    height += rowHeight(table.headers, 34, true);
+    table.rows
+      .filter((row) => row.some((cell) => String(cell || "").trim()))
+      .forEach((row) => {
+        height += rowHeight(row, 38, false);
+      });
+    return height;
+  };
+
+  const measureFigureHeight = (figure, figureIndex) => {
+    const properties = doc.getImageProperties(figure.dataUrl);
+    const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+    const imageHeight = properties.height * scale;
+    const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+    let height = measureParagraphHeight(title, { bold: true, size: 12, lineHeight: 16 });
+    height += imageHeight + 24;
+    if (figure.description) {
+      height += measureParagraphHeight(figure.description, { size: 11, lineHeight: 15 });
+    }
+    return height;
+  };
+
+  const measureSectionHeight = (section, index) => {
+    let height = measureParagraphHeight(`${index + 1}. ${section.label}`, {
+      bold: true,
+      size: 13,
+      lineHeight: 18
+    });
+
+    if (section.type === "text") {
+      return height + measureParagraphHeight(section.text, { size: 12, lineHeight: 17 }) + 12;
+    }
+
+    if (section.notes) {
+      height += measureParagraphHeight(section.notes, { size: 12, lineHeight: 17 }) + 4;
+    }
+    if (section.sampleCalculations) {
+      height += measureParagraphHeight("Sample Calculations", { bold: true, size: 12, lineHeight: 16 });
+      height += measureParagraphHeight(section.sampleCalculations, { size: 12, lineHeight: 17 }) + 4;
+    }
+
+    const sectionTables = Array.isArray(section.tables) ? section.tables : [];
+    sectionTables.forEach((table) => {
+      height += measureTableHeight(table, sectionTables.length > 1);
+    });
+    if (sectionTables.length === 0) {
+      height += 6;
+    }
+    (section.figures || []).forEach((figure, figureIndex) => {
+      height += measureFigureHeight(figure, figureIndex);
+    });
+    return height + 12;
+  };
+
+  const startSectionOnWholePageWhenPossible = (section, index) => {
+    const bottomLimit = pageHeight - margin;
+    const requiredHeight = measureSectionHeight(section, index);
+    if (y > margin + 1 && y + requiredHeight > bottomLimit) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
   drawParagraph(report.title || "Lab Report", { bold: true, size: 20, lineHeight: 24, align: "center" });
   drawParagraph(`Teacher: ${report.teacher || "Not specified"}`, {
     size: 12,
@@ -1599,6 +1692,7 @@ function generatePdfInBrowser(report) {
   y += 8;
 
   printableSections.forEach((section, index) => {
+    startSectionOnWholePageWhenPossible(section, index);
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
 
     if (section.type === "text") {

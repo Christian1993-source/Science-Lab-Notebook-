@@ -409,6 +409,84 @@ function ensurePageSpace(doc, minHeight) {
   }
 }
 
+function measureTableGridHeight(doc, table) {
+  const headers = table.headers.map((header) => cleanString(header));
+  const dataRows = table.rows
+    .map((row) => row.map((cell) => cleanString(String(cell))))
+    .filter((row) => row.some((cell) => cell.length > 0));
+  const columnCount = Math.max(headers.length, 1);
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const columnWidth = width / columnCount;
+  const fontSize = columnCount <= 5 ? 10 : columnCount <= 7 ? 9 : 8;
+  const horizontalPadding = 5;
+  const verticalPadding = 7;
+  const getRowHeight = (row, isHeader) => {
+    doc.font(isHeader ? "Times-Bold" : "Times-Roman").fontSize(fontSize);
+    const normalizedRow = Array.from({ length: columnCount }, (_, index) => row[index] || "");
+    const cellHeights = normalizedRow.map((cell) =>
+      doc.heightOfString(cell || " ", {
+        width: columnWidth - horizontalPadding * 2,
+        align: "left"
+      })
+    );
+    return Math.max(...cellHeights, isHeader ? 20 : 24) + verticalPadding * 2;
+  };
+
+  return getRowHeight(headers, true) + dataRows.reduce((total, row) => total + getRowHeight(row, false), 0) + 12;
+}
+
+function measureSectionHeight(doc, number, section) {
+  const width = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const textHeight = (text, { font = "Times-Roman", size = 12, lineGap = 0 } = {}) => {
+    doc.font(font).fontSize(size);
+    return doc.heightOfString(String(text || " "), { width, lineGap });
+  };
+  let height = textHeight(`${number}. ${section.label}`, { font: "Times-Bold", size: 13 }) + 14;
+
+  if (section.type === "text") {
+    return height + textHeight(section.value, { size: 12, lineGap: 4 }) + 18;
+  }
+
+  if (section.notes) {
+    height += textHeight(section.notes, { size: 12, lineGap: 4 }) + 12;
+  }
+  if (section.sampleCalculations) {
+    height += textHeight("Sample Calculations", { font: "Times-Bold", size: 12 }) + 6;
+    height += textHeight(section.sampleCalculations, { size: 12, lineGap: 4 }) + 12;
+  }
+
+  const contentTables = normalizeTableList(section.tables).filter((table) => tableHasContent(table));
+  contentTables.forEach((table) => {
+    if (table.title) {
+      height += textHeight(String(table.title), { font: "Times-Bold", size: 11 }) + 5;
+    }
+    if (contentTables.length > 1) {
+      height += textHeight("Table 1", { font: "Times-Bold", size: 11 }) + 6;
+    }
+    height += measureTableGridHeight(doc, table);
+  });
+
+  (section.figures || []).forEach((figure, figureIndex) => {
+    const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+    const scale = Math.min(width / image.width, 300 / image.height);
+    const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+    height += textHeight(title, { font: "Times-Bold", size: 12 }) + image.height * scale + 24;
+    if (figure.description) {
+      height += textHeight(figure.description, { size: 11, lineGap: 3 }) + 12;
+    }
+  });
+
+  return height + 12;
+}
+
+function startSectionOnWholePageWhenPossible(doc, number, section) {
+  const bottomLimit = doc.page.height - doc.page.margins.bottom;
+  const requiredHeight = measureSectionHeight(doc, number, section);
+  if (doc.y > doc.page.margins.top + 1 && doc.y + requiredHeight > bottomLimit) {
+    doc.addPage();
+  }
+}
+
 function drawSectionHeading(doc, number, label) {
   ensurePageSpace(doc, 48);
   doc.font("Times-Bold").fontSize(13).fillColor("#124232").text(`${number}. ${label}`);
@@ -657,6 +735,7 @@ function generatePdf(report) {
     } else {
       printableSections.forEach((section, index) => {
         const number = index + 1;
+        startSectionOnWholePageWhenPossible(doc, number, section);
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
         } else {
