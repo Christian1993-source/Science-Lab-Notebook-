@@ -49,16 +49,16 @@ const SELECTABLE_INPUT_TYPES = new Set(["text", "search", "url", "tel", "passwor
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
   {
-    type: "background",
-    key: "backgroundInformation",
-    label: "Background Information",
-    fieldKeys: ["backgroundPurpose", "backgroundScience"]
-  },
-  {
     type: "variables",
     key: "variables",
     label: "Variables",
     fieldKeys: ["independentVariable", "dependentVariable", "controlledVariables"]
+  },
+  {
+    type: "background",
+    key: "backgroundInformation",
+    label: "Background Information",
+    fieldKeys: ["backgroundPurpose", "backgroundScience"]
   },
   { type: "text", key: "hypothesis", label: "Hypothesis" },
   { type: "text", key: "materials", label: "Materials" },
@@ -110,7 +110,7 @@ const PROGRAM_CONFIGS = {
     name: "MYP",
     fullName: "Middle Years Programme",
     sections: [
-      "researchQuestion", "backgroundInformation", "variables", "hypothesis", "materials", "procedure",
+      "researchQuestion", "variables", "backgroundInformation", "hypothesis", "materials", "procedure",
       "experimentalSetup", "rawData", "processedData", "conclusion", "evaluation", "improvements",
       "safetyConsiderations", "pilotObservations", "references"
     ]
@@ -1215,9 +1215,6 @@ function renderProgramUI() {
     placeholder.hidden = !belongsToProgram || !availableForStudent || active.includes(key);
   });
   elements.outlineList.replaceChildren();
-  const studentItem = document.createElement("li");
-  studentItem.innerHTML = '<a href="#studentInfo">Student Information</a>';
-  elements.outlineList.appendChild(studentItem);
   visibleSections.filter((key) => active.includes(key)).forEach((key) => {
     const item = document.createElement("li");
     const link = document.createElement("a");

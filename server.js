@@ -18,16 +18,16 @@ app.disable("x-powered-by");
 const sectionOrder = [
   { type: "text", key: "researchQuestion", label: "Research Question" },
   {
-    type: "background",
-    key: "backgroundInformation",
-    label: "Background Information",
-    fieldKeys: ["backgroundPurpose", "backgroundScience"]
-  },
-  {
     type: "variables",
     key: "variables",
     label: "Variables",
     fieldKeys: ["independentVariable", "dependentVariable", "controlledVariables"]
+  },
+  {
+    type: "background",
+    key: "backgroundInformation",
+    label: "Background Information",
+    fieldKeys: ["backgroundPurpose", "backgroundScience"]
   },
   { type: "text", key: "hypothesis", label: "Hypothesis" },
   { type: "text", key: "materials", label: "Materials" },
