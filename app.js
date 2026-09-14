@@ -2078,13 +2078,36 @@ function generatePdfInBrowser(report) {
     return height + 12;
   };
 
-  const startSectionOnWholePageWhenPossible = (section, index) => {
-    const bottomLimit = pageHeight - margin;
-    const requiredHeight = measureSectionHeight(section, index);
-    if (y > margin + 1 && y + requiredHeight > bottomLimit) {
-      doc.addPage();
-      y = margin;
+  const ensureWholeBlockFitsPage = (height, blockName = "A table") => {
+    if (height > pageHeight - margin * 2) {
+      throw new Error(`${blockName} is too large to fit on one PDF page. Shorten it or create two separate tables, then download again.`);
     }
+    ensureSpace(height);
+  };
+
+  const startSectionWithContent = (section, index) => {
+    const headingHeight = measureParagraphHeight(`${index + 1}. ${section.label}`, {
+      bold: true,
+      size: 13,
+      lineHeight: 18
+    });
+    let openingHeight = Math.min(measureSectionHeight(section, index), 96);
+
+    if (section.type === "variables" && section.parts.length === 0 && section.controlledVariables.length) {
+      openingHeight = headingHeight
+        + measureParagraphHeight("Controlled Variables", { bold: true, size: 12, lineHeight: 16 })
+        + measureTableHeight(section.controlledVariablesTable, false);
+    } else if (!["text", "variables", "references", "structuredText"].includes(section.type)) {
+      const sectionTables = Array.isArray(section.tables) ? section.tables : [];
+      const hasLeadingText = Boolean(section.notes || section.sampleCalculations);
+      if (!hasLeadingText && sectionTables.length) {
+        openingHeight = headingHeight + measureTableHeight(sectionTables[0], sectionTables.length > 1);
+      } else if (!hasLeadingText && !sectionTables.length && section.figures?.length) {
+        openingHeight = headingHeight + measureFigureHeight(section.figures[0], 0);
+      }
+    }
+
+    ensureWholeBlockFitsPage(openingHeight, "A table or figure");
   };
 
   drawParagraph(report.title || "Lab Report", { bold: true, size: 20, lineHeight: 24, align: "center" });
@@ -2114,18 +2137,24 @@ function generatePdfInBrowser(report) {
   y += 8;
 
   printableSections.forEach((section, index) => {
-    startSectionOnWholePageWhenPossible(section, index);
+    startSectionWithContent(section, index);
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
 
     if (section.type === "variables") {
       section.parts.forEach((part) => {
+        ensureSpace(58);
         drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
         drawParagraph(part.text, { size: 12, lineHeight: 17 });
         y += 4;
       });
       if (section.controlledVariables.length) {
+        const controlledTableHeight = measureParagraphHeight("Controlled Variables", {
+          bold: true,
+          size: 12,
+          lineHeight: 16
+        }) + measureTableHeight(section.controlledVariablesTable, false);
+        ensureWholeBlockFitsPage(controlledTableHeight, "The controlled variables table");
         drawParagraph("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
-        ensureSpace(96);
         doc.autoTable({
           startY: y,
           head: [["Controlled Variable", "How It Will Be Controlled"]],
@@ -2133,7 +2162,7 @@ function generatePdfInBrowser(report) {
           theme: "grid",
           tableWidth: maxTextWidth,
           showHead: "everyPage",
-          pageBreak: "auto",
+          pageBreak: "avoid",
           rowPageBreak: "avoid",
           styles: {
             font: "LabReportSerif",
@@ -2176,6 +2205,7 @@ function generatePdfInBrowser(report) {
     }
     if (section.type === "structuredText") {
       section.parts.forEach((part) => {
+        ensureSpace(58);
         drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
         drawParagraph(part.text, { size: 12, lineHeight: 17 });
         y += 4;
@@ -2190,6 +2220,7 @@ function generatePdfInBrowser(report) {
     }
 
     if (section.sampleCalculations) {
+      ensureSpace(58);
       drawParagraph("Sample Calculations", { bold: true, size: 12, lineHeight: 16 });
       drawParagraph(section.sampleCalculations, { size: 12, lineHeight: 17 });
       y += 4;
@@ -2198,8 +2229,8 @@ function generatePdfInBrowser(report) {
     const sectionTables = Array.isArray(section.tables) ? section.tables : [];
     if (sectionTables.length > 0 && typeof doc.autoTable === "function") {
       sectionTables.forEach((table, tableIndex) => {
-        const tableLabelCount = Number(Boolean(table.title)) + Number(sectionTables.length > 1);
-        ensureSpace(82 + tableLabelCount * 18);
+        const tableBlockHeight = measureTableHeight(table, sectionTables.length > 1);
+        ensureWholeBlockFitsPage(tableBlockHeight, `Table ${tableIndex + 1}`);
         if (table.title) {
           drawParagraph(String(table.title), { bold: true, size: 11, lineHeight: 15 });
         }
@@ -2219,7 +2250,7 @@ function generatePdfInBrowser(report) {
           theme: "grid",
           tableWidth: maxTextWidth,
           showHead: "everyPage",
-          pageBreak: "auto",
+          pageBreak: "avoid",
           rowPageBreak: "avoid",
           styles: {
             font: "LabReportSerif",
