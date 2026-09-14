@@ -1094,13 +1094,31 @@ function buildPrintableSections(report) {
         .map((key) => ({ label: labels[key], text: String(report.sections?.[key] || "").trim() }))
         .filter((part) => part.text);
       const legacyText = String(report.sections?.variables || "").trim();
-      if (legacyText && parts.length === 0) parts.push({ label: "Variables", text: legacyText });
-      if (parts.length) sections.push({ type: "variables", label: section.label, parts });
+      if (legacyText && parts.length === 0) {
+        sections.push({ type: "text", label: section.label, text: legacyText });
+        return;
+      }
+      if (parts.length) {
+        sections.push({
+          type: "text",
+          label: section.label,
+          text: parts.map((part) => `${part.label}\n${part.text}`).join("\n\n")
+        });
+      }
       return;
     }
     if (section.type === "diagram") {
       const diagram = normalizeSingleFigure(report.setupDiagram);
-      if (diagram.dataUrl) sections.push({ type: "diagram", label: section.label, figure: diagram });
+      if (diagram.dataUrl) {
+        sections.push({
+          type: "data",
+          label: section.label,
+          notes: "",
+          sampleCalculations: "",
+          tables: [],
+          figures: [diagram]
+        });
+      }
       return;
     }
     if (section.type === "text") {
@@ -1171,20 +1189,6 @@ function generateBasicPdfBlob(report) {
 
   printableSections.forEach((section, index) => {
     lines.push(`${index + 1}. ${section.label}`);
-    if (section.type === "variables") {
-      section.parts.forEach((part) => {
-        lines.push(part.label);
-        lines.push(...wrapPlainText(part.text));
-      });
-      lines.push("");
-      return;
-    }
-    if (section.type === "diagram") {
-      lines.push(section.figure.title || "Experimental setup diagram");
-      if (section.figure.description) lines.push(...wrapPlainText(section.figure.description));
-      lines.push("");
-      return;
-    }
     if (section.type === "text") {
       if (section.label === "Materials") {
         section.text.split("\n").forEach(item => lines.push(...wrapPlainText(item)));
@@ -1312,23 +1316,6 @@ function generatePdfInBrowser(report) {
     y += 4;
   };
 
-  let figureNumber = 1;
-  const drawFigure = (figure) => {
-    const properties = doc.getImageProperties(figure.dataUrl);
-    const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
-    const width = properties.width * scale;
-    const height = properties.height * scale;
-    const title = `Figure ${figureNumber}${figure.title ? `. ${figure.title}` : ""}`;
-    const titleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
-    ensureSpace(height + titleHeight + 24);
-    drawParagraph(title, { bold: true });
-    doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
-    y += height + 12;
-    if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
-    y += 12;
-    figureNumber += 1;
-  };
-
   drawParagraph(report.title || "Lab Report", { bold: true, size: 20, lineHeight: 24, align: "center" });
   drawParagraph(`Teacher: ${report.teacher || "Not specified"}`, {
     size: 12,
@@ -1356,28 +1343,7 @@ function generatePdfInBrowser(report) {
   y += 8;
 
   printableSections.forEach((section, index) => {
-    if (section.type === "diagram") {
-      const properties = doc.getImageProperties(section.figure.dataUrl);
-      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
-      const figureTitle = `Figure ${figureNumber}${section.figure.title ? `. ${section.figure.title}` : ""}`;
-      const figureTitleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(figureTitle, maxTextWidth).length * 16 + 4;
-      ensureSpace(properties.height * scale + figureTitleHeight + 66);
-    }
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
-
-    if (section.type === "variables") {
-      section.parts.forEach((part) => {
-        drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
-        drawParagraph(part.text, { size: 12, lineHeight: 17 });
-      });
-      y += 6;
-      return;
-    }
-
-    if (section.type === "diagram") {
-      drawFigure(section.figure);
-      return;
-    }
 
     if (section.type === "text") {
       drawParagraph(section.text, { size: 12, lineHeight: 17 });
@@ -1449,7 +1415,20 @@ function generatePdfInBrowser(report) {
     } else {
       y += 6;
     }
-    (section.figures || []).forEach(drawFigure);
+    (section.figures || []).forEach((figure, figureIndex) => {
+      const properties = doc.getImageProperties(figure.dataUrl);
+      const scale = Math.min(maxTextWidth / properties.width, 300 / properties.height);
+      const width = properties.width * scale;
+      const height = properties.height * scale;
+      const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+      const titleHeight = doc.setFont("LabReportSerif", "bold").setFontSize(12).splitTextToSize(title, maxTextWidth).length * 16 + 4;
+      ensureSpace(height + titleHeight + 24);
+      drawParagraph(title, { bold: true });
+      doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
+      y += height + 12;
+      if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
+      y += 12;
+    });
   });
 
   return doc.output("blob");

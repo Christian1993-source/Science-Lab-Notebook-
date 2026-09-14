@@ -568,12 +568,30 @@ function buildSectionsForPdf(report) {
         .map((key) => ({ label: labels[key], value: cleanMultiline(report.sections[key]) }))
         .filter((part) => part.value);
       const legacyValue = cleanMultiline(report.sections.variables);
-      if (legacyValue && parts.length === 0) parts.push({ label: "Variables", value: legacyValue });
-      if (parts.length) ordered.push({ type: "variables", label: section.label, parts });
+      if (legacyValue && parts.length === 0) {
+        ordered.push({ type: "text", label: section.label, value: legacyValue });
+        return;
+      }
+      if (parts.length) {
+        ordered.push({
+          type: "text",
+          label: section.label,
+          value: parts.map((part) => `${part.label}\n${part.value}`).join("\n\n")
+        });
+      }
       return;
     }
     if (section.type === "diagram") {
-      if (report.setupDiagram?.dataUrl) ordered.push({ type: "diagram", label: section.label, figure: report.setupDiagram });
+      if (report.setupDiagram?.dataUrl) {
+        ordered.push({
+          type: "data",
+          label: section.label,
+          notes: "",
+          sampleCalculations: "",
+          tables: [],
+          figures: [report.setupDiagram]
+        });
+      }
       return;
     }
     if (section.type === "text") {
@@ -632,25 +650,6 @@ function generatePdf(report) {
     doc.moveDown(1);
 
     const printableSections = buildSectionsForPdf(report);
-    let figureNumber = 1;
-    const drawUploadedFigure = (figure) => {
-      const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
-      const widthLimit = doc.page.width - 144;
-      const scale = Math.min(widthLimit / image.width, 300 / image.height);
-      const width = image.width * scale;
-      const height = image.height * scale;
-      const title = `Figure ${figureNumber}${figure.title ? `. ${figure.title}` : ""}`;
-      doc.font("Times-Bold").fontSize(12);
-      ensurePageSpace(doc, height + doc.heightOfString(title, { width: widthLimit }) + 30);
-      doc.fillColor("#124232").text(title, 72, doc.y, { width: widthLimit });
-      doc.moveDown(0.4);
-      const imageY = doc.y;
-      doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
-      doc.y = imageY + height + 12;
-      if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
-      doc.moveDown(0.8);
-      figureNumber += 1;
-    };
     if (printableSections.length === 0) {
       doc.font("Times-Italic").fontSize(12).fillColor("#333333").text("No sections with content.", {
         align: "left"
@@ -660,23 +659,6 @@ function generatePdf(report) {
         const number = index + 1;
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
-        } else if (section.type === "variables") {
-          drawSectionHeading(doc, number, section.label);
-          section.parts.forEach((part) => {
-            ensurePageSpace(doc, 54);
-            doc.font("Times-Bold").fontSize(11).fillColor("#124232").text(part.label);
-            doc.font("Times-Roman").fontSize(12).fillColor("#111111").text(part.value, { lineGap: 4 });
-            doc.moveDown(0.5);
-          });
-        } else if (section.type === "diagram") {
-          const image = doc.openImage(Buffer.from(section.figure.dataUrl.split(",")[1], "base64"));
-          const widthLimit = doc.page.width - 144;
-          const scale = Math.min(widthLimit / image.width, 300 / image.height);
-          const figureTitle = `Figure ${figureNumber}${section.figure.title ? `. ${section.figure.title}` : ""}`;
-          doc.font("Times-Bold").fontSize(12);
-          ensurePageSpace(doc, image.height * scale + doc.heightOfString(figureTitle, { width: widthLimit }) + 72);
-          drawSectionHeading(doc, number, section.label);
-          drawUploadedFigure(section.figure);
         } else {
           drawDataSection(
             doc,
@@ -686,7 +668,23 @@ function generatePdf(report) {
             section.sampleCalculations,
             section.tables
           );
-          (section.figures || []).forEach(drawUploadedFigure);
+          (section.figures || []).forEach((figure, figureIndex) => {
+            const image = doc.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
+            const widthLimit = doc.page.width - 144;
+            const scale = Math.min(widthLimit / image.width, 300 / image.height);
+            const width = image.width * scale;
+            const height = image.height * scale;
+            const title = `Figure ${figureIndex + 1}${figure.title ? `. ${figure.title}` : ""}`;
+            doc.font("Times-Bold").fontSize(12);
+            ensurePageSpace(doc, height + doc.heightOfString(title, { width: widthLimit }) + 30);
+            doc.fillColor("#124232").text(title, 72, doc.y, { width: widthLimit });
+            doc.moveDown(0.4);
+            const imageY = doc.y;
+            doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
+            doc.y = imageY + height + 12;
+            if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
+            doc.moveDown(0.8);
+          });
         }
       });
     }
