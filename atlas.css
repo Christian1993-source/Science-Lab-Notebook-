@@ -222,6 +222,17 @@ input:focus, textarea:focus {
 .variables-fields > div { padding: 20px; border: 1px solid var(--atlas-line); border-radius: 14px; background: #f7f5ee; }
 .variables-fields label { display: block; margin: 0 0 10px; font-weight: 700; }
 .variables-fields textarea { display: block; width: 100%; min-height: 130px; box-sizing: border-box; }
+.variable-field-label { margin: 0 0 8px; font-weight: 700; }
+.controlled-variables-help { margin: 0 0 16px; color: #526b68; font: 0.86rem/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.controlled-variables-editor { display: grid; gap: 14px; }
+.controlled-variables-viewport { overflow-x: auto; border: 1px solid #a9c1b8; border-radius: 10px; background: #fffdf8; }
+.controlled-variables-table { width: 100%; min-width: 650px; border-collapse: collapse; table-layout: fixed; }
+.controlled-variables-table th { padding: 12px 14px; border: 1px solid #829f94; background: #dfe9e4; color: #17392f; text-align: left; font: 700 0.9rem/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.controlled-variables-table td { padding: 8px; border: 1px solid #a9c1b8; vertical-align: top; }
+.controlled-variables-table textarea { min-height: 82px; padding: 11px 12px; border-radius: 7px; background: #fff; font-size: 0.92rem; line-height: 1.45; resize: vertical; }
+.control-method-cell { display: grid; gap: 8px; }
+.controlled-variable-remove { justify-self: end; padding: 7px 10px; border: 1px solid rgba(184, 63, 63, 0.22); border-radius: 7px; background: #fff5f5; color: #a53636; font: 700 0.74rem/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; }
+.controlled-variables-editor > button { justify-self: start; }
 .diagram-upload-card { margin-bottom: 0; }
 .diagram-upload-card #experimentalSetupStatus { margin-top: 12px; }
 .diagram-upload-card #experimentalSetupStatus:empty { display: none; }

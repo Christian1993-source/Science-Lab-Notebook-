@@ -7,6 +7,7 @@ const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 4;
 const REPORT_TIME_ZONE = "America/Puerto_Rico";
 const MAX_REFERENCE_COUNT = 30;
+const MAX_CONTROLLED_VARIABLE_COUNT = 30;
 
 const sectionKeys = [
   "researchQuestion",
@@ -132,6 +133,10 @@ function defaultReferenceEntries() {
   return [{ citation: "", url: "" }];
 }
 
+function defaultControlledVariables() {
+  return Array.from({ length: 3 }, () => ({ variable: "", control: "" }));
+}
+
 const scienceTableTemplates = {
   rawData: ["Trial", "", "", "", ""],
   processedData: ["Trial", "", "", "", ""],
@@ -163,6 +168,7 @@ const state = {
   programmaticUpdate: false,
   figures: [],
   references: defaultReferenceEntries(),
+  controlledVariables: defaultControlledVariables(),
   setupDiagram: { dataUrl: "", title: "", description: "" },
   imageUploadPending: false,
   tables: {
@@ -209,6 +215,7 @@ const elements = {
   referenceEntries: document.getElementById("referenceEntries"),
   addReference: document.getElementById("addReference"),
   referenceStatus: document.getElementById("referenceStatus"),
+  controlledVariablesEditor: document.getElementById("controlledVariablesEditor"),
   saveState: document.getElementById("saveState"),
   statusBadge: document.getElementById("documentStatus"),
   rawDataEditor: document.getElementById("rawDataEditor"),
@@ -344,6 +351,7 @@ function clearLegacyExampleDraft() {
   state.activeSections = createDefaultActiveSections();
   state.blockedAttempts = 0;
   state.references = defaultReferenceEntries();
+  state.controlledVariables = defaultControlledVariables();
   state.tables = {
     rawData: defaultTableList("rawData"),
     processedData: defaultTableList("processedData"),
@@ -553,6 +561,140 @@ function renderGraphFigures() {
     card.append(remove);
     container.append(card);
   });
+}
+
+function serializeControlledVariables(rows) {
+  return rows
+    .filter((row) => row.variable.trim() || row.control.trim())
+    .map((row) => row.control.trim() ? `${row.variable.trim()} - ${row.control.trim()}` : row.variable.trim())
+    .join("\n");
+}
+
+function normalizeControlledVariables(value, legacyText = "") {
+  let source = Array.isArray(value) ? value.slice(0, MAX_CONTROLLED_VARIABLE_COUNT) : [];
+  if (!source.length && String(legacyText || "").trim()) {
+    source = String(legacyText)
+      .split(/\n+/)
+      .map((line) => ({ variable: line.trim(), control: "" }));
+  }
+  const rows = source.map((row) => ({
+    variable: String(row?.variable || "").trim(),
+    control: String(row?.control || "").trim()
+  }));
+  while (rows.length < 3) rows.push({ variable: "", control: "" });
+  return rows.length ? rows : defaultControlledVariables();
+}
+
+function controlledVariablesAsTable(rows) {
+  return {
+    title: "",
+    headers: ["Controlled Variable", "How It Will Be Controlled"],
+    rows: normalizeControlledVariables(rows)
+      .filter((row) => row.variable || row.control)
+      .map((row) => [row.variable, row.control])
+  };
+}
+
+function renderControlledVariables() {
+  state.controlledVariables = normalizeControlledVariables(
+    state.controlledVariables,
+    sectionInputs.controlledVariables.value
+  );
+  sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
+  elements.controlledVariablesEditor.replaceChildren();
+
+  const viewport = document.createElement("div");
+  viewport.className = "controlled-variables-viewport";
+  const table = document.createElement("table");
+  table.className = "controlled-variables-table";
+
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["Controlled Variable", "How It Will Be Controlled"].forEach((label) => {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = label;
+    headerRow.append(th);
+  });
+  thead.append(headerRow);
+  table.append(thead);
+
+  const tbody = document.createElement("tbody");
+  state.controlledVariables.forEach((row, rowIndex) => {
+    const tr = document.createElement("tr");
+    const variableCell = document.createElement("td");
+    const variable = document.createElement("textarea");
+    variable.rows = 2;
+    variable.maxLength = 4000;
+    variable.value = row.variable;
+    variable.placeholder = "Example: Amount of water";
+    variable.setAttribute("aria-label", `Controlled variable ${rowIndex + 1}`);
+    variable.dataset.safeTypedValue = variable.value;
+    variable.disabled = state.status === "Submitted";
+    variable.addEventListener("input", () => {
+      row.variable = variable.value;
+      sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
+      persistLocalBackup();
+      queueIdleSave();
+    });
+    variableCell.append(variable);
+
+    const controlCell = document.createElement("td");
+    controlCell.className = "control-method-cell";
+    const control = document.createElement("textarea");
+    control.rows = 2;
+    control.maxLength = 4000;
+    control.value = row.control;
+    control.placeholder = "Example: Use 100 mL of water for every trial";
+    control.setAttribute("aria-label", `How controlled ${rowIndex + 1}`);
+    control.dataset.safeTypedValue = control.value;
+    control.disabled = state.status === "Submitted";
+    control.addEventListener("input", () => {
+      row.control = control.value;
+      sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
+      persistLocalBackup();
+      queueIdleSave();
+    });
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "controlled-variable-remove";
+    remove.textContent = "Remove row";
+    remove.setAttribute("aria-label", `Remove controlled variable ${rowIndex + 1}`);
+    remove.disabled = state.status === "Submitted";
+    remove.addEventListener("click", () => {
+      if (state.status === "Submitted") return;
+      if (state.controlledVariables.length === 1) {
+        state.controlledVariables[0] = { variable: "", control: "" };
+      } else {
+        state.controlledVariables.splice(rowIndex, 1);
+      }
+      renderControlledVariables();
+      persistLocalBackup();
+      queueIdleSave();
+    });
+    controlCell.append(control, remove);
+    tr.append(variableCell, controlCell);
+    tbody.append(tr);
+  });
+  table.append(tbody);
+  viewport.append(table);
+
+  const addRow = document.createElement("button");
+  addRow.type = "button";
+  addRow.className = "btn btn-secondary";
+  addRow.textContent = "Add controlled variable";
+  addRow.disabled = state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT;
+  addRow.addEventListener("click", () => {
+    if (state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT) return;
+    state.controlledVariables.push({ variable: "", control: "" });
+    renderControlledVariables();
+    persistLocalBackup();
+    queueIdleSave();
+    elements.controlledVariablesEditor.querySelector("tbody tr:last-child textarea")?.focus();
+  });
+
+  elements.controlledVariablesEditor.append(viewport, addRow);
 }
 
 function normalizeReferenceUrl(value) {
@@ -1348,8 +1490,7 @@ function getPhysicsExampleReport() {
         "Pendulum length, L (m), measured from the pivot to the center of the bob and changed through 0.20, 0.40, 0.60, 0.80, and 1.00 m.",
       dependentVariable:
         "Period, T (s), calculated by timing 10 complete oscillations and dividing the measured time by 10. T² (s²) is used for graphical analysis.",
-      controlledVariables:
-        "Bob mass (50 g), release angle (10°), same string and pivot, same photogate position, same release method, same room, and three trials at every length.",
+      controlledVariables: "",
       hypothesis:
         "If pendulum length increases, then the period will increase in proportion to the square root of length. Therefore, T² plotted against L will form a straight line through or close to the origin.",
       materials:
@@ -1387,6 +1528,13 @@ function getPhysicsExampleReport() {
       description:
         "The data form a straight-line pattern with a positive slope of 4.03 s²/m and R² = 0.999. No measured point is an obvious outlier."
     }],
+    controlledVariables: [
+      { variable: "Bob mass", control: "Use the same 50 g pendulum bob for every trial." },
+      { variable: "Release angle", control: "Release the bob from 10° for every trial using the same protractor." },
+      { variable: "String and pivot", control: "Use the same string and pivot throughout the investigation." },
+      { variable: "Measurement method", control: "Use the same photogate position and time 10 oscillations for every trial." },
+      { variable: "Testing location", control: "Complete all trials in the same room under the same conditions." }
+    ],
     tables: {
       rawData: [{
         title: "Table 1. Raw Timing Data for 10 Oscillations",
@@ -1446,6 +1594,7 @@ function resetAllReport({
   state.imageUploadPending = false;
   state.setupDiagram = { dataUrl: "", title: "", description: "" };
   state.references = defaultReferenceEntries();
+  state.controlledVariables = defaultControlledVariables();
   state.activeSections = createDefaultActiveSections();
   state.tables = {
     rawData: defaultTableList("rawData"),
@@ -1475,6 +1624,7 @@ function resetAllReport({
     status: "Draft",
     setupDiagram: state.setupDiagram,
     references: state.references,
+    controlledVariables: state.controlledVariables,
     sections: {},
     tables: {
       rawData: defaultTableList("rawData"),
@@ -1534,22 +1684,27 @@ function buildPrintableSections(report) {
     if (section.type === "variables") {
       const labels = {
         independentVariable: "Independent Variable",
-        dependentVariable: "Dependent Variable",
-        controlledVariables: "Controlled Variables"
+        dependentVariable: "Dependent Variable"
       };
-      const parts = section.fieldKeys
+      const parts = ["independentVariable", "dependentVariable"]
         .map((key) => ({ label: labels[key], text: String(report.sections?.[key] || "").trim() }))
         .filter((part) => part.text);
+      const controlledVariables = normalizeControlledVariables(
+        report.controlledVariables,
+        report.sections?.controlledVariables
+      ).filter((row) => row.variable || row.control);
       const legacyText = String(report.sections?.variables || "").trim();
-      if (legacyText && parts.length === 0) {
+      if (legacyText && parts.length === 0 && controlledVariables.length === 0) {
         sections.push({ type: "text", label: section.label, text: legacyText });
         return;
       }
-      if (parts.length) {
+      if (parts.length || controlledVariables.length) {
         sections.push({
-          type: "text",
+          type: "variables",
           label: section.label,
-          text: parts.map((part) => `${part.label}\n${part.text}`).join("\n\n")
+          parts,
+          controlledVariables,
+          controlledVariablesTable: controlledVariablesAsTable(controlledVariables)
         });
       }
       return;
@@ -1646,6 +1801,20 @@ function generateBasicPdfBlob(report) {
 
   printableSections.forEach((section, index) => {
     lines.push(`${index + 1}. ${section.label}`);
+    if (section.type === "variables") {
+      section.parts.forEach((part) => {
+        lines.push(part.label);
+        lines.push(...wrapPlainText(part.text));
+        lines.push("");
+      });
+      if (section.controlledVariables.length) {
+        lines.push("Controlled Variables");
+        lines.push("Controlled Variable | How It Will Be Controlled");
+        section.controlledVariables.forEach((row) => lines.push(`${row.variable} | ${row.control}`));
+        lines.push("");
+      }
+      return;
+    }
     if (section.type === "structuredText") {
       section.parts.forEach((part) => {
         lines.push(part.label);
@@ -1753,7 +1922,7 @@ function generatePdfInBrowser(report) {
   doc.addFont("LiberationSerif-Regular.ttf", "LabReportSerif", "normal");
   doc.addFont("LiberationSerif-Bold.ttf", "LabReportSerif", "bold");
   const printableSections = buildPrintableSections(report);
-  if (printableSections.some(section => section.tables?.length) && typeof doc.autoTable !== "function") {
+  if (printableSections.some(section => section.tables?.length || section.controlledVariables?.length) && typeof doc.autoTable !== "function") {
     throw new Error("The PDF table library is unavailable. Keep this page open so you do not lose your work, and try downloading again when it is available.");
   }
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -1864,6 +2033,17 @@ function generatePdfInBrowser(report) {
     if (section.type === "text") {
       return height + measureParagraphHeight(section.text, { size: 12, lineHeight: 17 }) + 12;
     }
+    if (section.type === "variables") {
+      section.parts.forEach((part) => {
+        height += measureParagraphHeight(part.label, { bold: true, size: 12, lineHeight: 16 });
+        height += measureParagraphHeight(part.text, { size: 12, lineHeight: 17 }) + 8;
+      });
+      if (section.controlledVariables.length) {
+        height += measureParagraphHeight("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
+        height += measureTableHeight(section.controlledVariablesTable, false);
+      }
+      return height + 8;
+    }
     if (section.type === "references") {
       section.entries.forEach((entry, entryIndex) => {
         height += measureParagraphHeight(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineHeight: 17 });
@@ -1940,6 +2120,49 @@ function generatePdfInBrowser(report) {
     startSectionOnWholePageWhenPossible(section, index);
     drawParagraph(`${index + 1}. ${section.label}`, { bold: true, size: 13, lineHeight: 18 });
 
+    if (section.type === "variables") {
+      section.parts.forEach((part) => {
+        drawParagraph(part.label, { bold: true, size: 12, lineHeight: 16 });
+        drawParagraph(part.text, { size: 12, lineHeight: 17 });
+        y += 4;
+      });
+      if (section.controlledVariables.length) {
+        drawParagraph("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
+        ensureSpace(96);
+        doc.autoTable({
+          startY: y,
+          head: [["Controlled Variable", "How It Will Be Controlled"]],
+          body: section.controlledVariables.map((row) => [row.variable, row.control]),
+          theme: "grid",
+          tableWidth: maxTextWidth,
+          showHead: "everyPage",
+          pageBreak: "auto",
+          rowPageBreak: "avoid",
+          styles: {
+            font: "LabReportSerif",
+            fontSize: 10,
+            cellPadding: { top: 7, right: 7, bottom: 7, left: 7 },
+            minCellHeight: 34,
+            overflow: "linebreak",
+            valign: "middle",
+            lineColor: [82, 120, 102],
+            lineWidth: 0.5
+          },
+          headStyles: {
+            fillColor: [232, 241, 236],
+            textColor: [20, 52, 39],
+            fontStyle: "bold",
+            minCellHeight: 34
+          },
+          bodyStyles: { minCellHeight: 38 },
+          columnStyles: { 0: { cellWidth: maxTextWidth / 2 }, 1: { cellWidth: maxTextWidth / 2 } },
+          margin: { top: margin, bottom: margin, left: margin, right: margin }
+        });
+        y = doc.lastAutoTable.finalY + 14;
+      }
+      y += 2;
+      return;
+    }
     if (section.type === "references") {
       section.entries.forEach((entry, entryIndex) => {
         drawParagraph(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineHeight: 17 });
@@ -2505,6 +2728,7 @@ function collectReport() {
     time: elements.time.value,
     figures: state.figures,
     references: normalizeReferenceEntries(state.references),
+    controlledVariables: normalizeControlledVariables(state.controlledVariables),
     setupDiagram: normalizeSingleFigure({
       dataUrl: state.setupDiagram.dataUrl,
       title: elements.experimentalSetupTitle.value,
@@ -2594,10 +2818,15 @@ function applyReportToUI(report) {
     normalizedReport.references,
     sectionInputs.references.value || sectionInputs.dpReferences.value
   );
+  state.controlledVariables = normalizeControlledVariables(
+    normalizedReport.controlledVariables,
+    sectionInputs.controlledVariables.value
+  );
   state.setupDiagram = setupDiagram;
   renderExperimentalSetup();
   renderGraphFigures();
   renderReferenceEntries();
+  renderControlledVariables();
 
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);

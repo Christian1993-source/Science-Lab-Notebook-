@@ -103,7 +103,8 @@ const REPORT_LIMITS = Object.freeze({
   rowsPerTable: 300,
   columnsPerTable: 12,
   references: 30,
-  referenceUrlLength: 2048
+  referenceUrlLength: 2048,
+  controlledVariables: 30
 });
 
 function invalidReport(message, status = 400) {
@@ -196,6 +197,33 @@ function normalizeReferences(value, legacyText = "") {
       }
       return entry;
     });
+}
+
+function normalizeControlledVariables(value, legacyText = "") {
+  if (Array.isArray(value) && value.length > REPORT_LIMITS.controlledVariables) {
+    throw invalidReport(`A report supports up to ${REPORT_LIMITS.controlledVariables} controlled variables.`);
+  }
+  let source = Array.isArray(value) ? value : [];
+  if (!source.length && cleanMultiline(legacyText)) {
+    source = cleanMultiline(legacyText)
+      .split(/\n+/)
+      .map((line) => ({ variable: line, control: "" }));
+  }
+  return source
+    .slice(0, REPORT_LIMITS.controlledVariables)
+    .map((row) => ({
+      variable: cleanMultiline(row?.variable),
+      control: cleanMultiline(row?.control)
+    }))
+    .filter((row) => row.variable || row.control);
+}
+
+function controlledVariablesAsTable(rows) {
+  return {
+    title: "",
+    headers: ["Controlled Variable", "How It Will Be Controlled"],
+    rows: rows.map((row) => [row.variable, row.control])
+  };
 }
 
 function defaultTable() {
@@ -327,6 +355,10 @@ function sanitizeReport(rawReport) {
     report.references,
     sections.references || sections.dpReferences
   );
+  const controlledVariables = normalizeControlledVariables(
+    report.controlledVariables,
+    sections.controlledVariables
+  );
 
   return {
     schemaVersion: Math.max(1, Math.floor(cleanNumber(report.schemaVersion) || 1)),
@@ -352,6 +384,7 @@ function sanitizeReport(rawReport) {
     time: cleanString(report.time),
     figures,
     references,
+    controlledVariables,
     setupDiagram,
     startedAt: cleanNumber(report.startedAt),
     timeSpentSeconds: cleanNumber(report.timeSpentSeconds),
@@ -524,6 +557,17 @@ function measureSectionHeight(doc, number, section) {
   if (section.type === "text") {
     return height + textHeight(section.value, { size: 12, lineGap: 4 }) + 18;
   }
+  if (section.type === "variables") {
+    section.parts.forEach((part) => {
+      height += textHeight(part.label, { font: "Times-Bold", size: 12 }) + 6;
+      height += textHeight(part.value, { size: 12, lineGap: 4 }) + 12;
+    });
+    if (section.controlledVariables.length) {
+      height += textHeight("Controlled Variables", { font: "Times-Bold", size: 12 }) + 8;
+      height += measureTableGridHeight(doc, controlledVariablesAsTable(section.controlledVariables));
+    }
+    return height + 8;
+  }
   if (section.type === "references") {
     section.entries.forEach((entry, entryIndex) => {
       height += textHeight(`${entryIndex + 1}. ${entry.citation}`, { size: 12, lineGap: 4 }) + 6;
@@ -695,6 +739,25 @@ function drawStructuredTextSection(doc, number, label, parts) {
   });
 }
 
+function drawVariablesSection(doc, number, label, parts, controlledVariables) {
+  drawSectionHeading(doc, number, label);
+  parts.forEach((part) => {
+    doc.font("Times-Bold").fontSize(12).fillColor("#124232").text(part.label);
+    doc.moveDown(0.2);
+    doc
+      .font("Times-Roman")
+      .fontSize(12)
+      .fillColor("#111111")
+      .text(part.value, { align: "justify", lineGap: 4 });
+    doc.moveDown(0.6);
+  });
+  if (controlledVariables.length) {
+    doc.font("Times-Bold").fontSize(12).fillColor("#124232").text("Controlled Variables");
+    doc.moveDown(0.3);
+    drawTableGrid(doc, controlledVariablesAsTable(controlledVariables));
+  }
+}
+
 function drawReferencesSection(doc, number, label, entries) {
   drawSectionHeading(doc, number, label);
   entries.forEach((entry, entryIndex) => {
@@ -787,22 +850,26 @@ function buildSectionsForPdf(report) {
     if (section.type === "variables") {
       const labels = {
         independentVariable: "Independent Variable",
-        dependentVariable: "Dependent Variable",
-        controlledVariables: "Controlled Variables"
+        dependentVariable: "Dependent Variable"
       };
-      const parts = section.fieldKeys
+      const parts = ["independentVariable", "dependentVariable"]
         .map((key) => ({ label: labels[key], value: cleanMultiline(report.sections[key]) }))
         .filter((part) => part.value);
+      const controlledVariables = normalizeControlledVariables(
+        report.controlledVariables,
+        report.sections.controlledVariables
+      );
       const legacyValue = cleanMultiline(report.sections.variables);
-      if (legacyValue && parts.length === 0) {
+      if (legacyValue && parts.length === 0 && controlledVariables.length === 0) {
         ordered.push({ type: "text", label: section.label, value: legacyValue });
         return;
       }
-      if (parts.length) {
+      if (parts.length || controlledVariables.length) {
         ordered.push({
-          type: "text",
+          type: "variables",
           label: section.label,
-          value: parts.map((part) => `${part.label}\n${part.value}`).join("\n\n")
+          parts,
+          controlledVariables
         });
       }
       return;
@@ -893,6 +960,8 @@ function generatePdf(report) {
         startSectionOnWholePageWhenPossible(doc, number, section);
         if (section.type === "text") {
           drawTextSection(doc, number, section.label, section.value);
+        } else if (section.type === "variables") {
+          drawVariablesSection(doc, number, section.label, section.parts, section.controlledVariables);
         } else if (section.type === "references") {
           drawReferencesSection(doc, number, section.label, section.entries);
         } else if (section.type === "structuredText") {
