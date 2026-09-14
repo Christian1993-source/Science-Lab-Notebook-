@@ -111,7 +111,21 @@ app.get("/chemistry-lab-guide.pdf", (_req, res) => {
 app.get("/dp-physics-sl-lab-guide.pdf", (_req, res) => {
   res.sendFile(path.join(__dirname, "dp-physics-sl-lab-guide.pdf"));
 });
-const publicFiles = new Set(["app.js", "figures.js", "loader.js", "report-fonts.js", "styles.css", "atlas.css", "lab-hero.jpg", "teacher.html", "teacher.js"]);
+const publicFiles = new Set([
+  "app.js",
+  "figures.js",
+  "loader.js",
+  "report-fonts.js",
+  "styles.css",
+  "atlas.css",
+  "lab-hero.jpg",
+  "favicon.svg",
+  "favicon-32.png",
+  "apple-touch-icon.png",
+  "safari-pinned-tab.svg",
+  "teacher.html",
+  "teacher.js"
+]);
 app.get(["/", "/index.html"], (_req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.use("/vendor", express.static(path.join(__dirname, "vendor"), { dotfiles: "deny", fallthrough: false }));
 app.get("/:publicFile", (req, res, next) => {
