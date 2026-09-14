@@ -710,7 +710,6 @@ function renderControlledVariables() {
     variable.rows = 2;
     variable.maxLength = 4000;
     variable.value = row.variable;
-    variable.placeholder = "Example: Amount of water";
     variable.setAttribute("aria-label", `Controlled variable ${rowIndex + 1}`);
     variable.dataset.safeTypedValue = variable.value;
     variable.disabled = state.status === "Submitted";
@@ -728,7 +727,6 @@ function renderControlledVariables() {
     control.rows = 2;
     control.maxLength = 4000;
     control.value = row.control;
-    control.placeholder = "Example: Use 100 mL for every trial, or explain why it cannot be controlled";
     control.setAttribute("aria-label", `How controlled or why it cannot be controlled ${rowIndex + 1}`);
     control.dataset.safeTypedValue = control.value;
     control.disabled = state.status === "Submitted";
