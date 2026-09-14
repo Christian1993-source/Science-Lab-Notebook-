@@ -997,7 +997,9 @@ function buildSectionsForPdf(report) {
       const notes = cleanMultiline(report.sections[section.noteKey]);
       const sampleCalculations = cleanMultiline(report.sections[section.sampleCalculationsKey]);
       const tables = normalizeTableList(report.tables?.[section.key]);
-      const figures = section.key === "processedData" ? (report.figures || []).filter(figure => figure.dataUrl) : [];
+      const figures = section.key === "processedData" && report.studentProgramme === "DP"
+        ? (report.figures || []).filter(figure => figure.dataUrl)
+        : [];
       const calculationImage = report.sampleCalculationImages?.[section.key]
         || { dataUrl: "", title: "", description: "" };
       if (notes.length > 0 || sampleCalculations.length > 0 || calculationImage.dataUrl || tableListHasContent(tables) || figures.length) {

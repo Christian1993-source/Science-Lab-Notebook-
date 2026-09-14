@@ -1285,6 +1285,8 @@ function renderProgramUI() {
   const config = PROGRAM_CONFIGS[state.program];
   const active = state.activeSections[state.program];
   const isDp = elements.selectedProgram.value === "DP";
+  const graphPanel = document.querySelector(".graph-upload-panel");
+  if (graphPanel) graphPanel.hidden = !isDp;
   const visibleSections = config.sections.filter((key) => {
     const definition = sectionOrder.find((section) => section.key === key && section.program === state.program);
     return !definition?.dpOnly || isDp;
@@ -1859,7 +1861,9 @@ function buildPrintableSections(report) {
     const sampleCalculations = String(report.sections?.[section.sampleCalculationsKey] || "").trim();
     const tableList = normalizeTableList(report.tables?.[section.key], section.key);
     const contentTables = tableList.filter((table) => tableHasContent(table, section.key));
-    const figures = section.key === "processedData" ? LabFigures.normalize(report.figures).filter(figure => figure.dataUrl) : [];
+    const figures = section.key === "processedData" && report.studentProgramme === "DP"
+      ? LabFigures.normalize(report.figures).filter(figure => figure.dataUrl)
+      : [];
     const calculationImage = normalizeSingleFigure(report.sampleCalculationImages?.[section.key]);
     if (notes || sampleCalculations || calculationImage.dataUrl || contentTables.length > 0 || figures.length) {
       sections.push({
@@ -3221,7 +3225,7 @@ async function submitFinalReport() {
     elements.saveState.textContent = "Upload the experimental setup image, or clear its unfinished title and explanation.";
     return;
   }
-  if (report.program === "myp" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {
+  if (report.studentProgramme === "DP" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {
     elements.saveState.textContent = "Upload an image for each graph with a title or description, or remove the unfinished graph.";
     return;
   }
