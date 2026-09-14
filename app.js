@@ -72,7 +72,7 @@ const sectionOrder = [
     sampleCalculationsKey: "processedDataSampleCalculations",
     label: "Processed Data"
   },
-  { type: "text", key: "conclusion", label: "Conclusion" },
+  { type: "text", key: "conclusion", label: "Conclusion (CER)" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
   { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations", dpOnly: true },
@@ -93,7 +93,7 @@ const sectionOrder = [
     label: "Processed Data",
     program: "dp"
   },
-  { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
+  { type: "text", key: "dpConclusion", label: "Conclusion (CER)", program: "dp" },
   { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" },
   { type: "text", key: "dpImprovements", label: "Improvements", program: "dp" },
   { type: "text", key: "dpReferences", label: "References (APA 7)", program: "dp" }
@@ -1124,6 +1124,37 @@ function attachInputListeners() {
     });
     field.addEventListener("blur", () => {
       if (state.status !== "Submitted") update(LabFigures.bulletedMaterials(field.value));
+    });
+  });
+  [sectionInputs.procedure, sectionInputs.dpProcedure].forEach(field => {
+    const update = (value, caret = value.length) => {
+      field.value = value;
+      field.dataset.safeTypedValue = value;
+      field.setSelectionRange(caret, caret);
+      persistLocalBackup();
+      queueIdleSave();
+    };
+    field.addEventListener("focus", () => {
+      if (state.status === "Submitted") return;
+      if (!field.value.trim()) update("Step 1: ");
+    });
+    field.addEventListener("keydown", event => {
+      if (event.key !== "Enter" || event.isComposing || state.status === "Submitted") return;
+      const start = field.selectionStart;
+      const end = field.selectionEnd;
+      const before = field.value.slice(0, start);
+      const currentLine = before.slice(before.lastIndexOf("\n") + 1);
+      if (!currentLine.replace(/^\s*Step\s+\d+\s*:\s*/i, "").trim()) {
+        event.preventDefault();
+        return;
+      }
+      event.preventDefault();
+      const nextStep = before.split("\n").length + 1;
+      const insertion = `\nStep ${nextStep}: `;
+      update(before + insertion + field.value.slice(end), before.length + insertion.length);
+    });
+    field.addEventListener("blur", () => {
+      if (state.status !== "Submitted") update(LabFigures.steppedProcedure(field.value));
     });
   });
   const standardInputs = [elements.title, elements.teacher, elements.studentName, elements.date, elements.classCode, ...Object.values(sectionInputs)];
@@ -2855,9 +2886,13 @@ function formatDuration(seconds) {
 function collectReport() {
   const sections = {};
   sectionKeys.forEach((sectionKey) => {
-    sections[sectionKey] = ["materials", "dpMaterials"].includes(sectionKey)
-      ? LabFigures.bulletedMaterials(sectionInputs[sectionKey].value)
-      : sectionInputs[sectionKey].value.trim();
+    if (["materials", "dpMaterials"].includes(sectionKey)) {
+      sections[sectionKey] = LabFigures.bulletedMaterials(sectionInputs[sectionKey].value);
+    } else if (["procedure", "dpProcedure"].includes(sectionKey)) {
+      sections[sectionKey] = LabFigures.steppedProcedure(sectionInputs[sectionKey].value);
+    } else {
+      sections[sectionKey] = sectionInputs[sectionKey].value.trim();
+    }
   });
 
   return {
@@ -2948,6 +2983,8 @@ function applyReportToUI(report) {
     sectionInputs[sectionKey].value = normalizedReport.sections?.[sectionKey] || "";
     if (["materials", "dpMaterials"].includes(sectionKey)) {
       sectionInputs[sectionKey].value = LabFigures.bulletedMaterials(sectionInputs[sectionKey].value);
+    } else if (["procedure", "dpProcedure"].includes(sectionKey)) {
+      sectionInputs[sectionKey].value = LabFigures.steppedProcedure(sectionInputs[sectionKey].value);
     }
   });
   if (!sectionInputs.backgroundPurpose.value && !sectionInputs.backgroundScience.value && sectionInputs.backgroundInformation.value) {

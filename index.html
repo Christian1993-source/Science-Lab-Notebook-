@@ -8,13 +8,13 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260914-blank-controlled-variables-1" />
+    <meta name="notebook-release" content="20260914-procedure-steps-1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
     <link rel="mask-icon" href="safari-pinned-tab.svg?v=20260914-chemistry-favicon-1" color="#0f8f8d" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260914-blank-controlled-variables-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260914-procedure-steps-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -170,7 +170,8 @@
 
           <section class="card report-section" data-program="myp" data-section-key="procedure" id="sec-procedure">
             <div class="section-heading"><h2>VI. Procedure</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-procedure"></textarea>
+            <textarea id="section-procedure" aria-describedby="procedure-tip"></textarea>
+            <p class="materials-tip procedure-tip" id="procedure-tip"><span>Press <kbd>Enter</kbd> to add the next step.</span></p>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="experimentalSetup" data-dp-only="true" id="sec-experimentalSetup">
@@ -222,7 +223,7 @@
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="conclusion" id="sec-conclusion">
-            <div class="section-heading"><h2>X. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>X. Conclusion (CER)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-conclusion"></textarea>
           </section>
 
@@ -288,7 +289,8 @@
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpProcedure" id="sec-dpProcedure">
             <div class="section-heading"><h2>VI. Procedure</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
-            <textarea id="section-dpProcedure"></textarea>
+            <textarea id="section-dpProcedure" aria-describedby="dp-procedure-tip"></textarea>
+            <p class="materials-tip procedure-tip" id="dp-procedure-tip"><span>Press <kbd>Enter</kbd> to add the next step.</span></p>
           </section>
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpRawData" id="sec-dpRawData">
@@ -320,7 +322,7 @@
           </section>
 
           <section class="card report-section dp-section" data-program="dp" data-section-key="dpConclusion" id="sec-dpConclusion">
-            <div class="section-heading"><h2>IX. Conclusion</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
+            <div class="section-heading"><h2>IX. Conclusion (CER)</h2><button type="button" class="section-action" data-action="remove-section">Remove part</button></div>
             <textarea id="section-dpConclusion"></textarea>
           </section>
 
@@ -356,6 +358,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260914-blank-controlled-variables-1"></script>
+    <script src="loader.js?v=20260914-procedure-steps-1"></script>
   </body>
 </html>

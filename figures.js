@@ -40,7 +40,12 @@
       .map(line => line.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, "").trim())
       .filter(Boolean).map(line => `• ${line}`).join("\n");
   }
-  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize, hasTableContent, bulletedMaterials };
+  function steppedProcedure(value) {
+    return String(value || "").split(/\r?\n/)
+      .map(line => line.replace(/^\s*(?:Step\s+\d+\s*:|\d+[.):]|[-*•])\s*/i, "").trim())
+      .filter(Boolean).map((line, index) => `Step ${index + 1}: ${line}`).join("\n");
+  }
+  const api = { MAX_COUNT, MAX_IMAGE_LENGTH, MAX_TOTAL_LENGTH, normalize, hasTableContent, bulletedMaterials, steppedProcedure };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.LabFigures = api;
 })(typeof window !== "undefined" ? window : this);

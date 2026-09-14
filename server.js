@@ -41,7 +41,7 @@ const sectionOrder = [
     sampleCalculationsKey: "processedDataSampleCalculations",
     label: "Processed Data"
   },
-  { type: "text", key: "conclusion", label: "Conclusion" },
+  { type: "text", key: "conclusion", label: "Conclusion (CER)" },
   { type: "text", key: "evaluation", label: "Evaluation" },
   { type: "text", key: "improvements", label: "Improvements" },
   { type: "text", key: "safetyConsiderations", label: "Safety, Ethical & Environmental Considerations", dpOnly: true },
@@ -62,7 +62,7 @@ const sectionOrder = [
     label: "Processed Data",
     program: "dp"
   },
-  { type: "text", key: "dpConclusion", label: "Conclusion", program: "dp" },
+  { type: "text", key: "dpConclusion", label: "Conclusion (CER)", program: "dp" },
   { type: "text", key: "dpEvaluation", label: "Evaluation", program: "dp" },
   { type: "text", key: "dpImprovements", label: "Improvements", program: "dp" },
   { type: "text", key: "dpReferences", label: "References (APA 7)", program: "dp" }
@@ -349,9 +349,14 @@ function sanitizeReport(rawReport) {
       return;
     }
     if (section.type === "text") {
-      sections[section.key] = ["materials", "dpMaterials"].includes(section.key)
-        ? LabFigures.bulletedMaterials(cleanMultiline(report.sections?.[section.key]))
-        : cleanMultiline(report.sections?.[section.key]);
+      const value = cleanMultiline(report.sections?.[section.key]);
+      if (["materials", "dpMaterials"].includes(section.key)) {
+        sections[section.key] = LabFigures.bulletedMaterials(value);
+      } else if (["procedure", "dpProcedure"].includes(section.key)) {
+        sections[section.key] = LabFigures.steppedProcedure(value);
+      } else {
+        sections[section.key] = value;
+      }
       return;
     }
     if (section.type === "data" && section.noteKey) {
