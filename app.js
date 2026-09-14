@@ -160,6 +160,7 @@ const state = {
   reportId: generateId(),
   reportToken: localStorage.getItem(REPORT_TOKEN_KEY) || generateId(),
   startedAt: 0,
+  downloadedAt: "",
   status: "Draft",
   program: "myp",
   classCode: "",
@@ -364,6 +365,7 @@ function clearLegacyExampleDraft() {
   state.reportId = generateId();
   state.reportToken = generateId();
   state.startedAt = 0;
+  state.downloadedAt = "";
   state.status = "Draft";
   state.classCode = "";
   state.activeSections = createDefaultActiveSections();
@@ -1695,6 +1697,7 @@ function resetAllReport({
   state.reportId = generateId();
   state.reportToken = generateId();
   state.startedAt = 0;
+  state.downloadedAt = "";
   state.status = "Draft";
   state.classCode = "";
   state.blockedAttempts = 0;
@@ -1905,11 +1908,12 @@ function generateBasicPdfBlob(report) {
   lines.push(`Teacher: ${report.teacher || "Not specified"}`);
   lines.push(`Student: ${report.studentName || ""}`);
   lines.push(`Date: ${report.date || ""}`);
-  lines.push(`Time: ${report.time || ""}`);
+  lines.push(`Start Time: ${report.time || ""}`);
+  lines.push(`Download Time: ${report.downloadTime || ""}`);
   lines.push(`Programme: ${report.studentProgramme || "MYP"}`);
   lines.push(`Class Code: ${report.classCode || ""}`);
   lines.push(`Copy and Paste Attempts: ${report.blockedAttempts || 0}`);
-  lines.push(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`);
+  lines.push(`Total Time: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`);
   lines.push("");
 
   printableSections.forEach((section, index) => {
@@ -2251,7 +2255,8 @@ function generatePdfInBrowser(report) {
   });
   drawParagraph(`Student: ${report.studentName || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Date: ${report.date || ""}`, { size: 12, align: "center", lineHeight: 16 });
-  drawParagraph(`Time: ${report.time || ""}`, { size: 12, align: "center", lineHeight: 16 });
+  drawParagraph(`Start Time: ${report.time || ""}`, { size: 12, align: "center", lineHeight: 16 });
+  drawParagraph(`Download Time: ${report.downloadTime || ""}`, { size: 12, align: "center", lineHeight: 16 });
   drawParagraph(`Programme: ${report.studentProgramme || "MYP"}  |  Class Code: ${report.classCode || ""}`, {
     size: 11,
     align: "center",
@@ -2262,7 +2267,7 @@ function generatePdfInBrowser(report) {
     align: "center",
     lineHeight: 14
   });
-  drawParagraph(`Time Spent: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`, {
+  drawParagraph(`Total Time: ${formatDuration(report.timeSpentSeconds || getTimeSpentSeconds())}`, {
     size: 12,
     align: "center",
     lineHeight: 16
@@ -2860,12 +2865,13 @@ function onTableChange() {
   queueIdleSave();
 }
 
-function getTimeSpentSeconds() {
+function getTimeSpentSeconds(endTimestamp = Date.now()) {
+  const end = Number(endTimestamp);
   const start = Number(state.startedAt);
-  if (!Number.isFinite(start) || start <= 0) {
+  if (!Number.isFinite(start) || start <= 0 || !Number.isFinite(end)) {
     return 0;
   }
-  return Math.max(0, Math.round((Date.now() - start) / 1000));
+  return Math.max(0, Math.round((end - start) / 1000));
 }
 
 function formatDuration(seconds) {
@@ -2910,6 +2916,8 @@ function collectReport() {
     studentName: elements.studentName.value.trim(),
     date: elements.date.value,
     time: elements.time.value,
+    downloadedAt: state.downloadedAt,
+    downloadTime: state.downloadedAt ? formatAutomaticDateTime(state.downloadedAt).time : "",
     figures: state.figures,
     references: normalizeReferenceEntries(state.references),
     controlledVariables: normalizeControlledVariables(state.controlledVariables),
@@ -2920,7 +2928,7 @@ function collectReport() {
     }),
     sampleCalculationImages: normalizeSampleCalculationImages(state.sampleCalculationImages),
     startedAt: state.startedAt,
-    timeSpentSeconds: getTimeSpentSeconds(),
+    timeSpentSeconds: getTimeSpentSeconds(state.downloadedAt ? Date.parse(state.downloadedAt) : Date.now()),
     status: state.status,
     sections,
     tables: {
@@ -2953,6 +2961,7 @@ function applyReportToUI(report) {
     state.startedAt = !Number.isNaN(parsedStartedAt) && parsedStartedAt > 0 ? parsedStartedAt : 0;
     localStorage.setItem(REPORT_STARTED_AT_KEY, String(state.startedAt));
   }
+  state.downloadedAt = String(normalizedReport.downloadedAt || "");
 
   state.programmaticUpdate = true;
   state.program = "myp";
@@ -3229,6 +3238,11 @@ async function submitFinalReport() {
     return;
   }
 
+  const downloadMoment = new Date();
+  report.downloadedAt = downloadMoment.toISOString();
+  report.downloadTime = formatAutomaticDateTime(downloadMoment).time;
+  report.timeSpentSeconds = getTimeSpentSeconds(downloadMoment.getTime());
+
   elements.submitBtn.disabled = true;
   elements.saveState.textContent = "Generating final PDF...";
 
@@ -3267,6 +3281,7 @@ async function submitFinalReport() {
     if (report.id !== state.reportId) return;
     downloadPdf(pdfBlob, `${safeFileName(report.title)}.pdf`);
 
+    state.downloadedAt = report.downloadedAt;
     state.status = "Submitted";
     persistLocalBackup();
     updateStatusBadge();

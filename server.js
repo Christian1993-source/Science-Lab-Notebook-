@@ -12,6 +12,7 @@ dotenv.config();
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const SUPABASE_TABLE = process.env.SUPABASE_TABLE || "lab_reports";
+const REPORT_TIME_ZONE = "America/Puerto_Rico";
 
 app.disable("x-powered-by");
 
@@ -398,6 +399,8 @@ function sanitizeReport(rawReport) {
     studentName: cleanString(report.studentName),
     date: cleanString(report.date),
     time: cleanString(report.time),
+    downloadedAt: cleanString(report.downloadedAt).slice(0, 64),
+    downloadTime: cleanString(report.downloadTime).slice(0, 64),
     figures,
     references,
     controlledVariables,
@@ -476,6 +479,18 @@ function formatDuration(secondsInput) {
     return `${minutes}m ${seconds}s`;
   }
   return `${seconds}s`;
+}
+
+function formatReportTime(timestamp) {
+  const parsed = new Date(timestamp);
+  if (!Number.isFinite(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: REPORT_TIME_ZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  }).format(parsed);
 }
 
 async function getReportById(reportId) {
@@ -1021,10 +1036,11 @@ function generatePdf(report) {
       align: "center"
     });
     doc.text(`Date: ${report.date}`, { align: "center" });
-    doc.text(`Time: ${report.time}`, { align: "center" });
+    doc.text(`Start Time: ${report.time}`, { align: "center" });
+    doc.text(`Download Time: ${report.downloadTime || formatReportTime(report.downloadedAt)}`, { align: "center" });
     doc.text(`Programme: ${report.studentProgramme || report.program.toUpperCase()} | Class Code: ${report.classCode}`, { align: "center" });
     doc.fontSize(10).fillColor("#4b5563").text(`Copy and Paste Attempts: ${report.blockedAttempts}`, { align: "center" });
-    doc.text(`Time Spent: ${formatDuration(report.timeSpentSeconds)}`, { align: "center" });
+    doc.text(`Total Time: ${formatDuration(report.timeSpentSeconds)}`, { align: "center" });
     doc.moveDown(1);
 
     const printableSections = buildSectionsForPdf(report);
@@ -1173,7 +1189,18 @@ app.post("/api/submit", async (req, res) => {
       return res.status(409).json({ error: "Report already submitted and locked." });
     }
 
-    const finalReport = { ...report, status: "Submitted" };
+    const downloadedAt = Number.isFinite(Date.parse(report.downloadedAt))
+      ? report.downloadedAt
+      : new Date().toISOString();
+    const finalReport = {
+      ...report,
+      downloadedAt,
+      downloadTime: formatReportTime(downloadedAt),
+      timeSpentSeconds: report.startedAt > 0
+        ? Math.max(0, Math.round((Date.parse(downloadedAt) - report.startedAt) / 1000))
+        : report.timeSpentSeconds,
+      status: "Submitted"
+    };
     const pdfBuffer = await generatePdf(finalReport);
     await saveReport(finalReport, "Submitted");
 
