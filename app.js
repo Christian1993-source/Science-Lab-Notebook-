@@ -588,7 +588,7 @@ function normalizeControlledVariables(value, legacyText = "") {
 function controlledVariablesAsTable(rows) {
   return {
     title: "",
-    headers: ["Controlled Variable", "How It Will Be Controlled"],
+    headers: ["Controlled Variable", "How It Will Be Controlled / Why It Cannot Be Controlled"],
     rows: normalizeControlledVariables(rows)
       .filter((row) => row.variable || row.control)
       .map((row) => [row.variable, row.control])
@@ -610,7 +610,7 @@ function renderControlledVariables() {
 
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  ["Controlled Variable", "How It Will Be Controlled"].forEach((label) => {
+  ["Controlled Variable", "How It Will Be Controlled / Why It Cannot Be Controlled"].forEach((label) => {
     const th = document.createElement("th");
     th.scope = "col";
     th.textContent = label;
@@ -645,8 +645,8 @@ function renderControlledVariables() {
     control.rows = 2;
     control.maxLength = 4000;
     control.value = row.control;
-    control.placeholder = "Example: Use 100 mL of water for every trial";
-    control.setAttribute("aria-label", `How controlled ${rowIndex + 1}`);
+    control.placeholder = "Example: Use 100 mL for every trial, or explain why it cannot be controlled";
+    control.setAttribute("aria-label", `How controlled or why it cannot be controlled ${rowIndex + 1}`);
     control.dataset.safeTypedValue = control.value;
     control.disabled = state.status === "Submitted";
     control.addEventListener("input", () => {
@@ -1806,7 +1806,7 @@ function generateBasicPdfBlob(report) {
       });
       if (section.controlledVariables.length) {
         lines.push("Controlled Variables");
-        lines.push("Controlled Variable | How It Will Be Controlled");
+        lines.push("Controlled Variable | How It Will Be Controlled / Why It Cannot Be Controlled");
         section.controlledVariables.forEach((row) => lines.push(`${row.variable} | ${row.control}`));
         lines.push("");
       }
@@ -2157,7 +2157,7 @@ function generatePdfInBrowser(report) {
         drawParagraph("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
         doc.autoTable({
           startY: y,
-          head: [["Controlled Variable", "How It Will Be Controlled"]],
+          head: [["Controlled Variable", "How It Will Be Controlled / Why It Cannot Be Controlled"]],
           body: section.controlledVariables.map((row) => [row.variable, row.control]),
           theme: "grid",
           tableWidth: maxTextWidth,

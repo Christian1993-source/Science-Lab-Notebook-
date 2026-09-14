@@ -221,7 +221,7 @@ function normalizeControlledVariables(value, legacyText = "") {
 function controlledVariablesAsTable(rows) {
   return {
     title: "",
-    headers: ["Controlled Variable", "How It Will Be Controlled"],
+    headers: ["Controlled Variable", "How It Will Be Controlled / Why It Cannot Be Controlled"],
     rows: rows.map((row) => [row.variable, row.control])
   };
 }
