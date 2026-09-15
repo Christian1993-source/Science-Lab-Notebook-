@@ -8,13 +8,13 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260914-student-qa-1" />
+    <meta name="notebook-release" content="20260915-raw-data-graphs-analysis-1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
     <link rel="mask-icon" href="safari-pinned-tab.svg?v=20260914-chemistry-favicon-1" color="#0f8f8d" />
     <link rel="stylesheet" href="styles.css?v=20260903-6" />
-    <link rel="stylesheet" href="atlas.css?v=20260914-student-qa-1" />
+    <link rel="stylesheet" href="atlas.css?v=20260915-raw-data-graphs-analysis-1" />
   </head>
   <body class="program-myp">
     <div class="page-shell">
@@ -196,6 +196,14 @@
             <label for="section-rawDataNotes">Written Analysys/ Notes</label>
             <textarea id="section-rawDataNotes" class="data-notes"></textarea>
             <div id="rawDataEditor" class="table-editor"></div>
+            <section class="graph-upload-panel" aria-labelledby="rawGraphUploadHeading" hidden>
+              <h3 id="rawGraphUploadHeading">Graphs &amp; Figures</h3>
+              <p>Upload graphs or figures for the raw data, then write a title, description, and analysis for each image.</p>
+              <p id="rawGraphUploadHelp" class="meta">PNG, JPG or WebP · Up to 6 figures · 8 MB per original image.</p>
+              <p id="rawGraphUploadStatus" role="status" aria-live="polite"></p>
+              <div id="rawGraphFigures"></div>
+              <button id="addRawGraph" type="button" class="btn btn-secondary">Add another graph</button>
+            </section>
           </section>
 
           <section class="card report-section" data-program="myp" data-section-key="processedData" id="sec-processedData">
@@ -213,9 +221,9 @@
               <p class="meta" role="status" aria-live="polite" data-calculation-image-status="processedData"></p>
             </div>
             <div id="processedDataEditor" class="table-editor"></div>
-            <section class="graph-upload-panel" aria-labelledby="graphUploadHeading">
+            <section class="graph-upload-panel" aria-labelledby="graphUploadHeading" hidden>
               <h3 id="graphUploadHeading">Graphs &amp; Figures</h3>
-              <p>Upload graphs exported from your software, then write a title and description for each figure.</p>
+              <p>Upload graphs exported from your software, then write a title, description, and analysis for each figure.</p>
               <p id="graphUploadHelp" class="meta">PNG, JPG or WebP · Up to 6 figures · 8 MB per original image.</p>
               <p id="graphUploadStatus" role="status" aria-live="polite"></p>
               <div id="graphFigures"></div>
@@ -359,6 +367,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260914-student-qa-1"></script>
+    <script src="loader.js?v=20260915-raw-data-graphs-analysis-1"></script>
   </body>
 </html>

@@ -17,7 +17,8 @@
       return {
         dataUrl,
         title: String(figure.title || "").trim().slice(0, 160),
-        description: String(figure.description || "").trim().slice(0, 2000)
+        description: String(figure.description || "").trim().slice(0, 2000),
+        analysis: String(figure.analysis || "").trim().slice(0, 4000)
       };
     });
   }

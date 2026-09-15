@@ -167,6 +167,7 @@ const state = {
   activeSections: createDefaultActiveSections(),
   blockedAttempts: 0,
   programmaticUpdate: false,
+  rawFigures: [],
   figures: [],
   references: defaultReferenceEntries(),
   controlledVariables: defaultControlledVariables(),
@@ -300,15 +301,18 @@ function init() {
       document.querySelector(`[data-calculation-image-status="${key}"]`).textContent = "Handwritten calculations image removed.";
     });
   });
-  document.getElementById("addGraph").addEventListener("click", () => {
-    if (state.status === "Submitted" || state.imageUploadPending) return;
-    if (state.figures.length >= LabFigures.MAX_COUNT) {
-      document.getElementById("graphUploadStatus").textContent = "You can add up to 6 graph images.";
-      return;
-    }
-    state.figures.push({ dataUrl: "", title: "", description: "" });
-    renderGraphFigures();
-    persistLocalBackup();
+  [["rawData", "addRawGraph"], ["processedData", "addGraph"]].forEach(([sectionKey, buttonId]) => {
+    document.getElementById(buttonId).addEventListener("click", () => {
+      if (state.status === "Submitted" || state.imageUploadPending) return;
+      const context = getGraphContext(sectionKey);
+      if (context.figures.length >= LabFigures.MAX_COUNT) {
+        document.getElementById(context.statusId).textContent = "You can add up to 6 graph images.";
+        return;
+      }
+      context.figures.push({ dataUrl: "", title: "", description: "", analysis: "" });
+      renderGraphFigures(sectionKey);
+      persistLocalBackup();
+    });
   });
   elements.addReference.addEventListener("click", () => {
     if (state.status === "Submitted") return;
@@ -373,6 +377,7 @@ function clearLegacyExampleDraft() {
   state.references = defaultReferenceEntries();
   state.controlledVariables = defaultControlledVariables();
   state.setupDiagram = { dataUrl: "", title: "", description: "" };
+  state.rawFigures = [];
   state.sampleCalculationImages = normalizeSampleCalculationImages();
   state.tables = {
     rawData: defaultTableList("rawData"),
@@ -548,20 +553,22 @@ async function uploadGraphImages(event) {
   if (state.status === "Submitted" || state.imageUploadPending) return;
   const files = Array.from(input.files || []);
   if (!files.length) return;
-  const message = document.getElementById("graphUploadStatus");
+  const sectionKey = input.dataset.figureSection === "rawData" ? "rawData" : "processedData";
+  const context = getGraphContext(sectionKey);
+  const message = document.getElementById(context.statusId);
   const reportId = state.reportId;
   state.imageUploadPending = true;
   input.disabled = true;
   message.textContent = "Preparing graph images…";
   try {
     const index = Number(input.dataset.figureIndex);
-    const target = state.figures[index];
+    const target = context.figures[index];
     const added = await prepareUploadedImage(files[0]);
     if (reportId !== state.reportId || state.status === "Submitted") return;
-    if (state.figures[index] !== target) return;
-    const candidate = LabFigures.normalize(state.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
+    if (context.figures[index] !== target) return;
+    const candidate = LabFigures.normalize(context.figures.map((figure, position) => position === index ? { ...figure, dataUrl: added.dataUrl } : figure));
     // Check available draft storage before replacing the current figures.
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ ...collectReport(), figures: candidate }));
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ ...collectReport(), [context.reportKey]: candidate }));
     // Keep the existing fields and their listeners while the student is typing.
     target.dataUrl = added.dataUrl;
     const preview = input.parentElement.querySelector("img");
@@ -585,11 +592,31 @@ async function uploadGraphImages(event) {
   }
 }
 
-function renderGraphFigures() {
-  const container = document.getElementById("graphFigures");
+function getGraphContext(sectionKey) {
+  if (sectionKey === "rawData") {
+    return {
+      figures: state.rawFigures,
+      containerId: "rawGraphFigures",
+      statusId: "rawGraphUploadStatus",
+      reportKey: "rawFigures",
+      idPrefix: "raw-graph"
+    };
+  }
+  return {
+    figures: state.figures,
+    containerId: "graphFigures",
+    statusId: "graphUploadStatus",
+    reportKey: "figures",
+    idPrefix: "graph"
+  };
+}
+
+function renderGraphFigures(sectionKey = "processedData") {
+  const context = getGraphContext(sectionKey);
+  const container = document.getElementById(context.containerId);
   container.replaceChildren();
-  if (!state.figures.length && state.status !== "Submitted") state.figures.push({ dataUrl: "", title: "", description: "" });
-  state.figures.forEach((figure, index) => {
+  if (!context.figures.length && state.status !== "Submitted") context.figures.push({ dataUrl: "", title: "", description: "", analysis: "" });
+  context.figures.forEach((figure, index) => {
     const card = document.createElement("div");
     card.className = "graph-figure";
     const heading = document.createElement("h4");
@@ -599,10 +626,14 @@ function renderGraphFigures() {
     preview.hidden = !figure.dataUrl;
     preview.alt = figure.title || `Graph preview ${index + 1}`;
     card.append(heading);
-    for (const [key, labelText, tag, limit] of [["title", "Graph title", "input", 160], ["description", "Image description", "textarea", 2000]]) {
+    for (const [key, labelText, tag, limit] of [
+      ["title", "Graph title", "input", 160],
+      ["description", "Image description", "textarea", 2000],
+      ["analysis", "Graph Analysis", "textarea", 4000]
+    ]) {
       const label = document.createElement("label");
       const field = document.createElement(tag);
-      field.id = `graph-${index}-${key}`;
+      field.id = `${context.idPrefix}-${index}-${key}`;
       label.htmlFor = field.id;
       label.textContent = `${labelText} — Figure ${index + 1}`;
       field.value = figure[key];
@@ -620,12 +651,13 @@ function renderGraphFigures() {
       if (key === "title") {
         const uploadLabel = document.createElement("label");
         const upload = document.createElement("input");
-        upload.id = `graph-${index}-image`;
+        upload.id = `${context.idPrefix}-${index}-image`;
         uploadLabel.htmlFor = upload.id;
         uploadLabel.textContent = `Upload image — Figure ${index + 1}`;
         upload.type = "file";
         upload.accept = "image/png,image/jpeg,image/webp";
         upload.dataset.figureIndex = String(index);
+        upload.dataset.figureSection = sectionKey;
         upload.disabled = state.status === "Submitted";
         upload.addEventListener("change", uploadGraphImages);
         card.append(uploadLabel, upload, preview);
@@ -638,8 +670,8 @@ function renderGraphFigures() {
     remove.disabled = state.status === "Submitted";
     remove.addEventListener("click", () => {
       if (state.status === "Submitted" || state.imageUploadPending) return;
-      state.figures.splice(index, 1);
-      renderGraphFigures();
+      context.figures.splice(index, 1);
+      renderGraphFigures(sectionKey);
       persistLocalBackup();
       queueIdleSave();
     });
@@ -1285,8 +1317,9 @@ function renderProgramUI() {
   const config = PROGRAM_CONFIGS[state.program];
   const active = state.activeSections[state.program];
   const isDp = elements.selectedProgram.value === "DP";
-  const graphPanel = document.querySelector(".graph-upload-panel");
-  if (graphPanel) graphPanel.hidden = !isDp;
+  document.querySelectorAll(".graph-upload-panel").forEach((graphPanel) => {
+    graphPanel.hidden = !isDp;
+  });
   const visibleSections = config.sections.filter((key) => {
     const definition = sectionOrder.find((section) => section.key === key && section.program === state.program);
     return !definition?.dpOnly || isDp;
@@ -1638,8 +1671,9 @@ function getPhysicsExampleReport() {
     figures: [{
       dataUrl: images.graph,
       title: "Period squared versus pendulum length",
-      description:
-        "The data form a straight-line pattern with a positive slope of 4.03 s²/m and R² = 0.999. No measured point is an obvious outlier."
+      description: "Scatter plot of period squared (s²) versus pendulum length (m), including a linear best-fit line.",
+      analysis:
+        "The data form a straight-line pattern with a positive slope of 4.03 s²/m and R² = 0.999. This indicates a very strong positive linear relationship, consistent with the simple-pendulum model. No measured point is an obvious outlier."
     }],
     controlledVariables: [
       { variable: "Bob mass", control: "Use the same 50 g pendulum bob for every trial." },
@@ -1707,6 +1741,7 @@ function resetAllReport({
   state.pendingSave = false;
   state.imageUploadPending = false;
   state.setupDiagram = { dataUrl: "", title: "", description: "" };
+  state.rawFigures = [];
   state.sampleCalculationImages = normalizeSampleCalculationImages();
   state.references = defaultReferenceEntries();
   state.controlledVariables = defaultControlledVariables();
@@ -1861,8 +1896,9 @@ function buildPrintableSections(report) {
     const sampleCalculations = String(report.sections?.[section.sampleCalculationsKey] || "").trim();
     const tableList = normalizeTableList(report.tables?.[section.key], section.key);
     const contentTables = tableList.filter((table) => tableHasContent(table, section.key));
-    const figures = section.key === "processedData" && report.studentProgramme === "DP"
-      ? LabFigures.normalize(report.figures).filter(figure => figure.dataUrl)
+    const figureSource = section.key === "rawData" ? report.rawFigures : section.key === "processedData" ? report.figures : [];
+    const figures = report.studentProgramme === "DP"
+      ? LabFigures.normalize(figureSource).filter(figure => figure.dataUrl)
       : [];
     const calculationImage = normalizeSingleFigure(report.sampleCalculationImages?.[section.key]);
     if (notes || sampleCalculations || calculationImage.dataUrl || contentTables.length > 0 || figures.length) {
@@ -2143,6 +2179,10 @@ function generatePdfInBrowser(report) {
     height += imageHeight + 24;
     if (figure.description) {
       height += measureParagraphHeight(figure.description, { size: 11, lineHeight: 15 });
+    }
+    if (figure.analysis) {
+      height += measureParagraphHeight("Graph Analysis", { bold: true, size: 11, lineHeight: 15 });
+      height += measureParagraphHeight(figure.analysis, { size: 11, lineHeight: 15 });
     }
     return height;
   };
@@ -2452,6 +2492,10 @@ function generatePdfInBrowser(report) {
       doc.addImage(figure.dataUrl, properties.fileType, (pageWidth - width) / 2, y, width, height);
       y += height + 12;
       if (figure.description) drawParagraph(figure.description, { size: 11, lineHeight: 15 });
+      if (figure.analysis) {
+        drawParagraph("Graph Analysis", { bold: true, size: 11, lineHeight: 15 });
+        drawParagraph(figure.analysis, { size: 11, lineHeight: 15 });
+      }
       y += 12;
     });
   });
@@ -2922,6 +2966,7 @@ function collectReport() {
     time: elements.time.value,
     downloadedAt: state.downloadedAt,
     downloadTime: state.downloadedAt ? formatAutomaticDateTime(state.downloadedAt).time : "",
+    rawFigures: state.rawFigures,
     figures: state.figures,
     references: normalizeReferenceEntries(state.references),
     controlledVariables: normalizeControlledVariables(state.controlledVariables),
@@ -2946,6 +2991,7 @@ function collectReport() {
 
 function applyReportToUI(report) {
   const normalizedReport = report && typeof report === "object" ? report : {};
+  const rawFigures = LabFigures.normalize(normalizedReport.rawFigures);
   const figures = LabFigures.normalize(normalizedReport.figures);
   const setupDiagram = normalizeSingleFigure(normalizedReport.setupDiagram);
   const sampleCalculationImages = normalizeSampleCalculationImages(normalizedReport.sampleCalculationImages);
@@ -3014,6 +3060,7 @@ function applyReportToUI(report) {
   state.tables.dpRawData = normalizeTableList(normalizedReport.tables?.dpRawData, "dpRawData");
   state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
   state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
+  state.rawFigures = rawFigures;
   state.figures = figures;
   state.references = normalizeReferenceEntries(
     normalizedReport.references,
@@ -3027,7 +3074,8 @@ function applyReportToUI(report) {
   state.sampleCalculationImages = sampleCalculationImages;
   renderExperimentalSetup();
   renderSampleCalculationImages();
-  renderGraphFigures();
+  renderGraphFigures("rawData");
+  renderGraphFigures("processedData");
   renderReferenceEntries();
   renderControlledVariables();
 
@@ -3225,8 +3273,15 @@ async function submitFinalReport() {
     elements.saveState.textContent = "Upload the experimental setup image, or clear its unfinished title and explanation.";
     return;
   }
-  if (report.studentProgramme === "DP" && report.activeSections.myp.includes("processedData") && report.figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim()))) {
-    elements.saveState.textContent = "Upload an image for each graph with a title or description, or remove the unfinished graph.";
+  const unfinishedGraph = [
+    ["rawData", report.rawFigures],
+    ["processedData", report.figures]
+  ].some(([sectionKey, figures]) =>
+    report.activeSections.myp.includes(sectionKey)
+    && figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim() || figure.analysis.trim()))
+  );
+  if (report.studentProgramme === "DP" && unfinishedGraph) {
+    elements.saveState.textContent = "Upload an image for each graph with a title, description, or analysis, or remove the unfinished graph.";
     return;
   }
   const invalidReferenceIndex = report.references.findIndex((reference) =>

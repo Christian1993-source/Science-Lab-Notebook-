@@ -302,10 +302,12 @@ function normalizeTableList(tableValue) {
 
 function sanitizeReport(rawReport) {
   const report = rawReport && typeof rawReport === "object" ? rawReport : {};
+  let rawFigures;
   let figures;
   let setupDiagram;
   let sampleCalculationImages;
   try {
+    rawFigures = LabFigures.normalize(report.rawFigures);
     figures = LabFigures.normalize(report.figures);
     setupDiagram = LabFigures.normalize(report.setupDiagram && typeof report.setupDiagram === "object" ? [report.setupDiagram] : [])[0]
       || { dataUrl: "", title: "", description: "" };
@@ -320,7 +322,7 @@ function sanitizeReport(rawReport) {
       ])
     );
     const probe = new PDFDocument({ autoFirstPage: false });
-    for (const figure of [...figures, setupDiagram, ...Object.values(sampleCalculationImages)]) {
+    for (const figure of [...rawFigures, ...figures, setupDiagram, ...Object.values(sampleCalculationImages)]) {
       if (!figure.dataUrl) continue;
       const image = probe.openImage(Buffer.from(figure.dataUrl.split(",")[1], "base64"));
       if (!image.width || !image.height || image.width * image.height > 4000000) throw new Error("Uploaded image dimensions are too large.");
@@ -401,6 +403,7 @@ function sanitizeReport(rawReport) {
     time: cleanString(report.time),
     downloadedAt: cleanString(report.downloadedAt).slice(0, 64),
     downloadTime: cleanString(report.downloadTime).slice(0, 64),
+    rawFigures,
     figures,
     references,
     controlledVariables,
@@ -652,6 +655,10 @@ function measureSectionHeight(doc, number, section) {
     height += textHeight(title, { font: "Times-Bold", size: 12 }) + image.height * scale + 24;
     if (figure.description) {
       height += textHeight(figure.description, { size: 11, lineGap: 3 }) + 12;
+    }
+    if (figure.analysis) {
+      height += textHeight("Graph Analysis", { font: "Times-Bold", size: 11 }) + 4;
+      height += textHeight(figure.analysis, { size: 11, lineGap: 3 }) + 12;
     }
   });
 
@@ -997,8 +1004,9 @@ function buildSectionsForPdf(report) {
       const notes = cleanMultiline(report.sections[section.noteKey]);
       const sampleCalculations = cleanMultiline(report.sections[section.sampleCalculationsKey]);
       const tables = normalizeTableList(report.tables?.[section.key]);
-      const figures = section.key === "processedData" && report.studentProgramme === "DP"
-        ? (report.figures || []).filter(figure => figure.dataUrl)
+      const figureSource = section.key === "rawData" ? report.rawFigures : section.key === "processedData" ? report.figures : [];
+      const figures = report.studentProgramme === "DP"
+        ? (figureSource || []).filter(figure => figure.dataUrl)
         : [];
       const calculationImage = report.sampleCalculationImages?.[section.key]
         || { dataUrl: "", title: "", description: "" };
@@ -1087,6 +1095,12 @@ function generatePdf(report) {
             doc.image(image, (doc.page.width - width) / 2, imageY, { width, height });
             doc.y = imageY + height + 12;
             if (figure.description) doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.description, 72, doc.y, { width: widthLimit, lineGap: 3 });
+            if (figure.analysis) {
+              doc.moveDown(0.3);
+              doc.font("Times-Bold").fontSize(11).fillColor("#124232").text("Graph Analysis", 72, doc.y, { width: widthLimit });
+              doc.moveDown(0.2);
+              doc.font("Times-Roman").fontSize(11).fillColor("#111111").text(figure.analysis, 72, doc.y, { width: widthLimit, lineGap: 3 });
+            }
             doc.moveDown(0.8);
           });
         }
