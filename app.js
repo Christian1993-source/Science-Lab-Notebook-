@@ -2,6 +2,7 @@ const STORAGE_KEY = "libretaLaboratorio.draft";
 const SESSION_STORAGE_KEY = "libretaLaboratorio.currentSession";
 const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
+const ESSAY_STORAGE_KEY = "libretaLaboratorio.essayDraft";
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 4;
@@ -166,6 +167,8 @@ const state = {
   classCode: "",
   activeSections: createDefaultActiveSections(),
   blockedAttempts: 0,
+  essayBlockedAttempts: 0,
+  essayStartedAt: 0,
   programmaticUpdate: false,
   rawFigures: [],
   figures: [],
@@ -227,7 +230,23 @@ const elements = {
   rawDataEditor: document.getElementById("rawDataEditor"),
   processedDataEditor: document.getElementById("processedDataEditor"),
   dpRawDataEditor: document.getElementById("dpRawDataEditor"),
-  dpProcessedDataEditor: document.getElementById("dpProcessedDataEditor")
+  dpProcessedDataEditor: document.getElementById("dpProcessedDataEditor"),
+  openEssayBtn: document.getElementById("openEssayBtn"),
+  closeEssayBtn: document.getElementById("closeEssayBtn"),
+  essayWorkspace: document.getElementById("essayWorkspace"),
+  essayTitle: document.getElementById("essayTitle"),
+  essayTeacher: document.getElementById("essayTeacher"),
+  essayStudentName: document.getElementById("essayStudentName"),
+  essayDate: document.getElementById("essayDate"),
+  essayTime: document.getElementById("essayTime"),
+  essayClassCode: document.getElementById("essayClassCode"),
+  essayContent: document.getElementById("essayContent"),
+  essayReferences: document.getElementById("essayReferences"),
+  resetEssayBtn: document.getElementById("resetEssayBtn"),
+  saveEssayDraftBtn: document.getElementById("saveEssayDraftBtn"),
+  loadEssayDraftBtn: document.getElementById("loadEssayDraftBtn"),
+  downloadEssayBtn: document.getElementById("downloadEssayBtn"),
+  essayStatus: document.getElementById("essayStatus")
 };
 
 const sectionInputs = {
@@ -1125,6 +1144,22 @@ function maybeStartTimerFromStudentName() {
 }
 
 function attachInputListeners() {
+  elements.openEssayBtn.addEventListener("click", openEssayWorkspace);
+  elements.closeEssayBtn.addEventListener("click", () => {
+    elements.essayWorkspace.hidden = true;
+    elements.openEssayBtn.focus();
+  });
+  elements.resetEssayBtn.addEventListener("click", resetEssayWorkspace);
+  elements.saveEssayDraftBtn.addEventListener("click", saveEssayDraft);
+  elements.loadEssayDraftBtn.addEventListener("click", loadEssayDraft);
+  elements.downloadEssayBtn.addEventListener("click", downloadEssay);
+  [elements.essayTitle, elements.essayStudentName].forEach((field) => {
+    field.addEventListener("input", maybeStartEssayTimer);
+  });
+  elements.essayClassCode.addEventListener("input", () => {
+    elements.essayClassCode.value = elements.essayClassCode.value.toUpperCase();
+  });
+
   elements.selectedProgram.addEventListener("change", () => {
     renderProgramUI();
     persistLocalBackup();
@@ -2503,14 +2538,248 @@ function generatePdfInBrowser(report) {
   return doc.output("blob");
 }
 
+function openEssayWorkspace() {
+  if (!elements.essayDate.value) elements.essayDate.value = formatAutomaticDateTime(Date.now()).date;
+  if (!elements.essayTeacher.value) elements.essayTeacher.value = elements.teacher.value;
+  if (!elements.essayStudentName.value) elements.essayStudentName.value = elements.studentName.value;
+  if (!elements.essayClassCode.value) elements.essayClassCode.value = elements.classCode.value;
+  maybeStartEssayTimer();
+  elements.essayWorkspace.hidden = false;
+  elements.essayStatus.textContent = "Essay workspace opened. Write directly in the fields below.";
+  elements.essayWorkspace.scrollIntoView({ behavior: "smooth", block: "start" });
+  elements.essayTitle.focus({ preventScroll: true });
+}
+
+function maybeStartEssayTimer() {
+  if (state.essayStartedAt || !elements.essayTitle.value.trim() || !elements.essayStudentName.value.trim()) return;
+  state.essayStartedAt = Date.now();
+  const automatic = formatAutomaticDateTime(state.essayStartedAt);
+  elements.essayDate.value = automatic.date;
+  elements.essayTime.value = automatic.time;
+  elements.essayStatus.textContent = `Essay timer started at ${automatic.time}.`;
+}
+
+function resetEssayWorkspace() {
+  if (!window.confirm("Are you sure you want to delete the entire essay? This action cannot be undone.")) return;
+  [
+    elements.essayTitle,
+    elements.essayTeacher,
+    elements.essayStudentName,
+    elements.essayClassCode,
+    elements.essayContent,
+    elements.essayReferences
+  ].forEach((field) => {
+    field.value = "";
+    field.dataset.safeTypedValue = "";
+  });
+  state.essayBlockedAttempts = 0;
+  state.essayStartedAt = 0;
+  localStorage.removeItem(ESSAY_STORAGE_KEY);
+  elements.essayDate.value = formatAutomaticDateTime(Date.now()).date;
+  elements.essayTime.value = "";
+  elements.essayStatus.textContent = "Essay reset. You can begin a new essay.";
+  elements.essayTitle.focus();
+}
+
+function collectEssayDraft() {
+  return {
+    schemaVersion: 1,
+    title: elements.essayTitle.value,
+    teacher: elements.essayTeacher.value,
+    studentName: elements.essayStudentName.value,
+    date: elements.essayDate.value,
+    startTime: elements.essayTime.value,
+    classCode: elements.essayClassCode.value,
+    content: elements.essayContent.value,
+    references: elements.essayReferences.value,
+    startedAt: state.essayStartedAt,
+    blockedAttempts: state.essayBlockedAttempts,
+    savedAt: new Date().toISOString()
+  };
+}
+
+function saveEssayDraft() {
+  try {
+    localStorage.setItem(ESSAY_STORAGE_KEY, JSON.stringify(collectEssayDraft()));
+    elements.essayStatus.textContent = `Essay draft saved at ${new Date().toLocaleTimeString()}.`;
+  } catch (_error) {
+    elements.essayStatus.textContent = "The essay draft could not be saved on this device. Browser storage may be full.";
+  }
+}
+
+function loadEssayDraft() {
+  const rawDraft = localStorage.getItem(ESSAY_STORAGE_KEY);
+  if (!rawDraft) {
+    elements.essayStatus.textContent = "No saved essay draft was found in this browser.";
+    return;
+  }
+  try {
+    const draft = JSON.parse(rawDraft);
+    state.essayStartedAt = Math.max(0, Number(draft.startedAt) || 0);
+    state.essayBlockedAttempts = Math.max(0, Number(draft.blockedAttempts) || 0);
+    elements.essayTitle.value = String(draft.title || "");
+    elements.essayTeacher.value = String(draft.teacher || "");
+    elements.essayStudentName.value = String(draft.studentName || "");
+    elements.essayDate.value = String(draft.date || formatAutomaticDateTime(Date.now()).date);
+    elements.essayTime.value = String(draft.startTime || "");
+    elements.essayClassCode.value = String(draft.classCode || "").toUpperCase();
+    elements.essayContent.value = String(draft.content || "");
+    elements.essayReferences.value = String(draft.references || "");
+    [
+      elements.essayTitle,
+      elements.essayTeacher,
+      elements.essayStudentName,
+      elements.essayClassCode,
+      elements.essayContent,
+      elements.essayReferences
+    ].forEach((field) => { field.dataset.safeTypedValue = field.value; });
+    elements.essayWorkspace.hidden = false;
+    elements.essayStatus.textContent = `Saved essay loaded at ${new Date().toLocaleTimeString()}.`;
+  } catch (_error) {
+    elements.essayStatus.textContent = "The saved essay draft could not be read.";
+  }
+}
+
+function generateEssayPdfBlob(essay) {
+  if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") {
+    throw new Error("The PDF library is unavailable. Keep this page open and try again.");
+  }
+  if (!window.LabReportFonts?.normal || !window.LabReportFonts?.bold) {
+    throw new Error("The PDF fonts are unavailable. Keep this page open and try again.");
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  doc.addFileToVFS("LiberationSerif-Regular.ttf", window.LabReportFonts.normal);
+  doc.addFileToVFS("LiberationSerif-Bold.ttf", window.LabReportFonts.bold);
+  doc.addFont("LiberationSerif-Regular.ttf", "EssaySerif", "normal");
+  doc.addFont("LiberationSerif-Bold.ttf", "EssaySerif", "bold");
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 72;
+  const textWidth = pageWidth - margin * 2;
+  let y = margin;
+
+  const nextPageIfNeeded = (needed = 18) => {
+    if (y + needed > pageHeight - margin) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+  const drawLines = (text, { bold = false, size = 12, lineHeight = 18, align = "left" } = {}) => {
+    const lines = doc
+      .setFont("EssaySerif", bold ? "bold" : "normal")
+      .setFontSize(size)
+      .splitTextToSize(String(text || " "), textWidth);
+    lines.forEach((line) => {
+      nextPageIfNeeded(lineHeight);
+      doc.text(line, align === "center" ? pageWidth / 2 : margin, y, { align, baseline: "top" });
+      y += lineHeight;
+    });
+  };
+
+  drawLines(essay.title, { bold: true, size: 18, lineHeight: 23, align: "center" });
+  y += 14;
+  drawLines(`Student: ${essay.studentName}`, { size: 11, lineHeight: 16 });
+  drawLines(`Teacher: ${essay.teacher || "Not specified"}`, { size: 11, lineHeight: 16 });
+  drawLines(`Class Code: ${essay.classCode}`, { size: 11, lineHeight: 16 });
+  drawLines(`Date: ${essay.date}`, { size: 11, lineHeight: 16 });
+  drawLines(`Start Time: ${essay.startTime}`, { size: 11, lineHeight: 16 });
+  drawLines(`Download Time: ${essay.downloadTime}`, { size: 11, lineHeight: 16 });
+  drawLines(`Time Spent: ${formatDuration(essay.timeSpentSeconds)}`, { size: 11, lineHeight: 16 });
+  drawLines(`Copy and Paste Attempts: ${essay.blockedAttempts}`, { size: 11, lineHeight: 16 });
+  y += 18;
+
+  String(essay.content).replace(/\r\n/g, "\n").split("\n").forEach((paragraph) => {
+    if (!paragraph.trim()) {
+      nextPageIfNeeded(12);
+      y += 12;
+      return;
+    }
+    drawLines(paragraph, { size: 12, lineHeight: 18 });
+    y += 8;
+  });
+
+  if (essay.references.trim()) {
+    y += 12;
+    nextPageIfNeeded(48);
+    drawLines("References", { bold: true, size: 14, lineHeight: 20 });
+    y += 4;
+    essay.references.replace(/\r\n/g, "\n").split("\n").forEach((reference) => {
+      if (reference.trim()) {
+        drawLines(reference, { size: 11, lineHeight: 16 });
+        y += 5;
+      }
+    });
+  }
+
+  const totalPages = doc.getNumberOfPages();
+  for (let pageNumber = 1; pageNumber <= totalPages; pageNumber += 1) {
+    doc.setPage(pageNumber);
+    doc.setFont("EssaySerif", "normal").setFontSize(9).setTextColor(90, 90, 90);
+    doc.text(`Page ${pageNumber} of ${totalPages}`, pageWidth / 2, pageHeight - 34, { align: "center" });
+  }
+  return doc.output("blob");
+}
+
+function downloadEssay() {
+  const title = elements.essayTitle.value.trim();
+  const studentName = elements.essayStudentName.value.trim();
+  const teacher = elements.essayTeacher.value.trim();
+  const classCode = elements.essayClassCode.value.trim().toUpperCase();
+  const content = elements.essayContent.value.trim();
+  const references = elements.essayReferences.value.trim();
+
+  if (!title || !studentName || !classCode || !content) {
+    elements.essayStatus.textContent = "Complete the essay title, student name, class code, and essay before downloading.";
+    const firstMissing = [elements.essayTitle, elements.essayStudentName, elements.essayClassCode, elements.essayContent]
+      .find((field) => !field.value.trim());
+    firstMissing?.focus();
+    return;
+  }
+
+  const finishedAt = Date.now();
+  const downloadTime = formatAutomaticDateTime(finishedAt).time;
+  const essay = {
+    title,
+    teacher,
+    studentName,
+    classCode,
+    date: elements.essayDate.value,
+    startTime: elements.essayTime.value,
+    downloadTime,
+    timeSpentSeconds: Math.max(0, Math.round((finishedAt - state.essayStartedAt) / 1000)),
+    blockedAttempts: state.essayBlockedAttempts,
+    content,
+    references
+  };
+
+  elements.downloadEssayBtn.disabled = true;
+  elements.essayStatus.textContent = "Generating essay PDF...";
+  try {
+    downloadPdf(generateEssayPdfBlob(essay), `${safeFileName(title)}.pdf`);
+    elements.essayStatus.textContent = "Essay downloaded successfully.";
+  } catch (error) {
+    elements.essayStatus.textContent = error.message || "The essay PDF could not be generated.";
+  } finally {
+    elements.downloadEssayBtn.disabled = false;
+  }
+}
+
 function attachRestrictions() {
   const isReferenceLinkField = (target) =>
     target instanceof HTMLInputElement && target.dataset.allowPaste === "true";
+  const isEssayField = (target) =>
+    target instanceof Element && Boolean(target.closest("#essayWorkspace"));
 
   const blockEvent = (event) => {
     event.preventDefault();
     event.stopPropagation();
     state.blockedAttempts += 1;
+    if (isEssayField(event.target)) {
+      state.essayBlockedAttempts += 1;
+    }
     persistLocalBackup();
     showRestrictionAlert();
   };
@@ -2595,6 +2864,7 @@ function attachRestrictions() {
     if (prohibitedInput || unexplainedBulkInsertion) {
       field.value = previous;
       state.blockedAttempts += 1;
+      if (isEssayField(field)) state.essayBlockedAttempts += 1;
       persistLocalBackup();
       showRestrictionAlert();
       event.stopImmediatePropagation();

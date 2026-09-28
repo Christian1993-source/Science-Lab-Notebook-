@@ -8,12 +8,12 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260915-raw-data-graphs-analysis-1" />
+    <meta name="notebook-release" content="20260928-essay-workspace-1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
     <link rel="mask-icon" href="safari-pinned-tab.svg?v=20260914-chemistry-favicon-1" color="#0f8f8d" />
-    <link rel="stylesheet" href="styles.css?v=20260903-6" />
+    <link rel="stylesheet" href="styles.css?v=20260928-essay-workspace-1" />
     <link rel="stylesheet" href="atlas.css?v=20260915-raw-data-graphs-analysis-1" />
   </head>
   <body class="program-myp">
@@ -65,6 +65,12 @@
             <div id="restoreSectionButtons"></div>
           </div>
         </aside>
+        <section class="card essay-launch-card" aria-labelledby="essayLaunchTitle">
+          <p class="eyebrow">Independent writing</p>
+          <h2 id="essayLaunchTitle">Essay</h2>
+          <p>Write and download a complete essay without copy or paste.</p>
+          <button id="openEssayBtn" type="button" class="btn btn-strong">Open Essay Workspace</button>
+        </section>
         <section class="card lab-guides" aria-labelledby="labGuidesTitle">
           <p class="eyebrow">Writing support</p>
           <h2 id="labGuidesTitle">Lab Guides</h2>
@@ -76,6 +82,54 @@
         </div>
 
         <main class="main-column">
+          <section class="card essay-workspace" id="essayWorkspace" hidden aria-labelledby="essayWorkspaceTitle">
+            <div class="section-heading essay-workspace-heading">
+              <div>
+                <p class="eyebrow">Essay workspace</p>
+                <h2 id="essayWorkspaceTitle">Write Your Essay</h2>
+              </div>
+              <button id="closeEssayBtn" type="button" class="btn btn-secondary">Close Essay</button>
+            </div>
+            <p class="data-loss-warning">(Copying, pasting, cutting, and dragging text are disabled. Before refreshing, closing the tab, or turning off the computer, click Save Essay Draft. Return on this browser and device and click Load Saved Essay to continue.)</p>
+            <div class="student-grid essay-info-grid">
+              <div>
+                <label for="essayTitle">Essay Title *</label>
+                <input id="essayTitle" type="text" />
+              </div>
+              <div>
+                <label for="essayTeacher">Teacher</label>
+                <input id="essayTeacher" type="text" />
+              </div>
+              <div>
+                <label for="essayStudentName">Student Name *</label>
+                <input id="essayStudentName" type="text" />
+              </div>
+              <div>
+                <label for="essayDate">Date *</label>
+                <input id="essayDate" type="date" readonly aria-readonly="true" />
+              </div>
+              <div>
+                <label for="essayTime">Start Time *</label>
+                <input id="essayTime" type="text" readonly aria-readonly="true" />
+              </div>
+              <div>
+                <label for="essayClassCode">Class Code *</label>
+                <input id="essayClassCode" type="text" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              </div>
+            </div>
+            <label for="essayContent">Complete Essay *</label>
+            <textarea id="essayContent" class="essay-content" aria-describedby="essayWritingNote"></textarea>
+            <p id="essayWritingNote" class="meta">Use this single writing box for the entire essay. Paragraph breaks will be preserved in the downloaded PDF.</p>
+            <label for="essayReferences">References</label>
+            <textarea id="essayReferences" class="essay-references" placeholder="Type each reference on a separate line."></textarea>
+            <div class="button-row essay-actions">
+              <button id="resetEssayBtn" type="button" class="btn btn-secondary">Reset Essay</button>
+              <button id="saveEssayDraftBtn" type="button" class="btn">Save Essay Draft</button>
+              <button id="loadEssayDraftBtn" type="button" class="btn btn-secondary">Load Saved Essay</button>
+              <button id="downloadEssayBtn" type="button" class="btn btn-strong">Download Essay</button>
+            </div>
+            <p id="essayStatus" class="meta" role="status" aria-live="polite"></p>
+          </section>
           <section class="card" id="studentInfo">
             <h2>Student Information</h2>
             <p class="data-loss-warning">
@@ -367,6 +421,6 @@
 
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260915-raw-data-graphs-analysis-1"></script>
+    <script src="loader.js?v=20260928-essay-workspace-1"></script>
   </body>
 </html>

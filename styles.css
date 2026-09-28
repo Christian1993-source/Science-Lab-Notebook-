@@ -616,6 +616,49 @@ body {
   border-bottom-color: #18553a;
 }
 
+.essay-launch-card {
+  border-top: 4px solid #0f766e;
+  background: linear-gradient(145deg, #ffffff, #effaf8);
+}
+
+.essay-launch-card p:not(.eyebrow) {
+  margin: 0 0 16px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.essay-launch-card .btn {
+  width: 100%;
+}
+
+.essay-workspace {
+  border-top: 5px solid #0f766e;
+  scroll-margin-top: 18px;
+}
+
+.essay-workspace-heading {
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.essay-info-grid {
+  margin-bottom: 20px;
+}
+
+.essay-content {
+  min-height: 620px;
+}
+
+.essay-references {
+  min-height: 170px;
+  margin-top: 4px;
+}
+
+.essay-actions {
+  margin-top: 16px;
+}
+
 .main-column {
   min-width: 0;
 }
