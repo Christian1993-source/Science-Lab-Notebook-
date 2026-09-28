@@ -1146,6 +1146,7 @@ function maybeStartTimerFromStudentName() {
 function attachInputListeners() {
   elements.openEssayBtn.addEventListener("click", openEssayWorkspace);
   elements.closeEssayBtn.addEventListener("click", () => {
+    document.body.classList.remove("essay-mode");
     elements.essayWorkspace.hidden = true;
     elements.openEssayBtn.focus();
   });
@@ -2545,6 +2546,7 @@ function openEssayWorkspace() {
   if (!elements.essayClassCode.value) elements.essayClassCode.value = elements.classCode.value;
   maybeStartEssayTimer();
   elements.essayWorkspace.hidden = false;
+  document.body.classList.add("essay-mode");
   elements.essayStatus.textContent = "Essay workspace opened. Write directly in the fields below.";
   elements.essayWorkspace.scrollIntoView({ behavior: "smooth", block: "start" });
   elements.essayTitle.focus({ preventScroll: true });
@@ -2634,6 +2636,7 @@ function loadEssayDraft() {
       elements.essayReferences
     ].forEach((field) => { field.dataset.safeTypedValue = field.value; });
     elements.essayWorkspace.hidden = false;
+    document.body.classList.add("essay-mode");
     elements.essayStatus.textContent = `Saved essay loaded at ${new Date().toLocaleTimeString()}.`;
   } catch (_error) {
     elements.essayStatus.textContent = "The saved essay draft could not be read.";

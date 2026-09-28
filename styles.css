@@ -636,6 +636,26 @@ body {
   scroll-margin-top: 18px;
 }
 
+body.essay-mode .main-hero,
+body.essay-mode .instructions-card,
+body.essay-mode .notebook-sidebar,
+body.essay-mode .main-column > :not(#essayWorkspace) {
+  display: none !important;
+}
+
+body.essay-mode .page-shell {
+  max-width: 1080px;
+  padding-top: 24px;
+}
+
+body.essay-mode .content-grid {
+  display: block;
+}
+
+body.essay-mode #essayWorkspace {
+  display: block;
+}
+
 .essay-workspace-heading {
   gap: 16px;
   align-items: flex-start;
@@ -644,6 +664,22 @@ body {
 
 .essay-info-grid {
   margin-bottom: 20px;
+}
+
+.essay-student-information,
+.essay-writing-fields {
+  padding-top: 12px;
+}
+
+.essay-student-information h3,
+.essay-writing-fields h3 {
+  margin: 0 0 14px;
+  color: var(--text);
+  font-size: 1.35rem;
+}
+
+.essay-writing-fields > input {
+  margin-bottom: 18px;
 }
 
 .essay-content {
