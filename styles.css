@@ -174,6 +174,42 @@ textarea {
   box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.12);
 }
 
+.integrity-strip.is-warning {
+  background: #fff0f0;
+  color: #8f1d1d;
+}
+
+.integrity-strip.is-warning .integrity-dot {
+  background: #c52f2f;
+  box-shadow: 0 0 0 5px rgba(197, 47, 47, 0.12);
+}
+
+.essay-tab-warning {
+  width: min(520px, calc(100vw - 32px));
+  padding: 28px;
+  border: 2px solid #c52f2f;
+  border-radius: 18px;
+  background: #fffaf7;
+  color: #183247;
+  box-shadow: 0 24px 70px rgba(24, 50, 71, 0.28);
+  text-align: center;
+}
+
+.essay-tab-warning::backdrop {
+  background: rgba(11, 30, 43, 0.58);
+}
+
+.essay-tab-warning h2 {
+  margin-top: 0;
+  color: #a52626;
+}
+
+.essay-tab-warning p {
+  margin: 0 0 22px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .outline-heading,
 .section-heading {
   display: flex;

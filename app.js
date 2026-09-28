@@ -168,6 +168,7 @@ const state = {
   activeSections: createDefaultActiveSections(),
   blockedAttempts: 0,
   essayBlockedAttempts: 0,
+  essayTabChanges: 0,
   essayStartedAt: 0,
   programmaticUpdate: false,
   rawFigures: [],
@@ -240,6 +241,10 @@ const elements = {
   essayDate: document.getElementById("essayDate"),
   essayTime: document.getElementById("essayTime"),
   essayClassCode: document.getElementById("essayClassCode"),
+  essayTabChangeCount: document.getElementById("essayTabChangeCount"),
+  essayTabWarning: document.getElementById("essayTabWarning"),
+  essayTabWarningMessage: document.getElementById("essayTabWarningMessage"),
+  essayTabWarningClose: document.getElementById("essayTabWarningClose"),
   essayContent: document.getElementById("essayContent"),
   essayReferences: document.getElementById("essayReferences"),
   loadPhysicsEssayExampleBtn: document.getElementById("loadPhysicsEssayExampleBtn"),
@@ -347,6 +352,7 @@ function init() {
     elements.referenceEntries.querySelector(".reference-entry:last-child textarea")?.focus();
   });
   attachRestrictions();
+  attachEssayTabChangeTracking();
   attachInputListeners();
   renderTableEditor("rawData", elements.rawDataEditor);
   renderTableEditor("processedData", elements.processedDataEditor);
@@ -2556,6 +2562,38 @@ function openEssayWorkspace() {
   elements.essayTitle.focus({ preventScroll: true });
 }
 
+function updateEssayTabChangeDisplay() {
+  elements.essayTabChangeCount.textContent = String(state.essayTabChanges);
+  elements.essayTabChangeCount.closest(".integrity-strip")?.classList.toggle("is-warning", state.essayTabChanges >= 2);
+}
+
+function showEssayTabWarning() {
+  elements.essayTabWarningMessage.textContent = state.essayTabChanges === 1
+    ? "Please stay on the Essay tab. This is your first warning. If you leave this tab again, the report will record a zero."
+    : `Tab change #${state.essayTabChanges} recorded. The essay report will show ZERO because you left the tab more than once.`;
+  if (!elements.essayTabWarning.open) elements.essayTabWarning.showModal();
+}
+
+function attachEssayTabChangeTracking() {
+  let essayWasActiveWhenHidden = false;
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      essayWasActiveWhenHidden = document.body.classList.contains("essay-mode") && state.essayStartedAt > 0;
+      return;
+    }
+
+    if (!essayWasActiveWhenHidden) return;
+    essayWasActiveWhenHidden = false;
+    state.essayTabChanges += 1;
+    updateEssayTabChangeDisplay();
+
+    showEssayTabWarning();
+  });
+
+  elements.essayTabWarningClose.addEventListener("click", () => elements.essayTabWarning.close());
+}
+
 function maybeStartEssayTimer() {
   if (state.essayStartedAt || !elements.essayTitle.value.trim() || !elements.essayStudentName.value.trim()) return;
   state.essayStartedAt = Date.now();
@@ -2601,6 +2639,8 @@ Serway, R. A., & Vuille, C. (2018). College physics (11th ed.). Cengage Learning
   elements.essayReferences.value = example.references;
   state.essayStartedAt = startedAt;
   state.essayBlockedAttempts = 0;
+  state.essayTabChanges = 0;
+  updateEssayTabChangeDisplay();
   [
     elements.essayTeacher,
     elements.essayStudentName,
@@ -2627,7 +2667,9 @@ function resetEssayWorkspace() {
     field.dataset.safeTypedValue = "";
   });
   state.essayBlockedAttempts = 0;
+  state.essayTabChanges = 0;
   state.essayStartedAt = 0;
+  updateEssayTabChangeDisplay();
   localStorage.removeItem(ESSAY_STORAGE_KEY);
   elements.essayDate.value = formatAutomaticDateTime(Date.now()).date;
   elements.essayTime.value = "";
@@ -2648,6 +2690,7 @@ function collectEssayDraft() {
     references: elements.essayReferences.value,
     startedAt: state.essayStartedAt,
     blockedAttempts: state.essayBlockedAttempts,
+    tabChanges: state.essayTabChanges,
     savedAt: new Date().toISOString()
   };
 }
@@ -2671,6 +2714,8 @@ function loadEssayDraft() {
     const draft = JSON.parse(rawDraft);
     state.essayStartedAt = Math.max(0, Number(draft.startedAt) || 0);
     state.essayBlockedAttempts = Math.max(0, Number(draft.blockedAttempts) || 0);
+    state.essayTabChanges = Math.max(0, Number(draft.tabChanges) || 0);
+    updateEssayTabChangeDisplay();
     elements.essayTitle.value = String(draft.title || "");
     elements.essayTeacher.value = String(draft.teacher || "");
     elements.essayStudentName.value = String(draft.studentName || "");
@@ -2744,7 +2789,9 @@ function generateEssayPdfBlob(essay) {
     `Start Time: ${essay.startTime}`,
     `Download Time: ${essay.downloadTime}`,
     `Time Spent: ${formatDuration(essay.timeSpentSeconds)}`,
-    `Copy and Paste Attempts: ${essay.blockedAttempts}`
+    `Copy and Paste Attempts: ${essay.blockedAttempts}`,
+    `Tab Changes: ${essay.tabChanges}`,
+    `Tab Change Result: ${essay.tabChanges >= 2 ? "ZERO - more than one tab change recorded" : "No zero triggered"}`
   ].forEach((detail) => drawLines(detail, { size: 11, lineHeight: 16, align: "center" }));
   y += 18;
 
@@ -2808,6 +2855,7 @@ function downloadEssay() {
     downloadTime,
     timeSpentSeconds: Math.max(0, Math.round((finishedAt - state.essayStartedAt) / 1000)),
     blockedAttempts: state.essayBlockedAttempts,
+    tabChanges: state.essayTabChanges,
     content,
     references
   };

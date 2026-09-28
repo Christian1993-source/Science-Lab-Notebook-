@@ -8,12 +8,12 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20260928-sticky-essay-actions-1" />
+    <meta name="notebook-release" content="20260928-essay-tab-monitor-1" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
     <link rel="mask-icon" href="safari-pinned-tab.svg?v=20260914-chemistry-favicon-1" color="#0f8f8d" />
-    <link rel="stylesheet" href="styles.css?v=20260928-sticky-essay-actions-1" />
+    <link rel="stylesheet" href="styles.css?v=20260928-essay-tab-monitor-1" />
     <link rel="stylesheet" href="atlas.css?v=20260915-raw-data-graphs-analysis-1" />
   </head>
   <body class="program-myp">
@@ -113,6 +113,10 @@
               <div>
                 <label for="essayClassCode">Class Code *</label>
                 <input id="essayClassCode" type="text" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              </div>
+              <div class="integrity-strip" aria-live="polite">
+                <span class="integrity-dot" aria-hidden="true"></span>
+                <span><strong>Tab Changes:</strong> <span id="essayTabChangeCount">0</span></span>
               </div>
               </div>
             </div>
@@ -424,8 +428,14 @@
       </div>
     </div>
 
+    <dialog id="essayTabWarning" class="essay-tab-warning" aria-labelledby="essayTabWarningTitle">
+      <h2 id="essayTabWarningTitle">Essay Tab Warning</h2>
+      <p id="essayTabWarningMessage"></p>
+      <button id="essayTabWarningClose" type="button" class="btn btn-strong">Continue Essay</button>
+    </dialog>
+
     <script src="vendor/jspdf.umd.min.js"></script>
     <script src="vendor/jspdf.plugin.autotable.min.js"></script>
-    <script src="loader.js?v=20260928-sticky-essay-actions-1"></script>
+    <script src="loader.js?v=20260928-essay-tab-monitor-1"></script>
   </body>
 </html>
