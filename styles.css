@@ -654,6 +654,7 @@ body.essay-mode .content-grid {
 
 body.essay-mode #essayWorkspace {
   display: block;
+  padding-bottom: 130px;
 }
 
 .essay-workspace-heading {
@@ -693,6 +694,27 @@ body.essay-mode #essayWorkspace {
 
 .essay-actions {
   margin-top: 16px;
+}
+
+body.essay-mode .essay-actions {
+  position: fixed;
+  z-index: 100;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  width: min(1040px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 12px;
+  justify-content: center;
+  background: rgba(251, 253, 252, 0.97);
+  border: 1px solid #b9cec3;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(15, 56, 39, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+body.essay-mode .essay-actions .btn {
+  flex: 1 1 auto;
 }
 
 .main-column {
@@ -1078,5 +1100,20 @@ textarea {
 
   .button-row {
     flex-direction: column;
+  }
+
+  body.essay-mode #essayWorkspace {
+    padding-bottom: 110px;
+  }
+
+  body.essay-mode .essay-actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+
+  body.essay-mode .essay-actions .btn {
+    flex: 0 0 auto;
   }
 }
