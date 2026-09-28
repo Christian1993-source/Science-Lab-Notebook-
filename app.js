@@ -242,6 +242,7 @@ const elements = {
   essayClassCode: document.getElementById("essayClassCode"),
   essayContent: document.getElementById("essayContent"),
   essayReferences: document.getElementById("essayReferences"),
+  loadPhysicsEssayExampleBtn: document.getElementById("loadPhysicsEssayExampleBtn"),
   resetEssayBtn: document.getElementById("resetEssayBtn"),
   saveEssayDraftBtn: document.getElementById("saveEssayDraftBtn"),
   loadEssayDraftBtn: document.getElementById("loadEssayDraftBtn"),
@@ -1150,6 +1151,7 @@ function attachInputListeners() {
     elements.essayWorkspace.hidden = true;
     elements.openEssayBtn.focus();
   });
+  elements.loadPhysicsEssayExampleBtn.addEventListener("click", loadPhysicsEssayExample);
   elements.resetEssayBtn.addEventListener("click", resetEssayWorkspace);
   elements.saveEssayDraftBtn.addEventListener("click", saveEssayDraft);
   elements.loadEssayDraftBtn.addEventListener("click", loadEssayDraft);
@@ -2559,6 +2561,54 @@ function maybeStartEssayTimer() {
   elements.essayDate.value = automatic.date;
   elements.essayTime.value = automatic.time;
   elements.essayStatus.textContent = `Essay timer started at ${automatic.time}.`;
+}
+
+function loadPhysicsEssayExample() {
+  if (!window.confirm("Load the physics essay example? This will replace the information currently entered in the essay workspace.")) return;
+
+  const startedAt = Date.now();
+  const automatic = formatAutomaticDateTime(startedAt);
+  const example = {
+    teacher: "Physics Teacher",
+    studentName: "Example Student",
+    classCode: "PHYSICS",
+    title: "How Seat Belts Reduce Injury During a Collision",
+    content: `Seat belts are one of the most effective safety devices in a vehicle because they apply the principles of force, momentum, and impulse to protect passengers during a collision. When a moving car stops suddenly, an unrestrained passenger continues moving forward because of inertia. A seat belt provides the external force needed to bring the passenger to rest with the vehicle. By increasing the time over which the passenger's momentum changes, the belt reduces the average force acting on the body.
+
+Newton's first law states that an object in motion remains in motion unless acted upon by a net external force. Before a collision, the car and its occupants move with approximately the same velocity. The collision exerts a large force on the car and rapidly decreases its velocity, but the passenger's body continues moving forward. Without a restraint, the passenger may strike the dashboard, windshield, or another object. The seat belt prevents this uncontrolled motion by applying a force across stronger areas of the body.
+
+The impulse-momentum theorem explains why the stopping time is important. Impulse is equal to the change in momentum and can be written as FΔt = Δp. For a passenger of a given mass and initial velocity, the change in momentum required to stop is fixed. If the stopping time increases, the average force must decrease. A seat belt stretches slightly during a collision, increasing the time and distance over which the passenger stops. This does not eliminate the change in momentum, but it makes the force less severe than an almost instantaneous impact with a rigid surface.
+
+Seat belts also distribute force across the pelvis and rib cage instead of concentrating it on a small area. Modern restraint systems work with airbags and crumple zones. Crumple zones increase the collision time by deforming, while airbags provide a larger surface that reduces pressure on the head and chest. These systems are most effective when the passenger is correctly restrained because the seat belt keeps the body in the position for which the airbag was designed.
+
+In conclusion, seat belts reduce injury by controlling inertia, increasing stopping time, lowering average force, and distributing that force across stronger parts of the body. Their effectiveness is a practical example of Newton's laws and the impulse-momentum theorem. Wearing a seat belt does not prevent a collision, but it changes how the passenger comes to rest and greatly reduces the physical consequences of the impact.`,
+    references: `National Highway Traffic Safety Administration. (n.d.). Seat belts. https://www.nhtsa.gov/vehicle-safety/seat-belts
+
+OpenStax. (2022). College physics 2e. Rice University. https://openstax.org/details/books/college-physics-2e
+
+Serway, R. A., & Vuille, C. (2018). College physics (11th ed.). Cengage Learning.`
+  };
+
+  elements.essayTeacher.value = example.teacher;
+  elements.essayStudentName.value = example.studentName;
+  elements.essayDate.value = automatic.date;
+  elements.essayTime.value = automatic.time;
+  elements.essayClassCode.value = example.classCode;
+  elements.essayTitle.value = example.title;
+  elements.essayContent.value = example.content;
+  elements.essayReferences.value = example.references;
+  state.essayStartedAt = startedAt;
+  state.essayBlockedAttempts = 0;
+  [
+    elements.essayTeacher,
+    elements.essayStudentName,
+    elements.essayClassCode,
+    elements.essayTitle,
+    elements.essayContent,
+    elements.essayReferences
+  ].forEach((field) => { field.dataset.safeTypedValue = field.value; });
+  elements.essayStatus.textContent = "Physics essay example loaded. Review the complete example below.";
+  elements.essayWorkspace.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function resetEssayWorkspace() {
