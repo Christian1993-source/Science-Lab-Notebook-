@@ -2542,14 +2542,16 @@ function generatePdfInBrowser(report) {
 }
 
 function openEssayWorkspace() {
-  if (!elements.essayDate.value) elements.essayDate.value = formatAutomaticDateTime(Date.now()).date;
+  if (!state.essayStartedAt) state.essayStartedAt = Date.now();
+  const automatic = formatAutomaticDateTime(state.essayStartedAt);
+  elements.essayDate.value = automatic.date;
+  elements.essayTime.value = automatic.time;
   if (!elements.essayTeacher.value) elements.essayTeacher.value = elements.teacher.value;
   if (!elements.essayStudentName.value) elements.essayStudentName.value = elements.studentName.value;
   if (!elements.essayClassCode.value) elements.essayClassCode.value = elements.classCode.value;
-  maybeStartEssayTimer();
   elements.essayWorkspace.hidden = false;
   document.body.classList.add("essay-mode");
-  elements.essayStatus.textContent = "Essay workspace opened. Write directly in the fields below.";
+  elements.essayStatus.textContent = `Essay workspace opened. Timer started at ${automatic.time}.`;
   elements.essayWorkspace.scrollIntoView({ behavior: "smooth", block: "start" });
   elements.essayTitle.focus({ preventScroll: true });
 }
