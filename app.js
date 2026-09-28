@@ -2736,14 +2736,16 @@ function generateEssayPdfBlob(essay) {
 
   drawLines(essay.title, { bold: true, size: 18, lineHeight: 23, align: "center" });
   y += 14;
-  drawLines(`Student: ${essay.studentName}`, { size: 11, lineHeight: 16 });
-  drawLines(`Teacher: ${essay.teacher || "Not specified"}`, { size: 11, lineHeight: 16 });
-  drawLines(`Class Code: ${essay.classCode}`, { size: 11, lineHeight: 16 });
-  drawLines(`Date: ${essay.date}`, { size: 11, lineHeight: 16 });
-  drawLines(`Start Time: ${essay.startTime}`, { size: 11, lineHeight: 16 });
-  drawLines(`Download Time: ${essay.downloadTime}`, { size: 11, lineHeight: 16 });
-  drawLines(`Time Spent: ${formatDuration(essay.timeSpentSeconds)}`, { size: 11, lineHeight: 16 });
-  drawLines(`Copy and Paste Attempts: ${essay.blockedAttempts}`, { size: 11, lineHeight: 16 });
+  [
+    `Student: ${essay.studentName}`,
+    `Teacher: ${essay.teacher || "Not specified"}`,
+    `Class Code: ${essay.classCode}`,
+    `Date: ${essay.date}`,
+    `Start Time: ${essay.startTime}`,
+    `Download Time: ${essay.downloadTime}`,
+    `Time Spent: ${formatDuration(essay.timeSpentSeconds)}`,
+    `Copy and Paste Attempts: ${essay.blockedAttempts}`
+  ].forEach((detail) => drawLines(detail, { size: 11, lineHeight: 16, align: "center" }));
   y += 18;
 
   String(essay.content).replace(/\r\n/g, "\n").split("\n").forEach((paragraph) => {
