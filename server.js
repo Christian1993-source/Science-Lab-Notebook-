@@ -1057,8 +1057,7 @@ function generatePdf(report) {
       doc.page.margins.bottom = 0;
       doc.font("Times-Roman").fontSize(1).fillColor("#ffffff");
       doc.text(hiddenWatermark, 2, doc.page.height - 4, { lineBreak: false });
-      doc.roundedRect(doc.page.width - 95, doc.page.height - 37, 23, 6, 1.5).fill("#144232");
-      doc.font("Times-Roman").fontSize(2.5).fillColor("#ffffff");
+      doc.font("Times-Roman").fontSize(1.5).fillColor("#000000");
       doc.text("mrmercadolab", doc.page.width - 93, doc.page.height - 35.7, {
         width: 19,
         align: "center",
