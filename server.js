@@ -1050,11 +1050,23 @@ function generatePdf(report) {
     doc.on("error", reject);
 
     const addHiddenWatermark = () => {
+      const currentX = doc.x;
       const currentY = doc.y;
+      const bottomMargin = doc.page.margins.bottom;
       doc.save();
+      doc.page.margins.bottom = 0;
       doc.font("Times-Roman").fontSize(1).fillColor("#ffffff");
       doc.text(hiddenWatermark, 2, doc.page.height - 4, { lineBreak: false });
+      doc.roundedRect(doc.page.width - 119, doc.page.height - 45, 47, 12, 3).fill("#144232");
+      doc.font("Times-Roman").fontSize(6).fillColor("#ffffff");
+      doc.text("mrmercadolab", doc.page.width - 115, doc.page.height - 42, {
+        width: 39,
+        align: "center",
+        lineBreak: false
+      });
       doc.restore();
+      doc.page.margins.bottom = bottomMargin;
+      doc.x = currentX;
       doc.y = currentY;
     };
     doc.on("pageAdded", addHiddenWatermark);
