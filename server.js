@@ -1021,9 +1021,23 @@ function buildSectionsForPdf(report) {
 
 function generatePdf(report) {
   return new Promise((resolve, reject) => {
+    const hiddenWatermark = [
+      "CM-LAB-VERIFY",
+      `REPORT-ID:${cleanString(report.id) || "UNKNOWN"}`,
+      `STUDENT:${cleanString(report.studentName) || "UNKNOWN"}`,
+      `CLASS:${cleanString(report.classCode) || "UNKNOWN"}`,
+      `DATE:${cleanString(report.date) || "UNKNOWN"}`
+    ].join(" | ").replace(/[\r\n|]+/g, " ").slice(0, 500);
     const doc = new PDFDocument({
       size: "LETTER",
-      margins: { top: 72, right: 72, bottom: 72, left: 72 }
+      margins: { top: 72, right: 72, bottom: 72, left: 72 },
+      info: {
+        Title: report.title || "Lab Report",
+        Author: report.studentName || "Science Lab Notebook Student",
+        Subject: "Student laboratory report",
+        Keywords: "science, laboratory, report",
+        Creator: "Science Lab Notebook"
+      }
     });
     const chunks = [];
 
@@ -1034,6 +1048,17 @@ function generatePdf(report) {
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
+
+    const addHiddenWatermark = () => {
+      const currentY = doc.y;
+      doc.save();
+      doc.font("Times-Roman").fontSize(1).fillColor("#ffffff");
+      doc.text(hiddenWatermark, 2, doc.page.height - 4, { lineBreak: false });
+      doc.restore();
+      doc.y = currentY;
+    };
+    doc.on("pageAdded", addHiddenWatermark);
+    addHiddenWatermark();
 
     doc.font("Times-Bold").fontSize(20).fillColor("#123f2e").text(report.title, {
       align: "center"

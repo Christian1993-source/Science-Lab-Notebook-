@@ -1985,6 +1985,36 @@ function wrapPlainText(text, maxChars = 95) {
   return lines;
 }
 
+function buildHiddenLabWatermark(report) {
+  const parts = [
+    "CM-LAB-VERIFY",
+    `REPORT-ID:${String(report.id || "UNKNOWN")}`,
+    `STUDENT:${String(report.studentName || "UNKNOWN")}`,
+    `CLASS:${String(report.classCode || "UNKNOWN")}`,
+    `DATE:${String(report.date || "UNKNOWN")}`
+  ];
+  return parts.join(" | ").replace(/[\r\n|]+/g, " ").slice(0, 500);
+}
+
+function applyHiddenLabWatermark(doc, report) {
+  const watermark = buildHiddenLabWatermark(report);
+  doc.setProperties({
+    title: report.title || "Lab Report",
+    subject: "Student laboratory report",
+    author: report.studentName || "Science Lab Notebook Student",
+    keywords: "science, laboratory, report",
+    creator: "Science Lab Notebook"
+  });
+
+  const pageCount = doc.getNumberOfPages();
+  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+    doc.setPage(pageNumber);
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setFont("LabReportSerif", "normal").setFontSize(1).setTextColor(255, 255, 255);
+    doc.text(watermark, 2, pageHeight - 2, { baseline: "bottom" });
+  }
+}
+
 function generateBasicPdfBlob(report) {
   const printableSections = buildPrintableSections(report);
   const lines = [];
@@ -2082,7 +2112,9 @@ function generateBasicPdfBlob(report) {
     contentLines.push(`1 0 0 1 72 ${y} Tm (${escapePdfText(line)}) Tj`);
     y -= 14;
   });
+  const hiddenWatermark = buildHiddenLabWatermark(report);
   contentLines.push("ET");
+  contentLines.push("BT", "/F1 1 Tf", "1 1 1 rg", `1 0 0 1 2 2 Tm (${escapePdfText(hiddenWatermark)}) Tj`, "ET");
 
   const stream = `${contentLines.join("\n")}\n`;
   const objects = [];
@@ -2093,6 +2125,9 @@ function generateBasicPdfBlob(report) {
   );
   objects.push(`4 0 obj\n<< /Length ${stream.length} >>\nstream\n${stream}endstream\nendobj\n`);
   objects.push("5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Times-Roman >>\nendobj\n");
+  objects.push(
+    `6 0 obj\n<< /Title (${escapePdfText(report.title || "Lab Report")}) /Subject (Student laboratory report) /Keywords (science, laboratory, report) /Creator (Science Lab Notebook) >>\nendobj\n`
+  );
 
   let pdf = "%PDF-1.4\n";
   const offsets = [0];
@@ -2106,7 +2141,7 @@ function generateBasicPdfBlob(report) {
   for (let i = 1; i < offsets.length; i += 1) {
     pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
   }
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
 
   return new Blob([pdf], { type: "application/pdf" });
 }
@@ -2543,6 +2578,8 @@ function generatePdfInBrowser(report) {
       y += 12;
     });
   });
+
+  applyHiddenLabWatermark(doc, report);
 
   return doc.output("blob");
 }
