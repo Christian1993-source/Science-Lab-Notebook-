@@ -2013,7 +2013,7 @@ function applyHiddenLabWatermark(doc, report) {
     const pageWidth = doc.internal.pageSize.getWidth();
     doc.setFont("LabReportSerif", "normal").setFontSize(1).setTextColor(255, 255, 255);
     doc.text(watermark, 2, pageHeight - 2, { baseline: "bottom" });
-    doc.setFont("LabReportSerif", "normal").setFontSize(1.5).setTextColor(0, 0, 0);
+    doc.setFont("LabReportSerif", "normal").setFontSize(0.75).setTextColor(0, 0, 0);
     doc.text("mrmercadolab", pageWidth - 83.5, pageHeight - 33.2, { align: "center" });
   }
 }
@@ -2118,7 +2118,7 @@ function generateBasicPdfBlob(report) {
   const hiddenWatermark = buildHiddenLabWatermark(report);
   contentLines.push("ET");
   contentLines.push("BT", "/F1 1 Tf", "1 1 1 rg", `1 0 0 1 2 2 Tm (${escapePdfText(hiddenWatermark)}) Tj`, "ET");
-  contentLines.push("BT", "/F1 1.5 Tf", "0 0 0 rg", "1 0 0 1 522 33 Tm (mrmercadolab) Tj", "ET");
+  contentLines.push("BT", "/F1 0.75 Tf", "0 0 0 rg", "1 0 0 1 524 33 Tm (mrmercadolab) Tj", "ET");
 
   const stream = `${contentLines.join("\n")}\n`;
   const objects = [];
