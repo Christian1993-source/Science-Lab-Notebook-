@@ -3379,7 +3379,7 @@ function collectReport() {
     }),
     sampleCalculationImages: normalizeSampleCalculationImages(state.sampleCalculationImages),
     startedAt: state.startedAt,
-    timeSpentSeconds: getTimeSpentSeconds(state.downloadedAt ? Date.parse(state.downloadedAt) : Date.now()),
+    timeSpentSeconds: getTimeSpentSeconds(),
     status: state.status,
     sections,
     tables: {
@@ -3461,7 +3461,8 @@ function applyReportToUI(report) {
   state.tables.processedData = normalizeTableList(normalizedReport.tables?.processedData, "processedData");
   state.tables.dpRawData = normalizeTableList(normalizedReport.tables?.dpRawData, "dpRawData");
   state.tables.dpProcessedData = normalizeTableList(normalizedReport.tables?.dpProcessedData, "dpProcessedData");
-  state.status = normalizedReport.status === "Submitted" ? "Submitted" : "Draft";
+  // A downloaded report remains an editable draft, including older saved reports.
+  state.status = "Draft";
   state.rawFigures = rawFigures;
   state.figures = figures;
   state.references = normalizeReferenceEntries(
@@ -3661,10 +3662,6 @@ async function submitFinalReport() {
     elements.saveState.textContent = "Wait for your images to finish uploading.";
     return;
   }
-  if (state.status === "Submitted") {
-    return;
-  }
-
   const report = collectReport();
   if (!report.classCode) {
     window.alert("Enter the Class Code provided by your teacher before downloading the report.");
@@ -3724,16 +3721,10 @@ async function submitFinalReport() {
     downloadPdf(pdfBlob, `${safeFileName(report.title)}.pdf`);
 
     state.downloadedAt = report.downloadedAt;
-    state.status = "Submitted";
     persistLocalBackup();
-    updateStatusBadge();
-    setFormLocked(true);
-    clearInterval(state.intervalTimer);
-    state.intervalTimer = null;
-    clearTimeout(state.idleTimer);
-    state.idleTimer = null;
-    elements.saveState.textContent = "Final report downloaded. Editing is now locked.";
-    window.alert("Final report downloaded successfully.");
+    updateSessionGate();
+    elements.saveState.textContent = "PDF downloaded. You can keep editing, save your draft, and download again.";
+    window.alert("Report downloaded successfully. You can continue editing and download an updated copy.");
   } catch (error) {
     if (report.id !== state.reportId) return;
     elements.saveState.textContent = error.message || "Failed to generate final PDF.";

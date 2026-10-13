@@ -522,7 +522,7 @@ async function saveReport(report, targetStatus) {
     ...sanitized,
     status,
     updatedAt: now,
-    submittedAt: status === "Submitted" ? now : sanitized.submittedAt || ""
+    submittedAt: status === "Submitted" ? now : ""
   };
 
   if (supabase) {
@@ -1208,10 +1208,6 @@ app.post("/api/draft", async (req, res) => {
     if (existing?.accessToken && !tokenMatches(existing, report.accessToken)) {
       return res.status(404).json({ error: "Report not found." });
     }
-    if (existing?.status === "Submitted") {
-      return res.status(409).json({ error: "Report already submitted and locked." });
-    }
-
     const saved = await saveReport(report, "Draft");
     return res.json({
       ok: true,
@@ -1239,10 +1235,6 @@ app.post("/api/submit", async (req, res) => {
     if (existing?.accessToken && !tokenMatches(existing, report.accessToken)) {
       return res.status(404).json({ error: "Report not found." });
     }
-    if (existing?.status === "Submitted") {
-      return res.status(409).json({ error: "Report already submitted and locked." });
-    }
-
     const downloadedAt = Number.isFinite(Date.parse(report.downloadedAt))
       ? report.downloadedAt
       : new Date().toISOString();
@@ -1253,10 +1245,10 @@ app.post("/api/submit", async (req, res) => {
       timeSpentSeconds: report.startedAt > 0
         ? Math.max(0, Math.round((Date.parse(downloadedAt) - report.startedAt) / 1000))
         : report.timeSpentSeconds,
-      status: "Submitted"
+      status: "Draft"
     };
     const pdfBuffer = await generatePdf(finalReport);
-    await saveReport(finalReport, "Submitted");
+    await saveReport(finalReport, "Draft");
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${safeFileName(finalReport.title)}.pdf"`);
