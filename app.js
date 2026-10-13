@@ -3671,29 +3671,10 @@ async function submitFinalReport() {
     elements.classCode.focus();
     return;
   }
-  if (report.activeSections.myp.includes("experimentalSetup") && !report.setupDiagram.dataUrl && (report.setupDiagram.title || report.setupDiagram.description)) {
-    elements.saveState.textContent = "Upload the experimental setup image, or clear its unfinished title and explanation.";
-    return;
-  }
-  const unfinishedGraph = [
-    ["rawData", report.rawFigures],
-    ["processedData", report.figures]
-  ].some(([sectionKey, figures]) =>
-    report.activeSections.myp.includes(sectionKey)
-    && figures.some(figure => !figure.dataUrl && (figure.title.trim() || figure.description.trim() || figure.analysis.trim()))
-  );
-  if (report.studentProgramme === "DP" && unfinishedGraph) {
-    elements.saveState.textContent = "Upload an image for each graph with a title, description, or analysis, or remove the unfinished graph.";
-    return;
-  }
-  const invalidReferenceIndex = report.references.findIndex((reference) =>
-    (reference.url && !reference.citation) || (reference.url && !normalizeReferenceUrl(reference.url))
-  );
-  if (invalidReferenceIndex >= 0) {
-    elements.referenceStatus.textContent = `Reference ${invalidReferenceIndex + 1} needs typed citation text and a valid source link.`;
-    document.getElementById(`reference-${invalidReferenceIndex}-citation`)?.focus();
-    return;
-  }
+  // Keep unfinished optional fields in the draft, but omit them from the downloaded report.
+  report.references = report.references
+    .filter((reference) => reference.citation)
+    .map((reference) => ({ ...reference, url: normalizeReferenceUrl(reference.url) }));
   if (!report.title || !report.studentName || !report.date || !report.time) {
     window.alert("Title of Experiment, Student Name, Date, and Time are required.");
     return;
