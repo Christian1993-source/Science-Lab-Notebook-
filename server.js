@@ -214,17 +214,24 @@ function normalizeControlledVariables(value, legacyText = "") {
     .slice(0, REPORT_LIMITS.controlledVariables)
     .map((row) => ({
       variable: cleanMultiline(row?.variable),
-      control: cleanMultiline(row?.control)
+      control: cleanMultiline(row?.control),
+      category: row?.category === "uncontrolled" ? "uncontrolled" : "controlled"
     }))
     .filter((row) => row.variable || row.control);
 }
 
-function controlledVariablesAsTable(rows) {
-  return {
-    title: "",
-    headers: ["Controlled Variable", "How It Will Be Controlled / Why It Cannot Be Controlled"],
-    rows: rows.map((row) => [row.variable, row.control])
-  };
+function controlledVariablesAsTables(rows) {
+  return [
+    { category: "controlled", heading: "Controlled Variables", headers: ["Controlled Variable", "How It Will Be Controlled"] },
+    { category: "uncontrolled", heading: "Variables That Cannot Be Controlled", headers: ["Variable", "Why It Cannot Be Controlled"] }
+  ].map(({ category, heading, headers }) => ({
+    heading,
+    table: {
+      title: "",
+      headers,
+      rows: rows.filter((row) => row.category === category).map((row) => [row.variable, row.control])
+    }
+  })).filter(({ table }) => table.rows.length);
 }
 
 function defaultTable() {
@@ -607,8 +614,10 @@ function measureSectionHeight(doc, number, section) {
       height += textHeight(part.value, { size: 12, lineGap: 4 }) + 12;
     });
     if (section.controlledVariables.length) {
-      height += textHeight("Controlled Variables", { font: "Times-Bold", size: 12 }) + 8;
-      height += measureTableGridHeight(doc, controlledVariablesAsTable(section.controlledVariables));
+      controlledVariablesAsTables(section.controlledVariables).forEach(({ heading, table }) => {
+        height += textHeight(heading, { font: "Times-Bold", size: 12 }) + 8;
+        height += measureTableGridHeight(doc, table);
+      });
     }
     return height + 8;
   }
@@ -676,9 +685,10 @@ function startSectionWithContent(doc, number, section) {
   let openingHeight = Math.min(measureSectionHeight(doc, number, section), 96);
 
   if (section.type === "variables" && section.parts.length === 0 && section.controlledVariables.length) {
+    const firstTable = controlledVariablesAsTables(section.controlledVariables)[0];
     openingHeight = headingHeight + 28 + measureTableGridHeight(
       doc,
-      controlledVariablesAsTable(section.controlledVariables)
+      firstTable.table
     );
   } else if (!["text", "variables", "references", "structuredText"].includes(section.type)) {
     const contentTables = normalizeTableList(section.tables).filter((table) => tableHasContent(table));
@@ -833,10 +843,12 @@ function drawVariablesSection(doc, number, label, parts, controlledVariables) {
     doc.moveDown(0.6);
   });
   if (controlledVariables.length) {
-    ensurePageSpace(doc, 28 + measureTableGridHeight(doc, controlledVariablesAsTable(controlledVariables)));
-    doc.font("Times-Bold").fontSize(12).fillColor("#124232").text("Controlled Variables");
-    doc.moveDown(0.3);
-    drawTableGrid(doc, controlledVariablesAsTable(controlledVariables));
+    controlledVariablesAsTables(controlledVariables).forEach(({ heading, table }) => {
+      ensurePageSpace(doc, 28 + measureTableGridHeight(doc, table));
+      doc.font("Times-Bold").fontSize(12).fillColor("#124232").text(heading);
+      doc.moveDown(0.3);
+      drawTableGrid(doc, table);
+    });
   }
 }
 
