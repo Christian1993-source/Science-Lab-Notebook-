@@ -730,11 +730,16 @@ function normalizeControlledVariables(value, legacyText = "") {
 }
 
 function controlledVariablesAsTable(rows) {
+  const filledRows = rows.filter((row) => row.variable || row.control || row.reason);
+  const includeReason = filledRows.some((row) => row.reason);
   return {
     title: "",
-    headers: ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"],
-    rows: rows.filter((row) => row.variable || row.control || row.reason)
-      .map((row) => [row.variable, row.control, row.reason])
+    headers: includeReason
+      ? ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"]
+      : ["Controlled Variable", "How It Will Be Controlled"],
+    rows: filledRows.map((row) => includeReason
+      ? [row.variable, row.control, row.reason || "N/A"]
+      : [row.variable, row.control])
   };
 }
 
@@ -2399,6 +2404,7 @@ function generatePdfInBrowser(report) {
         y += 4;
       });
       if (section.controlledVariables.length) {
+        const controlledColumnWidth = maxTextWidth / section.controlledVariablesTable.headers.length;
         const controlledTableHeight = measureParagraphHeight("Controlled Variables", {
           bold: true,
           size: 12,
@@ -2432,7 +2438,7 @@ function generatePdfInBrowser(report) {
             minCellHeight: 34
           },
           bodyStyles: { minCellHeight: 38 },
-          columnStyles: { 0: { cellWidth: maxTextWidth / 3 }, 1: { cellWidth: maxTextWidth / 3 }, 2: { cellWidth: maxTextWidth / 3 } },
+          columnStyles: { 0: { cellWidth: controlledColumnWidth }, 1: { cellWidth: controlledColumnWidth }, 2: { cellWidth: controlledColumnWidth } },
           margin: { top: margin, bottom: margin, left: margin, right: margin }
         });
         y = doc.lastAutoTable.finalY + 14;

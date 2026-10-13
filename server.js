@@ -221,10 +221,15 @@ function normalizeControlledVariables(value, legacyText = "") {
 }
 
 function controlledVariablesAsTable(rows) {
+  const includeReason = rows.some((row) => row.reason);
   return {
     title: "",
-    headers: ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"],
-    rows: rows.map((row) => [row.variable, row.control, row.reason])
+    headers: includeReason
+      ? ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"]
+      : ["Controlled Variable", "How It Will Be Controlled"],
+    rows: rows.map((row) => includeReason
+      ? [row.variable, row.control, row.reason || "N/A"]
+      : [row.variable, row.control])
   };
 }
 
