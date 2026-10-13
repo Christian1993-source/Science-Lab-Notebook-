@@ -1637,93 +1637,7 @@ function createPhysicsExampleImages() {
     context.fillText("R² = 0.999", 500, 125);
   });
 
-  const rawGraph = makeCanvas(900, 560, (context, width, height) => {
-    const left = 110;
-    const right = width - 65;
-    const top = 55;
-    const bottom = height - 90;
-    const lengths = [0.20, 0.40, 0.60, 0.80, 1.00];
-    const trials = [
-      { label: "Trial 1", color: "#0f8f8c", times: [8.99, 12.68, 15.54, 17.95, 20.04] },
-      { label: "Trial 2", color: "#b53b3b", times: [9.05, 12.73, 15.58, 18.00, 20.10] },
-      { label: "Trial 3", color: "#3555a4", times: [9.02, 12.70, 15.55, 17.97, 20.07] }
-    ];
-    const xPosition = (value) => left + (value / 1.0) * (right - left);
-    const yPosition = (value) => bottom - (value / 22) * (bottom - top);
-    context.font = "19px Arial";
-    context.fillStyle = "#374151";
-    context.strokeStyle = "#d5ded9";
-    context.lineWidth = 2;
-    context.textAlign = "center";
-    for (let index = 0; index <= 5; index += 1) {
-      const value = index * 0.2;
-      const x = xPosition(value);
-      context.beginPath();
-      context.moveTo(x, top);
-      context.lineTo(x, bottom);
-      context.stroke();
-      context.fillText(value.toFixed(1), x, bottom + 30);
-    }
-    context.textAlign = "right";
-    for (let value = 0; value <= 20; value += 5) {
-      const y = yPosition(value);
-      context.beginPath();
-      context.moveTo(left, y);
-      context.lineTo(right, y);
-      context.stroke();
-      context.fillText(String(value), left - 15, y + 7);
-    }
-    context.strokeStyle = "#143b2f";
-    context.lineWidth = 5;
-    context.beginPath();
-    context.moveTo(left, top);
-    context.lineTo(left, bottom);
-    context.lineTo(right, bottom);
-    context.stroke();
-    trials.forEach((trial, trialIndex) => {
-      context.fillStyle = trial.color;
-      trial.times.forEach((time, index) => {
-        context.beginPath();
-        context.arc(xPosition(lengths[index]) + (trialIndex - 1) * 7, yPosition(time), 8, 0, Math.PI * 2);
-        context.fill();
-      });
-      context.fillRect(550, 64 + trialIndex * 31, 16, 16);
-      context.font = "19px Arial";
-      context.textAlign = "left";
-      context.fillText(trial.label, 575, 79 + trialIndex * 31);
-    });
-    context.fillStyle = "#143b2f";
-    context.font = "bold 24px Arial";
-    context.textAlign = "center";
-    context.fillText("Pendulum length, L (m)", (left + right) / 2, height - 28);
-    context.save();
-    context.translate(32, (top + bottom) / 2);
-    context.rotate(-Math.PI / 2);
-    context.fillText("Time for 10 oscillations (s)", 0, 0);
-    context.restore();
-  });
-
-  const calculations = makeCanvas(900, 470, (context, width) => {
-    context.strokeStyle = "#d7e1ed";
-    context.lineWidth = 2;
-    for (let y = 98; y < 450; y += 64) {
-      context.beginPath();
-      context.moveTo(45, y);
-      context.lineTo(width - 45, y);
-      context.stroke();
-    }
-    context.fillStyle = "#163d81";
-    context.font = "italic 31px 'Comic Sans MS', cursive";
-    [
-      "Example calculation - L = 0.60 m",
-      "Mean time = (15.54 + 15.58 + 15.55) / 3 = 15.56 s",
-      "Period T = 15.56 s / 10 = 1.556 s",
-      "T² = (1.556 s)² = 2.42 s²",
-      "g = 4π² / 4.03 = 9.80 m/s²"
-    ].forEach((line, index) => context.fillText(line, 60, 86 + index * 64));
-  });
-
-  return { diagram, graph, rawGraph, calculations };
+  return { diagram, graph };
 }
 
 function getPhysicsExampleReport() {
@@ -1750,9 +1664,9 @@ function getPhysicsExampleReport() {
       researchQuestion:
         "How does changing the length of a simple pendulum from 0.20 m to 1.00 m affect its period, while the bob mass, release angle, measurement method, and testing location are controlled?",
       backgroundPurpose:
-        "The purpose of this investigation is to determine how pendulum length affects period and to use the relationship between T² and L to calculate an experimental value of gravitational field strength. Timing several oscillations reduces the percentage effect of reaction time on a single period (Moebs et al., 2016).",
+        "The purpose of this investigation is to determine how pendulum length affects period and to use the relationship between T² and L to calculate an experimental value of gravitational field strength. Timing several oscillations reduces the percentage effect of reaction time on a single period (Ling et al., 2016).",
       backgroundScience:
-        "The independent variable is pendulum length, L, and the dependent variable is period, T. For small release angles, a simple pendulum follows T = 2π√(L/g), where g is gravitational field strength. Squaring the equation gives T² = (4π²/g)L, predicting a direct linear relationship between T² and L (Serway & Jewett, 2019).",
+        "The independent variable is pendulum length, L, and the dependent variable is period, T. For small release angles, a simple pendulum follows T = 2π√(L/g), where g is gravitational field strength. Squaring the equation gives T² = (4π²/g)L, predicting a direct linear relationship between T² and L (Serway & Jewett, 2018).",
       independentVariable:
         "Pendulum length, L (m), measured from the pivot to the center of the bob and changed through 0.20, 0.40, 0.60, 0.80, and 1.00 m.",
       dependentVariable:
@@ -1781,7 +1695,7 @@ function getPhysicsExampleReport() {
       pilotObservations:
         "A pilot test at L = 0.60 m showed that timing one oscillation produced excessive relative uncertainty. Timing 10 oscillations gave repeatable values near 15.6 s. A 10° release angle produced stable motion and remained within the small-angle approximation.",
       references:
-        "Moebs, W., Ling, S. J., & Sanny, J. (2016). University physics volume 1. OpenStax.\nSerway, R. A., & Jewett, J. W. (2019). Physics for scientists and engineers with modern physics (10th ed.). Cengage Learning."
+        "Ling, S. J., Moebs, W., & Sanny, J. (2016). University physics volume 1. OpenStax.\nSerway, R. A., & Jewett, J. W. (2018). Physics for scientists and engineers with modern physics (10th ed.). Cengage Learning."
     },
     setupDiagram: {
       dataUrl: images.diagram,
@@ -1794,38 +1708,14 @@ function getPhysicsExampleReport() {
       title: "Period squared versus pendulum length",
       description: "Scatter plot of period squared (s²) versus pendulum length (m), including a linear best-fit line.",
       analysis:
-        "The positive linear trend (slope 4.03 s²/m; R² = 0.999) supports the pendulum model, with no obvious outlier."
+        "The data form a straight-line pattern with a positive slope of 4.03 s²/m and R² = 0.999. This indicates a very strong positive linear relationship, consistent with the simple-pendulum model. No measured point is an obvious outlier."
     }],
-    rawFigures: [{
-      dataUrl: images.rawGraph,
-      title: "Time for 10 oscillations versus pendulum length",
-      description: "Scatter plot of the three raw timing trials at each tested pendulum length.",
-      analysis: "Times increase with length; the three trials cluster closely at each length, with no obvious outlier."
-    }],
-    sampleCalculationImages: {
-      processedData: {
-        dataUrl: images.calculations,
-        title: "Illustrative sample calculations",
-        description: "Example calculation image; students should upload their own work completed in pen."
-      }
-    },
-    references: [
-      {
-        citation: "Moebs, W., Ling, S. J., & Sanny, J. (2016). University physics volume 1. OpenStax.",
-        url: "https://openstax.org/books/university-physics-volume-1/pages/15-4-pendulums"
-      },
-      {
-        citation: "Serway, R. A., & Jewett, J. W. (2019). Physics for scientists and engineers with modern physics (10th ed.). Cengage Learning.",
-        url: "https://www.cengage.com/c/physics-for-scientists-and-engineers-with-modern-physics-10e-serway-jewett/9781337553292/"
-      }
-    ],
     controlledVariables: [
-      { variable: "Bob mass", control: "Use the same 50 g pendulum bob for every trial.", reason: "N/A" },
-      { variable: "Release angle", control: "Release the bob from 10° for every trial using the same protractor.", reason: "N/A" },
-      { variable: "String and pivot", control: "Use the same string and pivot throughout the investigation.", reason: "N/A" },
-      { variable: "Measurement method", control: "Use the same photogate position and time 10 oscillations for every trial.", reason: "N/A" },
-      { variable: "Testing location", control: "Complete all trials in the same room under the same conditions.", reason: "N/A" },
-      { variable: "Ambient air movement", control: "Keep windows and doors closed and turn off fans during every trial.", reason: "Small residual air currents cannot be eliminated completely in a classroom." }
+      { variable: "Bob mass", control: "Use the same 50 g pendulum bob for every trial." },
+      { variable: "Release angle", control: "Release the bob from 10° for every trial using the same protractor." },
+      { variable: "String and pivot", control: "Use the same string and pivot throughout the investigation." },
+      { variable: "Measurement method", control: "Use the same photogate position and time 10 oscillations for every trial." },
+      { variable: "Testing location", control: "Complete all trials in the same room under the same conditions." }
     ],
     tables: {
       rawData: [{
