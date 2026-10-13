@@ -135,10 +135,7 @@ function defaultReferenceEntries() {
 }
 
 function defaultControlledVariables() {
-  return [
-    ...Array.from({ length: 3 }, () => ({ variable: "", control: "", category: "controlled" })),
-    { variable: "", control: "", category: "uncontrolled" }
-  ];
+  return Array.from({ length: 3 }, () => ({ variable: "", control: "", reason: "" }));
 }
 
 const scienceTableTemplates = {
@@ -711,8 +708,8 @@ function renderGraphFigures(sectionKey = "processedData") {
 
 function serializeControlledVariables(rows) {
   return rows
-    .filter((row) => row.variable.trim() || row.control.trim())
-    .map((row) => row.control.trim() ? `${row.variable.trim()} - ${row.control.trim()}` : row.variable.trim())
+    .filter((row) => row.variable.trim() || row.control.trim() || row.reason.trim())
+    .map((row) => [row.variable.trim(), row.control.trim(), row.reason.trim()].filter(Boolean).join(" - "))
     .join("\n");
 }
 
@@ -725,31 +722,20 @@ function normalizeControlledVariables(value, legacyText = "") {
   }
   const rows = source.map((row) => ({
     variable: String(row?.variable || "").trim(),
-    control: String(row?.control || "").trim(),
-    category: row?.category === "uncontrolled" ? "uncontrolled" : "controlled"
+    control: row?.category === "uncontrolled" ? "" : String(row?.control || "").trim(),
+    reason: String(row?.reason || (row?.category === "uncontrolled" ? row?.control : "") || "").trim()
   }));
-  if (rows.length < MAX_CONTROLLED_VARIABLE_COUNT && !rows.some((row) => row.category === "controlled")) {
-    rows.push({ variable: "", control: "", category: "controlled" });
-  }
-  if (rows.length < MAX_CONTROLLED_VARIABLE_COUNT && !rows.some((row) => row.category === "uncontrolled")) {
-    rows.push({ variable: "", control: "", category: "uncontrolled" });
-  }
+  while (rows.length < 3) rows.push({ variable: "", control: "", reason: "" });
   return rows.length ? rows : defaultControlledVariables();
 }
 
-function controlledVariablesAsTables(rows) {
-  return [
-    { category: "controlled", heading: "Controlled Variables", headers: ["Controlled Variable", "How It Will Be Controlled"] },
-    { category: "uncontrolled", heading: "Variables That Cannot Be Controlled", headers: ["Variable", "Why It Cannot Be Controlled"] }
-  ].map(({ category, heading, headers }) => ({
-    heading,
-    table: {
-      title: "",
-      headers,
-      rows: rows.filter((row) => row.category === category && (row.variable || row.control))
-        .map((row) => [row.variable, row.control])
-    }
-  })).filter(({ table }) => table.rows.length);
+function controlledVariablesAsTable(rows) {
+  return {
+    title: "",
+    headers: ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"],
+    rows: rows.filter((row) => row.variable || row.control || row.reason)
+      .map((row) => [row.variable, row.control, row.reason])
+  };
 }
 
 function renderControlledVariables() {
@@ -759,125 +745,83 @@ function renderControlledVariables() {
   );
   sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
   elements.controlledVariablesEditor.replaceChildren();
-  const groups = [
-    { category: "controlled", heading: "Controlled Variables", headers: ["Controlled Variable", "How It Will Be Controlled"], addLabel: "Add controlled variable" },
-    { category: "uncontrolled", heading: "Variables That Cannot Be Controlled", headers: ["Variable", "Why It Cannot Be Controlled"], addLabel: "Add variable that cannot be controlled" }
-  ];
-
-  groups.forEach(({ category, heading, headers, addLabel }) => {
-    const group = document.createElement("div");
-    group.className = "controlled-variables-group";
-    const title = document.createElement("h3");
-    title.textContent = heading;
-    group.append(title);
-
-    const viewport = document.createElement("div");
-    viewport.className = "controlled-variables-viewport";
-    const table = document.createElement("table");
-    table.className = "controlled-variables-table";
-    const thead = document.createElement("thead");
-    const headerRow = document.createElement("tr");
-    headers.forEach((label) => {
-      const th = document.createElement("th");
-      th.scope = "col";
-      th.textContent = label;
-      headerRow.append(th);
-    });
-    thead.append(headerRow);
-    table.append(thead);
-
-    const tbody = document.createElement("tbody");
-    let displayIndex = 0;
-    state.controlledVariables.forEach((row, rowIndex) => {
-      if (row.category !== category) return;
-      displayIndex += 1;
-      const tr = document.createElement("tr");
-      const variableCell = document.createElement("td");
-      const variable = document.createElement("textarea");
-      variable.rows = 2;
-      variable.maxLength = 4000;
-      variable.value = row.variable;
-      variable.setAttribute("aria-label", `${headers[0]} ${displayIndex}`);
-      variable.dataset.safeTypedValue = variable.value;
-      variable.disabled = state.status === "Submitted";
-      variable.addEventListener("input", () => {
-        row.variable = variable.value;
-        sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
-        persistLocalBackup();
-        queueIdleSave();
-      });
-      variableCell.append(variable);
-
-      const controlCell = document.createElement("td");
-      controlCell.className = "control-method-cell";
-      const control = document.createElement("textarea");
-      control.rows = 2;
-      control.maxLength = 4000;
-      control.value = row.control;
-      control.setAttribute("aria-label", `${headers[1]} ${displayIndex}`);
-      control.dataset.safeTypedValue = control.value;
-      control.disabled = state.status === "Submitted";
-      control.addEventListener("input", () => {
-        row.control = control.value;
-        sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
-        persistLocalBackup();
-        queueIdleSave();
-      });
-
-      const move = document.createElement("button");
-      move.type = "button";
-      move.className = "controlled-variable-move";
-      move.textContent = category === "controlled" ? "Move to cannot be controlled" : "Move to controlled";
-      move.disabled = state.status === "Submitted";
-      move.addEventListener("click", () => {
-        row.category = category === "controlled" ? "uncontrolled" : "controlled";
-        renderControlledVariables();
-        persistLocalBackup();
-        queueIdleSave();
-      });
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "controlled-variable-remove";
-      remove.textContent = "Remove row";
-      remove.setAttribute("aria-label", `Remove ${heading.toLowerCase()} row ${displayIndex}`);
-      remove.disabled = state.status === "Submitted";
-      remove.addEventListener("click", () => {
-        if (state.status === "Submitted") return;
-        if (state.controlledVariables.filter((entry) => entry.category === category).length === 1) {
-          state.controlledVariables[rowIndex] = { variable: "", control: "", category };
-        } else {
-          state.controlledVariables.splice(rowIndex, 1);
-        }
-        renderControlledVariables();
-        persistLocalBackup();
-        queueIdleSave();
-      });
-      controlCell.append(control, move, remove);
-      tr.append(variableCell, controlCell);
-      tbody.append(tr);
-    });
-    table.append(tbody);
-    viewport.append(table);
-    group.append(viewport);
-
-    const addRow = document.createElement("button");
-    addRow.type = "button";
-    addRow.className = "btn btn-secondary";
-    addRow.textContent = addLabel;
-    addRow.disabled = state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT;
-    addRow.addEventListener("click", () => {
-      if (state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT) return;
-      state.controlledVariables.push({ variable: "", control: "", category });
-      renderControlledVariables();
-      persistLocalBackup();
-      queueIdleSave();
-      elements.controlledVariablesEditor.querySelector(`.controlled-variables-group[data-category="${category}"] tbody tr:last-child textarea`)?.focus();
-    });
-    group.dataset.category = category;
-    group.append(addRow);
-    elements.controlledVariablesEditor.append(group);
+  const viewport = document.createElement("div");
+  viewport.className = "controlled-variables-viewport";
+  const table = document.createElement("table");
+  table.className = "controlled-variables-table";
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  const headers = ["Controlled Variable", "How It Will Be Controlled", "Why It Cannot Be Controlled"];
+  headers.forEach((label) => {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = label;
+    headerRow.append(th);
   });
+  thead.append(headerRow);
+  table.append(thead);
+
+  const tbody = document.createElement("tbody");
+  state.controlledVariables.forEach((row, rowIndex) => {
+    const tr = document.createElement("tr");
+    ["variable", "control", "reason"].forEach((key, columnIndex) => {
+      const cell = document.createElement("td");
+      if (columnIndex === 2) cell.className = "control-method-cell";
+      const field = document.createElement("textarea");
+      field.rows = 2;
+      field.maxLength = 4000;
+      field.value = row[key];
+      field.setAttribute("aria-label", `${headers[columnIndex]} ${rowIndex + 1}`);
+      field.dataset.safeTypedValue = field.value;
+      field.disabled = state.status === "Submitted";
+      field.addEventListener("input", () => {
+        row[key] = field.value;
+        sectionInputs.controlledVariables.value = serializeControlledVariables(state.controlledVariables);
+        persistLocalBackup();
+        queueIdleSave();
+      });
+      cell.append(field);
+      if (columnIndex === 2) {
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "controlled-variable-remove";
+        remove.textContent = "Remove row";
+        remove.setAttribute("aria-label", `Remove controlled variable row ${rowIndex + 1}`);
+        remove.disabled = state.status === "Submitted";
+        remove.addEventListener("click", () => {
+          if (state.status === "Submitted") return;
+          if (state.controlledVariables.length === 1) {
+            state.controlledVariables[0] = { variable: "", control: "", reason: "" };
+          } else {
+            state.controlledVariables.splice(rowIndex, 1);
+          }
+          renderControlledVariables();
+          persistLocalBackup();
+          queueIdleSave();
+        });
+        cell.append(remove);
+      }
+      tr.append(cell);
+    });
+    tbody.append(tr);
+  });
+  table.append(tbody);
+  viewport.append(table);
+
+  const addRow = document.createElement("button");
+  addRow.type = "button";
+  addRow.className = "btn btn-secondary";
+  addRow.textContent = "Add controlled variable";
+  addRow.disabled = state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT;
+  addRow.addEventListener("click", () => {
+    if (state.status === "Submitted" || state.controlledVariables.length >= MAX_CONTROLLED_VARIABLE_COUNT) return;
+    state.controlledVariables.push({ variable: "", control: "", reason: "" });
+    renderControlledVariables();
+    persistLocalBackup();
+    queueIdleSave();
+    elements.controlledVariablesEditor.querySelector("tbody tr:last-child textarea")?.focus();
+  });
+  elements.controlledVariablesEditor.append(viewport, addRow);
 }
 
 function normalizeReferenceUrl(value) {
@@ -1929,7 +1873,7 @@ function buildPrintableSections(report) {
       const controlledVariables = normalizeControlledVariables(
         report.controlledVariables,
         report.sections?.controlledVariables
-      ).filter((row) => row.variable || row.control);
+      ).filter((row) => row.variable || row.control || row.reason);
       const legacyText = String(report.sections?.variables || "").trim();
       if (legacyText && parts.length === 0 && controlledVariables.length === 0) {
         sections.push({ type: "text", label: section.label, text: legacyText });
@@ -1941,7 +1885,7 @@ function buildPrintableSections(report) {
           label: section.label,
           parts,
           controlledVariables,
-          variableTables: controlledVariablesAsTables(controlledVariables)
+          controlledVariablesTable: controlledVariablesAsTable(controlledVariables)
         });
       }
       return;
@@ -2084,12 +2028,10 @@ function generateBasicPdfBlob(report) {
         lines.push("");
       });
       if (section.controlledVariables.length) {
-        section.variableTables.forEach(({ heading, table }) => {
-          lines.push(heading);
-          lines.push(table.headers.join(" | "));
-          table.rows.forEach((row) => lines.push(row.join(" | ")));
-          lines.push("");
-        });
+        lines.push("Controlled Variables");
+        lines.push(section.controlledVariablesTable.headers.join(" | "));
+        section.controlledVariablesTable.rows.forEach((row) => lines.push(row.join(" | ")));
+        lines.push("");
       }
       return;
     }
@@ -2341,10 +2283,8 @@ function generatePdfInBrowser(report) {
         height += measureParagraphHeight(part.text, { size: 12, lineHeight: 17 }) + 8;
       });
       if (section.controlledVariables.length) {
-        section.variableTables.forEach(({ heading, table }) => {
-          height += measureParagraphHeight(heading, { bold: true, size: 12, lineHeight: 16 });
-          height += measureTableHeight(table, false);
-        });
+        height += measureParagraphHeight("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
+        height += measureTableHeight(section.controlledVariablesTable, false);
       }
       return height + 8;
     }
@@ -2403,8 +2343,8 @@ function generatePdfInBrowser(report) {
 
     if (section.type === "variables" && section.parts.length === 0 && section.controlledVariables.length) {
       openingHeight = headingHeight
-        + measureParagraphHeight(section.variableTables[0].heading, { bold: true, size: 12, lineHeight: 16 })
-        + measureTableHeight(section.variableTables[0].table, false);
+        + measureParagraphHeight("Controlled Variables", { bold: true, size: 12, lineHeight: 16 })
+        + measureTableHeight(section.controlledVariablesTable, false);
     } else if (!["text", "variables", "references", "structuredText"].includes(section.type)) {
       const sectionTables = Array.isArray(section.tables) ? section.tables : [];
       const hasLeadingText = Boolean(section.notes || section.sampleCalculations || section.calculationImage?.dataUrl);
@@ -2459,45 +2399,43 @@ function generatePdfInBrowser(report) {
         y += 4;
       });
       if (section.controlledVariables.length) {
-        section.variableTables.forEach(({ heading, table }) => {
-          const controlledTableHeight = measureParagraphHeight(heading, {
-            bold: true,
-            size: 12,
-            lineHeight: 16
-          }) + measureTableHeight(table, false);
-          ensureWholeBlockFitsPage(controlledTableHeight, "The variables table");
-          drawParagraph(heading, { bold: true, size: 12, lineHeight: 16 });
-          doc.autoTable({
-            startY: y,
-            head: [table.headers],
-            body: table.rows,
-            theme: "grid",
-            tableWidth: maxTextWidth,
-            showHead: "everyPage",
-            pageBreak: "avoid",
-            rowPageBreak: "avoid",
-            styles: {
-              font: "LabReportSerif",
-              fontSize: 10,
-              cellPadding: { top: 7, right: 7, bottom: 7, left: 7 },
-              minCellHeight: 34,
-              overflow: "linebreak",
-              valign: "middle",
-              lineColor: [82, 120, 102],
-              lineWidth: 0.5
-            },
-            headStyles: {
-              fillColor: [232, 241, 236],
-              textColor: [20, 52, 39],
-              fontStyle: "bold",
-              minCellHeight: 34
-            },
-            bodyStyles: { minCellHeight: 38 },
-            columnStyles: { 0: { cellWidth: maxTextWidth / 2 }, 1: { cellWidth: maxTextWidth / 2 } },
-            margin: { top: margin, bottom: margin, left: margin, right: margin }
-          });
-          y = doc.lastAutoTable.finalY + 14;
+        const controlledTableHeight = measureParagraphHeight("Controlled Variables", {
+          bold: true,
+          size: 12,
+          lineHeight: 16
+        }) + measureTableHeight(section.controlledVariablesTable, false);
+        ensureWholeBlockFitsPage(controlledTableHeight, "The controlled variables table");
+        drawParagraph("Controlled Variables", { bold: true, size: 12, lineHeight: 16 });
+        doc.autoTable({
+          startY: y,
+          head: [section.controlledVariablesTable.headers],
+          body: section.controlledVariablesTable.rows,
+          theme: "grid",
+          tableWidth: maxTextWidth,
+          showHead: "everyPage",
+          pageBreak: "avoid",
+          rowPageBreak: "avoid",
+          styles: {
+            font: "LabReportSerif",
+            fontSize: 10,
+            cellPadding: { top: 7, right: 7, bottom: 7, left: 7 },
+            minCellHeight: 34,
+            overflow: "linebreak",
+            valign: "middle",
+            lineColor: [82, 120, 102],
+            lineWidth: 0.5
+          },
+          headStyles: {
+            fillColor: [232, 241, 236],
+            textColor: [20, 52, 39],
+            fontStyle: "bold",
+            minCellHeight: 34
+          },
+          bodyStyles: { minCellHeight: 38 },
+          columnStyles: { 0: { cellWidth: maxTextWidth / 3 }, 1: { cellWidth: maxTextWidth / 3 }, 2: { cellWidth: maxTextWidth / 3 } },
+          margin: { top: margin, bottom: margin, left: margin, right: margin }
         });
+        y = doc.lastAutoTable.finalY + 14;
       }
       y += 2;
       return;
