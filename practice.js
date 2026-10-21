@@ -104,33 +104,45 @@ if (typeof document !== "undefined") {
 
   function renderResult(course, quiz, answers) {
     const result = gradeQuiz(quiz, answers);
-    content.replaceChildren(link(`← ${course.title} topics`, courseUrl(course), "back"), el("h2", "Your results"));
     const summary = el("section", undefined, "card");
-    summary.append(el("h3", quiz.title), el("p", `${result.score} out of ${result.total}`, "score"), el("p", `${result.percent}% · ${result.score} correct · ${result.total - result.score} incorrect`));
+    summary.tabIndex = -1;
+    summary.setAttribute("aria-label", "Final score");
+    summary.append(el("h2", "Your results"), el("h3", quiz.title), el("p", `${result.score} out of ${result.total}`, "score"), el("p", `${result.percent}% · ${result.score} correct · ${result.total - result.score} incorrect`));
     const actions = el("div", undefined, "actions");
     const retry = el("button", "Try again");
     retry.type = "button";
     retry.addEventListener("click", () => { content.replaceChildren(); renderQuiz(course, quiz); focusHeading(); });
     actions.append(retry, link("Back to topics", courseUrl(course), "button secondary"));
     summary.append(actions);
-    content.append(summary, el("h3", "Review your answers"));
-    quiz.questions.forEach((question, index) => {
-      const item = result.results[index];
-      const review = el("section", undefined, `feedback${item.correct ? " correct" : ""}`);
-      review.append(el("h3", `Question ${index + 1} · ${item.correct ? "Correct" : "Incorrect"}`), el("p", question.prompt), el("p", `Your answer: ${answerLabel(question, answers[index])}`));
-      if (!item.correct) review.append(el("p", `Correct answer: ${answerLabel(question, question.answer)}`));
-      if (question.explanation) review.append(el("p", question.explanation));
-      content.append(review);
-    });
-    focusHeading();
+    content.append(summary);
+    summary.focus();
   }
 
   function renderQuiz(course, quiz) {
-    content.append(link(`← ${course.title} topics`, courseUrl(course), "back"), el("h2", quiz.title), el("p", `${course.title} · ${quiz.questions.length} questions · Answer every question, then check your score.`, "muted"));
+    content.append(link(`← ${course.title} topics`, courseUrl(course), "back"), el("h2", quiz.title), el("p", `${course.title} · ${quiz.questions.length} questions · Choose an answer to see feedback immediately. Your first answer counts. Your final score appears automatically when you finish.`, "muted"));
     const form = el("form");
+    const answers = Array(quiz.questions.length).fill(null);
+    const progress = el("p", `0 of ${quiz.questions.length} answered`, "muted");
+    progress.setAttribute("role", "status");
+    content.append(progress);
+    form.addEventListener("submit", (event) => event.preventDefault());
     quiz.questions.forEach((question, index) => {
       const fieldset = el("fieldset");
       fieldset.append(el("legend", `Question ${index + 1}`), el("p", question.prompt, "prompt"));
+      const feedback = el("div");
+      feedback.setAttribute("role", "status");
+      function answerQuestion(value) {
+        if (answers[index] !== null || String(value).trim() === "") return;
+        answers[index] = value;
+        const result = gradeQuiz(quiz, answers).results[index];
+        fieldset.querySelectorAll("input").forEach((input) => { input.disabled = true; });
+        feedback.className = `feedback${result.correct ? " correct" : ""}`;
+        feedback.append(el("strong", result.correct ? "Correct!" : "Incorrect."), el("p", `Correct answer: ${answerLabel(question, question.answer)}`));
+        if (question.explanation) feedback.append(el("p", question.explanation));
+        const answered = answers.filter((answer) => answer !== null).length;
+        progress.textContent = `${answered} of ${quiz.questions.length} answered`;
+        if (answered === quiz.questions.length) renderResult(course, quiz, answers);
+      }
       if (question.type === "numeric") {
         const label = el("label", `Your answer${question.unit ? ` (${question.unit})` : ""}`);
         const input = el("input");
@@ -138,6 +150,9 @@ if (typeof document !== "undefined") {
         input.step = "any";
         input.name = `q${index}`;
         input.required = true;
+        input.addEventListener("change", () => {
+          if (input.validity.valid) answerQuestion(input.value);
+        });
         label.append(input);
         fieldset.append(label);
       } else {
@@ -148,20 +163,13 @@ if (typeof document !== "undefined") {
           input.name = `q${index}`;
           input.value = String(optionIndex);
           input.required = true;
+          input.addEventListener("change", () => answerQuestion(input.value));
           label.append(input, el("span", option));
           fieldset.append(label);
         });
       }
+      fieldset.append(feedback);
       form.append(fieldset);
-    });
-    const submit = el("button", "Check my score");
-    submit.type = "submit";
-    form.append(submit);
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-      const values = new FormData(form);
-      renderResult(course, quiz, quiz.questions.map((_, index) => values.get(`q${index}`)));
     });
     content.append(form);
   }
