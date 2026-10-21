@@ -371,6 +371,740 @@
               "explanation": "Zn is the chemical symbol for zinc."
             }
           ]
+        },
+        {
+          "id": "periodic-table-2",
+          "title": "Periodic Table 2",
+          "description": "Choose the chemical symbol for each element. 30 new elements, from gallium to neodymium.",
+          "questions": [
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for gallium?",
+              "options": [
+                "Ge",
+                "Gd",
+                "Ga",
+                "Ag"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for gallium is Ga."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for germanium?",
+              "options": [
+                "Ga",
+                "Gd",
+                "Ce",
+                "Ge"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for germanium is Ge."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for arsenic?",
+              "options": [
+                "As",
+                "Ag",
+                "Sb",
+                "Se"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for arsenic is As."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for selenium?",
+              "options": [
+                "Sr",
+                "Se",
+                "Sb",
+                "Sn"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for selenium is Se."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for bromine?",
+              "options": [
+                "Ba",
+                "Rb",
+                "Br",
+                "Kr"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for bromine is Br."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for krypton?",
+              "options": [
+                "Xe",
+                "Br",
+                "Rb",
+                "Kr"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for krypton is Kr."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for rubidium?",
+              "options": [
+                "Rb",
+                "Ru",
+                "Rh",
+                "Br"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for rubidium is Rb."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for strontium?",
+              "options": [
+                "Se",
+                "Sr",
+                "Sn",
+                "Sb"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for strontium is Sr."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for yttrium?",
+              "options": [
+                "Yb",
+                "I",
+                "Y",
+                "Zr"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for yttrium is Y."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for zirconium?",
+              "options": [
+                "Y",
+                "Nb",
+                "Xe",
+                "Zr"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for zirconium is Zr."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for niobium?",
+              "options": [
+                "Nb",
+                "Nd",
+                "No",
+                "Mo"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for niobium is Nb."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for molybdenum?",
+              "options": [
+                "Md",
+                "Mo",
+                "Nb",
+                "Tc"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for molybdenum is Mo."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for technetium?",
+              "options": [
+                "Te",
+                "Tb",
+                "Tc",
+                "Ta"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for technetium is Tc."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for ruthenium?",
+              "options": [
+                "Rh",
+                "Rb",
+                "Re",
+                "Ru"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for ruthenium is Ru."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for rhodium?",
+              "options": [
+                "Rh",
+                "Ru",
+                "Rb",
+                "Pd"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for rhodium is Rh."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for palladium?",
+              "options": [
+                "Pr",
+                "Pd",
+                "Pb",
+                "Pt"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for palladium is Pd."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for silver?",
+              "options": [
+                "As",
+                "Au",
+                "Ag",
+                "Ar"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for silver is Ag."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for cadmium?",
+              "options": [
+                "Ce",
+                "Cs",
+                "Ca",
+                "Cd"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for cadmium is Cd."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for indium?",
+              "options": [
+                "In",
+                "I",
+                "Ir",
+                "Sn"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for indium is In."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for tin?",
+              "options": [
+                "Sb",
+                "Sn",
+                "Te",
+                "Ti"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for tin is Sn."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for antimony?",
+              "options": [
+                "Sn",
+                "As",
+                "Sb",
+                "Ag"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for antimony is Sb."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for tellurium?",
+              "options": [
+                "Tc",
+                "Tb",
+                "Ti",
+                "Te"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for tellurium is Te."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for iodine?",
+              "options": [
+                "I",
+                "In",
+                "Ir",
+                "Y"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for iodine is I."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for xenon?",
+              "options": [
+                "Kr",
+                "Xe",
+                "Zr",
+                "Ce"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for xenon is Xe."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for cesium?",
+              "options": [
+                "Ce",
+                "Cd",
+                "Cs",
+                "Ca"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for cesium is Cs."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for barium?",
+              "options": [
+                "Br",
+                "Be",
+                "La",
+                "Ba"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for barium is Ba."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for lanthanum?",
+              "options": [
+                "La",
+                "Lu",
+                "Ce",
+                "Li"
+              ],
+              "answer": 0,
+              "explanation": "The chemical symbol for lanthanum is La."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for cerium?",
+              "options": [
+                "Cs",
+                "Ce",
+                "Cd",
+                "Pr"
+              ],
+              "answer": 1,
+              "explanation": "The chemical symbol for cerium is Ce."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for praseodymium?",
+              "options": [
+                "Pd",
+                "Pm",
+                "Pr",
+                "Pa"
+              ],
+              "answer": 2,
+              "explanation": "The chemical symbol for praseodymium is Pr."
+            },
+            {
+              "type": "choice",
+              "prompt": "What is the chemical symbol for neodymium?",
+              "options": [
+                "Nb",
+                "No",
+                "Ne",
+                "Nd"
+              ],
+              "answer": 3,
+              "explanation": "The chemical symbol for neodymium is Nd."
+            }
+          ]
+        },
+        {
+          "id": "electron-configuration",
+          "title": "Electron Configuration",
+          "description": "30 questions on neutral atoms in the ground state. Brackets represent a noble-gas core; superscripts show electrons in each subshell.",
+          "questions": [
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral hydrogen atom (H)?",
+              "options": [
+                "1s²",
+                "1s¹",
+                "[He] 2s¹",
+                "[He] 2s²"
+              ],
+              "answer": 1,
+              "explanation": "A neutral hydrogen atom has 1 electron. Its ground-state electron configuration is 1s¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral helium atom (He)?",
+              "options": [
+                "[He] 2s¹",
+                "[He] 2s²",
+                "1s²",
+                "[He] 2s² 2p¹"
+              ],
+              "answer": 2,
+              "explanation": "A neutral helium atom has 2 electrons. Its ground-state electron configuration is 1s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral lithium atom (Li)?",
+              "options": [
+                "[He] 2s²",
+                "[He] 2s² 2p¹",
+                "[He] 2s² 2p²",
+                "[He] 2s¹"
+              ],
+              "answer": 3,
+              "explanation": "A neutral lithium atom has 3 electrons. Its ground-state electron configuration is [He] 2s¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral beryllium atom (Be)?",
+              "options": [
+                "[He] 2s²",
+                "[He] 2s² 2p¹",
+                "[He] 2s² 2p²",
+                "[He] 2s² 2p³"
+              ],
+              "answer": 0,
+              "explanation": "A neutral beryllium atom has 4 electrons. Its ground-state electron configuration is [He] 2s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral boron atom (B)?",
+              "options": [
+                "[He] 2s² 2p²",
+                "[He] 2s² 2p¹",
+                "[He] 2s² 2p³",
+                "[He] 2s² 2p⁴"
+              ],
+              "answer": 1,
+              "explanation": "A neutral boron atom has 5 electrons. Its ground-state electron configuration is [He] 2s² 2p¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral carbon atom (C)?",
+              "options": [
+                "[He] 2s² 2p³",
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p²",
+                "[He] 2s² 2p⁵"
+              ],
+              "answer": 2,
+              "explanation": "A neutral carbon atom has 6 electrons. Its ground-state electron configuration is [He] 2s² 2p²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral nitrogen atom (N)?",
+              "options": [
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p⁵",
+                "[He] 2s² 2p⁶",
+                "[He] 2s² 2p³"
+              ],
+              "answer": 3,
+              "explanation": "A neutral nitrogen atom has 7 electrons. Its ground-state electron configuration is [He] 2s² 2p³."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral oxygen atom (O)?",
+              "options": [
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p⁵",
+                "[He] 2s² 2p⁶",
+                "[Ne] 3s¹"
+              ],
+              "answer": 0,
+              "explanation": "A neutral oxygen atom has 8 electrons. Its ground-state electron configuration is [He] 2s² 2p⁴."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral fluorine atom (F)?",
+              "options": [
+                "[He] 2s² 2p⁶",
+                "[He] 2s² 2p⁵",
+                "[Ne] 3s¹",
+                "[Ne] 3s²"
+              ],
+              "answer": 1,
+              "explanation": "A neutral fluorine atom has 9 electrons. Its ground-state electron configuration is [He] 2s² 2p⁵."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral neon atom (Ne)?",
+              "options": [
+                "[Ne] 3s¹",
+                "[Ne] 3s²",
+                "[He] 2s² 2p⁶",
+                "[Ne] 3s² 3p¹"
+              ],
+              "answer": 2,
+              "explanation": "A neutral neon atom has 10 electrons. Its ground-state electron configuration is [He] 2s² 2p⁶."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral sodium atom (Na)?",
+              "options": [
+                "[Ne] 3s²",
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s¹"
+              ],
+              "answer": 3,
+              "explanation": "A neutral sodium atom has 11 electrons. Its ground-state electron configuration is [Ne] 3s¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral magnesium atom (Mg)?",
+              "options": [
+                "[Ne] 3s²",
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s² 3p³"
+              ],
+              "answer": 0,
+              "explanation": "A neutral magnesium atom has 12 electrons. Its ground-state electron configuration is [Ne] 3s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral aluminum atom (Al)?",
+              "options": [
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s² 3p³",
+                "[Ne] 3s² 3p⁴"
+              ],
+              "answer": 1,
+              "explanation": "A neutral aluminum atom has 13 electrons. Its ground-state electron configuration is [Ne] 3s² 3p¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral silicon atom (Si)?",
+              "options": [
+                "[Ne] 3s² 3p³",
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s² 3p⁵"
+              ],
+              "answer": 2,
+              "explanation": "A neutral silicon atom has 14 electrons. Its ground-state electron configuration is [Ne] 3s² 3p²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral phosphorus atom (P)?",
+              "options": [
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p⁵",
+                "[Ne] 3s² 3p⁶",
+                "[Ne] 3s² 3p³"
+              ],
+              "answer": 3,
+              "explanation": "A neutral phosphorus atom has 15 electrons. Its ground-state electron configuration is [Ne] 3s² 3p³."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral sulfur atom (S)?",
+              "options": [
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p⁵",
+                "[Ne] 3s² 3p⁶",
+                "[Ar] 4s¹"
+              ],
+              "answer": 0,
+              "explanation": "A neutral sulfur atom has 16 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁴."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral chlorine atom (Cl)?",
+              "options": [
+                "[Ne] 3s² 3p⁶",
+                "[Ne] 3s² 3p⁵",
+                "[Ar] 4s¹",
+                "[Ar] 4s²"
+              ],
+              "answer": 1,
+              "explanation": "A neutral chlorine atom has 17 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁵."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral argon atom (Ar)?",
+              "options": [
+                "[Ar] 4s¹",
+                "[Ar] 4s²",
+                "[Ne] 3s² 3p⁶",
+                "[Ar] 3d¹ 4s²"
+              ],
+              "answer": 2,
+              "explanation": "A neutral argon atom has 18 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁶."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral potassium atom (K)?",
+              "options": [
+                "[Ar] 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 3d² 4s²",
+                "[Ar] 4s¹"
+              ],
+              "answer": 3,
+              "explanation": "A neutral potassium atom has 19 electrons. Its ground-state electron configuration is [Ar] 4s¹."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral calcium atom (Ca)?",
+              "options": [
+                "[Ar] 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 3d² 4s²",
+                "[Ar] 3d³ 4s²"
+              ],
+              "answer": 0,
+              "explanation": "A neutral calcium atom has 20 electrons. Its ground-state electron configuration is [Ar] 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral scandium atom (Sc)?",
+              "options": [
+                "[Ar] 3d² 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 3d³ 4s²",
+                "[Ar] 3d⁵ 4s¹"
+              ],
+              "answer": 1,
+              "explanation": "A neutral scandium atom has 21 electrons. Its ground-state electron configuration is [Ar] 3d¹ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral titanium atom (Ti)?",
+              "options": [
+                "[Ar] 3d³ 4s²",
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d² 4s²",
+                "[Ar] 3d⁵ 4s²"
+              ],
+              "answer": 2,
+              "explanation": "A neutral titanium atom has 22 electrons. Its ground-state electron configuration is [Ar] 3d² 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral vanadium atom (V)?",
+              "options": [
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d⁵ 4s²",
+                "[Ar] 3d⁶ 4s²",
+                "[Ar] 3d³ 4s²"
+              ],
+              "answer": 3,
+              "explanation": "A neutral vanadium atom has 23 electrons. Its ground-state electron configuration is [Ar] 3d³ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral chromium atom (Cr)?",
+              "options": [
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d⁴ 4s²",
+                "[Ar] 3d⁶",
+                "[Ar] 3d³ 4s²"
+              ],
+              "answer": 0,
+              "explanation": "A neutral chromium atom has 24 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s¹. This is an exception to the simple filling-order prediction."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral manganese atom (Mn)?",
+              "options": [
+                "[Ar] 3d⁶ 4s²",
+                "[Ar] 3d⁵ 4s²",
+                "[Ar] 3d⁷ 4s²",
+                "[Ar] 3d⁸ 4s²"
+              ],
+              "answer": 1,
+              "explanation": "A neutral manganese atom has 25 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral iron atom (Fe)?",
+              "options": [
+                "[Ar] 3d⁷ 4s²",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d⁶ 4s²",
+                "[Ar] 3d¹⁰ 4s¹"
+              ],
+              "answer": 2,
+              "explanation": "A neutral iron atom has 26 electrons. Its ground-state electron configuration is [Ar] 3d⁶ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral cobalt atom (Co)?",
+              "options": [
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d¹⁰ 4s²",
+                "[Ar] 3d⁷ 4s²"
+              ],
+              "answer": 3,
+              "explanation": "A neutral cobalt atom has 27 electrons. Its ground-state electron configuration is [Ar] 3d⁷ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral nickel atom (Ni)?",
+              "options": [
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d¹⁰ 4s²",
+                "1s¹"
+              ],
+              "answer": 0,
+              "explanation": "A neutral nickel atom has 28 electrons. Its ground-state electron configuration is [Ar] 3d⁸ 4s²."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral copper atom (Cu)?",
+              "options": [
+                "[Ar] 3d⁹ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s²"
+              ],
+              "answer": 1,
+              "explanation": "A neutral copper atom has 29 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s¹. This is an exception to the simple filling-order prediction."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral zinc atom (Zn)?",
+              "options": [
+                "1s¹",
+                "1s²",
+                "[Ar] 3d¹⁰ 4s²",
+                "[He] 2s¹"
+              ],
+              "answer": 2,
+              "explanation": "A neutral zinc atom has 30 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s²."
+            }
+          ]
         }
       ]
     },
