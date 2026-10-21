@@ -26,6 +26,10 @@ function validatePracticeData(data) {
       quizIds.add(quiz.id);
       quiz.questions.forEach((question) => {
         if (!question.prompt) throw new Error("Missing question");
+        if (question.element) {
+          const element = data.elements?.[question.element];
+          if (!element || element.symbol !== question.element || !element.name || !Number.isInteger(element.period) || !element.group || !["s", "p", "d", "f"].includes(element.block) || !element.subshell || !element.fact || !element.uses) throw new Error("Invalid element facts");
+        }
         if (question.type === "numeric") {
           if (!Number.isFinite(question.answer) || (question.tolerance !== undefined && (!Number.isFinite(question.tolerance) || question.tolerance < 0))) throw new Error("Invalid numeric answer");
         } else if (question.type !== "choice" || !Array.isArray(question.options) || question.options.length < 2 || !question.options.every((option) => typeof option === "string" && option.length > 0) || !Number.isInteger(question.answer) || question.answer < 0 || question.answer >= question.options.length) {
@@ -42,6 +46,7 @@ if (typeof module !== "undefined" && module.exports) module.exports = { gradeQui
 if (typeof document !== "undefined") {
   const content = document.getElementById("practiceContent");
   let courses = [];
+  let elements = {};
 
   function el(tag, text, className) {
     const node = document.createElement(tag);
@@ -102,6 +107,23 @@ if (typeof document !== "undefined") {
     return question.type === "numeric" ? `${answer}${question.unit ? ` ${question.unit}` : ""}` : question.options[Number(answer)];
   }
 
+  function renderElementFacts(element) {
+    const card = el("section", undefined, "element-facts");
+    card.append(el("h3", `${element.name} (${element.symbol})`));
+    const details = el("dl", undefined, "element-details");
+    [["Atomic number", element.atomicNumber], ["Period", element.period], ["Group", element.group], ["Block", element.block], ["Block subshell", element.subshell]].forEach(([label, value]) => {
+      details.append(el("dt", label), el("dd", String(value)));
+    });
+    card.append(details, el("p", "The block subshell identifies the s, p, d, or f region of the table; it is not always the outermost occupied subshell.", "muted"), el("h4", "Interesting fact"), el("p", element.fact), el("h4", "Uses and applications"), el("p", element.uses));
+    if (element.source) {
+      const source = link("Learn more: Royal Society of Chemistry ↗", element.source);
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      card.append(source);
+    }
+    return card;
+  }
+
   function renderResult(course, quiz, answers) {
     const result = gradeQuiz(quiz, answers);
     const summary = el("section", undefined, "card");
@@ -139,6 +161,7 @@ if (typeof document !== "undefined") {
         feedback.className = `feedback${result.correct ? " correct" : ""}`;
         feedback.append(el("strong", result.correct ? "Correct!" : "Incorrect."), el("p", `Correct answer: ${answerLabel(question, question.answer)}`));
         if (question.explanation) feedback.append(el("p", question.explanation));
+        if (result.correct && elements[question.element]) feedback.append(renderElementFacts(elements[question.element]));
         const answered = answers.filter((answer) => answer !== null).length;
         progress.textContent = `${answered} of ${quiz.questions.length} answered`;
         if (answered === quiz.questions.length) renderResult(course, quiz, answers);
@@ -189,7 +212,9 @@ if (typeof document !== "undefined") {
     try {
       const response = await fetch("practice-data.json", { cache: "no-store" });
       if (!response.ok) throw new Error("Unable to load quizzes");
-      courses = validatePracticeData(await response.json()).courses;
+      const data = validatePracticeData(await response.json());
+      courses = data.courses;
+      elements = data.elements || {};
       window.addEventListener("hashchange", render);
       render();
     } catch (_error) {

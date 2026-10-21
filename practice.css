@@ -38,5 +38,12 @@ h2[tabindex="-1"]:focus { outline: none; }
 .feedback { border-left: 4px solid #aa4835; padding-left: 18px; margin-top: 22px; }
 .feedback.correct { border-color: var(--teal); }
 .feedback p { white-space: pre-wrap; }
+.element-facts { margin-top: 20px; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: #e8efeb; }
+.element-facts h4 { margin: 18px 0 4px; }
+.element-facts p { margin: 4px 0 14px; }
+.element-facts .muted, .element-facts a { font-size: .85rem; }
+.element-details { display: grid; grid-template-columns: minmax(100px, 1fr) minmax(0, 1.5fr); gap: 7px 12px; }
+.element-details dt { font-weight: 700; }
+.element-details dd { margin: 0; overflow-wrap: anywhere; }
 footer { border-top: 1px solid var(--line); margin-top: 48px; padding-top: 20px; font-size: .85rem; }
 @media(max-width: 740px) { .course-grid { grid-template-columns: 1fr; } .shell { padding: 24px 18px; } .card, fieldset { padding: 20px; } }

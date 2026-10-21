@@ -20,7 +20,8 @@
                 "Mercury"
               ],
               "answer": 0,
-              "explanation": "H is the chemical symbol for hydrogen."
+              "explanation": "H is the chemical symbol for hydrogen.",
+              "element": "H"
             },
             {
               "type": "choice",
@@ -32,7 +33,8 @@
                 "Hafnium"
               ],
               "answer": 1,
-              "explanation": "He is the chemical symbol for helium."
+              "explanation": "He is the chemical symbol for helium.",
+              "element": "He"
             },
             {
               "type": "choice",
@@ -44,7 +46,8 @@
                 "Lutetium"
               ],
               "answer": 2,
-              "explanation": "Li is the chemical symbol for lithium."
+              "explanation": "Li is the chemical symbol for lithium.",
+              "element": "Li"
             },
             {
               "type": "choice",
@@ -56,7 +59,8 @@
                 "Beryllium"
               ],
               "answer": 3,
-              "explanation": "Be is the chemical symbol for beryllium."
+              "explanation": "Be is the chemical symbol for beryllium.",
+              "element": "Be"
             },
             {
               "type": "choice",
@@ -68,7 +72,8 @@
                 "Bismuth"
               ],
               "answer": 0,
-              "explanation": "B is the chemical symbol for boron."
+              "explanation": "B is the chemical symbol for boron.",
+              "element": "B"
             },
             {
               "type": "choice",
@@ -80,7 +85,8 @@
                 "Copper"
               ],
               "answer": 1,
-              "explanation": "C is the chemical symbol for carbon."
+              "explanation": "C is the chemical symbol for carbon.",
+              "element": "C"
             },
             {
               "type": "choice",
@@ -92,7 +98,8 @@
                 "Sodium"
               ],
               "answer": 2,
-              "explanation": "N is the chemical symbol for nitrogen."
+              "explanation": "N is the chemical symbol for nitrogen.",
+              "element": "N"
             },
             {
               "type": "choice",
@@ -104,7 +111,8 @@
                 "Oxygen"
               ],
               "answer": 3,
-              "explanation": "O is the chemical symbol for oxygen."
+              "explanation": "O is the chemical symbol for oxygen.",
+              "element": "O"
             },
             {
               "type": "choice",
@@ -116,7 +124,8 @@
                 "Phosphorus"
               ],
               "answer": 0,
-              "explanation": "F is the chemical symbol for fluorine."
+              "explanation": "F is the chemical symbol for fluorine.",
+              "element": "F"
             },
             {
               "type": "choice",
@@ -128,7 +137,8 @@
                 "Neodymium"
               ],
               "answer": 1,
-              "explanation": "Ne is the chemical symbol for neon."
+              "explanation": "Ne is the chemical symbol for neon.",
+              "element": "Ne"
             },
             {
               "type": "choice",
@@ -140,7 +150,8 @@
                 "Neon"
               ],
               "answer": 2,
-              "explanation": "Na is the chemical symbol for sodium."
+              "explanation": "Na is the chemical symbol for sodium.",
+              "element": "Na"
             },
             {
               "type": "choice",
@@ -152,7 +163,8 @@
                 "Magnesium"
               ],
               "answer": 3,
-              "explanation": "Mg is the chemical symbol for magnesium."
+              "explanation": "Mg is the chemical symbol for magnesium.",
+              "element": "Mg"
             },
             {
               "type": "choice",
@@ -164,7 +176,8 @@
                 "Gold"
               ],
               "answer": 0,
-              "explanation": "Al is the chemical symbol for aluminum."
+              "explanation": "Al is the chemical symbol for aluminum.",
+              "element": "Al"
             },
             {
               "type": "choice",
@@ -176,7 +189,8 @@
                 "Sodium"
               ],
               "answer": 1,
-              "explanation": "Si is the chemical symbol for silicon."
+              "explanation": "Si is the chemical symbol for silicon.",
+              "element": "Si"
             },
             {
               "type": "choice",
@@ -188,7 +202,8 @@
                 "Lead"
               ],
               "answer": 2,
-              "explanation": "P is the chemical symbol for phosphorus."
+              "explanation": "P is the chemical symbol for phosphorus.",
+              "element": "P"
             },
             {
               "type": "choice",
@@ -200,7 +215,8 @@
                 "Sulfur"
               ],
               "answer": 3,
-              "explanation": "S is the chemical symbol for sulfur."
+              "explanation": "S is the chemical symbol for sulfur.",
+              "element": "S"
             },
             {
               "type": "choice",
@@ -212,7 +228,8 @@
                 "Cobalt"
               ],
               "answer": 0,
-              "explanation": "Cl is the chemical symbol for chlorine."
+              "explanation": "Cl is the chemical symbol for chlorine.",
+              "element": "Cl"
             },
             {
               "type": "choice",
@@ -224,7 +241,8 @@
                 "Aluminum"
               ],
               "answer": 1,
-              "explanation": "Ar is the chemical symbol for argon."
+              "explanation": "Ar is the chemical symbol for argon.",
+              "element": "Ar"
             },
             {
               "type": "choice",
@@ -236,7 +254,8 @@
                 "Sodium"
               ],
               "answer": 2,
-              "explanation": "K is the chemical symbol for potassium."
+              "explanation": "K is the chemical symbol for potassium.",
+              "element": "K"
             },
             {
               "type": "choice",
@@ -248,7 +267,8 @@
                 "Calcium"
               ],
               "answer": 3,
-              "explanation": "Ca is the chemical symbol for calcium."
+              "explanation": "Ca is the chemical symbol for calcium.",
+              "element": "Ca"
             },
             {
               "type": "choice",
@@ -260,7 +280,8 @@
                 "Selenium"
               ],
               "answer": 0,
-              "explanation": "Sc is the chemical symbol for scandium."
+              "explanation": "Sc is the chemical symbol for scandium.",
+              "element": "Sc"
             },
             {
               "type": "choice",
@@ -272,7 +293,8 @@
                 "Tungsten"
               ],
               "answer": 1,
-              "explanation": "Ti is the chemical symbol for titanium."
+              "explanation": "Ti is the chemical symbol for titanium.",
+              "element": "Ti"
             },
             {
               "type": "choice",
@@ -284,7 +306,8 @@
                 "Zinc"
               ],
               "answer": 2,
-              "explanation": "V is the chemical symbol for vanadium."
+              "explanation": "V is the chemical symbol for vanadium.",
+              "element": "V"
             },
             {
               "type": "choice",
@@ -296,7 +319,8 @@
                 "Chromium"
               ],
               "answer": 3,
-              "explanation": "Cr is the chemical symbol for chromium."
+              "explanation": "Cr is the chemical symbol for chromium.",
+              "element": "Cr"
             },
             {
               "type": "choice",
@@ -308,7 +332,8 @@
                 "Mercury"
               ],
               "answer": 0,
-              "explanation": "Mn is the chemical symbol for manganese."
+              "explanation": "Mn is the chemical symbol for manganese.",
+              "element": "Mn"
             },
             {
               "type": "choice",
@@ -320,7 +345,8 @@
                 "Fermium"
               ],
               "answer": 1,
-              "explanation": "Fe is the chemical symbol for iron."
+              "explanation": "Fe is the chemical symbol for iron.",
+              "element": "Fe"
             },
             {
               "type": "choice",
@@ -332,7 +358,8 @@
                 "Calcium"
               ],
               "answer": 2,
-              "explanation": "Co is the chemical symbol for cobalt."
+              "explanation": "Co is the chemical symbol for cobalt.",
+              "element": "Co"
             },
             {
               "type": "choice",
@@ -344,7 +371,8 @@
                 "Nickel"
               ],
               "answer": 3,
-              "explanation": "Ni is the chemical symbol for nickel."
+              "explanation": "Ni is the chemical symbol for nickel.",
+              "element": "Ni"
             },
             {
               "type": "choice",
@@ -356,7 +384,8 @@
                 "Calcium"
               ],
               "answer": 0,
-              "explanation": "Cu is the chemical symbol for copper."
+              "explanation": "Cu is the chemical symbol for copper.",
+              "element": "Cu"
             },
             {
               "type": "choice",
@@ -368,7 +397,8 @@
                 "Xenon"
               ],
               "answer": 1,
-              "explanation": "Zn is the chemical symbol for zinc."
+              "explanation": "Zn is the chemical symbol for zinc.",
+              "element": "Zn"
             }
           ]
         },
@@ -387,7 +417,8 @@
                 "Ag"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for gallium is Ga."
+              "explanation": "The chemical symbol for gallium is Ga.",
+              "element": "Ga"
             },
             {
               "type": "choice",
@@ -399,7 +430,8 @@
                 "Ge"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for germanium is Ge."
+              "explanation": "The chemical symbol for germanium is Ge.",
+              "element": "Ge"
             },
             {
               "type": "choice",
@@ -411,7 +443,8 @@
                 "Se"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for arsenic is As."
+              "explanation": "The chemical symbol for arsenic is As.",
+              "element": "As"
             },
             {
               "type": "choice",
@@ -423,7 +456,8 @@
                 "Sn"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for selenium is Se."
+              "explanation": "The chemical symbol for selenium is Se.",
+              "element": "Se"
             },
             {
               "type": "choice",
@@ -435,7 +469,8 @@
                 "Kr"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for bromine is Br."
+              "explanation": "The chemical symbol for bromine is Br.",
+              "element": "Br"
             },
             {
               "type": "choice",
@@ -447,7 +482,8 @@
                 "Kr"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for krypton is Kr."
+              "explanation": "The chemical symbol for krypton is Kr.",
+              "element": "Kr"
             },
             {
               "type": "choice",
@@ -459,7 +495,8 @@
                 "Br"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for rubidium is Rb."
+              "explanation": "The chemical symbol for rubidium is Rb.",
+              "element": "Rb"
             },
             {
               "type": "choice",
@@ -471,7 +508,8 @@
                 "Sb"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for strontium is Sr."
+              "explanation": "The chemical symbol for strontium is Sr.",
+              "element": "Sr"
             },
             {
               "type": "choice",
@@ -483,7 +521,8 @@
                 "Zr"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for yttrium is Y."
+              "explanation": "The chemical symbol for yttrium is Y.",
+              "element": "Y"
             },
             {
               "type": "choice",
@@ -495,7 +534,8 @@
                 "Zr"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for zirconium is Zr."
+              "explanation": "The chemical symbol for zirconium is Zr.",
+              "element": "Zr"
             },
             {
               "type": "choice",
@@ -507,7 +547,8 @@
                 "Mo"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for niobium is Nb."
+              "explanation": "The chemical symbol for niobium is Nb.",
+              "element": "Nb"
             },
             {
               "type": "choice",
@@ -519,7 +560,8 @@
                 "Tc"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for molybdenum is Mo."
+              "explanation": "The chemical symbol for molybdenum is Mo.",
+              "element": "Mo"
             },
             {
               "type": "choice",
@@ -531,7 +573,8 @@
                 "Ta"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for technetium is Tc."
+              "explanation": "The chemical symbol for technetium is Tc.",
+              "element": "Tc"
             },
             {
               "type": "choice",
@@ -543,7 +586,8 @@
                 "Ru"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for ruthenium is Ru."
+              "explanation": "The chemical symbol for ruthenium is Ru.",
+              "element": "Ru"
             },
             {
               "type": "choice",
@@ -555,7 +599,8 @@
                 "Pd"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for rhodium is Rh."
+              "explanation": "The chemical symbol for rhodium is Rh.",
+              "element": "Rh"
             },
             {
               "type": "choice",
@@ -567,7 +612,8 @@
                 "Pt"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for palladium is Pd."
+              "explanation": "The chemical symbol for palladium is Pd.",
+              "element": "Pd"
             },
             {
               "type": "choice",
@@ -579,7 +625,8 @@
                 "Ar"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for silver is Ag."
+              "explanation": "The chemical symbol for silver is Ag.",
+              "element": "Ag"
             },
             {
               "type": "choice",
@@ -591,7 +638,8 @@
                 "Cd"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for cadmium is Cd."
+              "explanation": "The chemical symbol for cadmium is Cd.",
+              "element": "Cd"
             },
             {
               "type": "choice",
@@ -603,7 +651,8 @@
                 "Sn"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for indium is In."
+              "explanation": "The chemical symbol for indium is In.",
+              "element": "In"
             },
             {
               "type": "choice",
@@ -615,7 +664,8 @@
                 "Ti"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for tin is Sn."
+              "explanation": "The chemical symbol for tin is Sn.",
+              "element": "Sn"
             },
             {
               "type": "choice",
@@ -627,7 +677,8 @@
                 "Ag"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for antimony is Sb."
+              "explanation": "The chemical symbol for antimony is Sb.",
+              "element": "Sb"
             },
             {
               "type": "choice",
@@ -639,7 +690,8 @@
                 "Te"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for tellurium is Te."
+              "explanation": "The chemical symbol for tellurium is Te.",
+              "element": "Te"
             },
             {
               "type": "choice",
@@ -651,7 +703,8 @@
                 "Y"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for iodine is I."
+              "explanation": "The chemical symbol for iodine is I.",
+              "element": "I"
             },
             {
               "type": "choice",
@@ -663,7 +716,8 @@
                 "Ce"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for xenon is Xe."
+              "explanation": "The chemical symbol for xenon is Xe.",
+              "element": "Xe"
             },
             {
               "type": "choice",
@@ -675,7 +729,8 @@
                 "Ca"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for cesium is Cs."
+              "explanation": "The chemical symbol for cesium is Cs.",
+              "element": "Cs"
             },
             {
               "type": "choice",
@@ -687,7 +742,8 @@
                 "Ba"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for barium is Ba."
+              "explanation": "The chemical symbol for barium is Ba.",
+              "element": "Ba"
             },
             {
               "type": "choice",
@@ -699,7 +755,8 @@
                 "Li"
               ],
               "answer": 0,
-              "explanation": "The chemical symbol for lanthanum is La."
+              "explanation": "The chemical symbol for lanthanum is La.",
+              "element": "La"
             },
             {
               "type": "choice",
@@ -711,7 +768,8 @@
                 "Pr"
               ],
               "answer": 1,
-              "explanation": "The chemical symbol for cerium is Ce."
+              "explanation": "The chemical symbol for cerium is Ce.",
+              "element": "Ce"
             },
             {
               "type": "choice",
@@ -723,7 +781,8 @@
                 "Pa"
               ],
               "answer": 2,
-              "explanation": "The chemical symbol for praseodymium is Pr."
+              "explanation": "The chemical symbol for praseodymium is Pr.",
+              "element": "Pr"
             },
             {
               "type": "choice",
@@ -735,7 +794,8 @@
                 "Nd"
               ],
               "answer": 3,
-              "explanation": "The chemical symbol for neodymium is Nd."
+              "explanation": "The chemical symbol for neodymium is Nd.",
+              "element": "Nd"
             }
           ]
         },
@@ -754,7 +814,8 @@
                 "[He] 2s²"
               ],
               "answer": 1,
-              "explanation": "A neutral hydrogen atom has 1 electron. Its ground-state electron configuration is 1s¹."
+              "explanation": "A neutral hydrogen atom has 1 electron. Its ground-state electron configuration is 1s¹.",
+              "element": "H"
             },
             {
               "type": "choice",
@@ -766,7 +827,8 @@
                 "[He] 2s² 2p¹"
               ],
               "answer": 2,
-              "explanation": "A neutral helium atom has 2 electrons. Its ground-state electron configuration is 1s²."
+              "explanation": "A neutral helium atom has 2 electrons. Its ground-state electron configuration is 1s².",
+              "element": "He"
             },
             {
               "type": "choice",
@@ -778,7 +840,8 @@
                 "[He] 2s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral lithium atom has 3 electrons. Its ground-state electron configuration is [He] 2s¹."
+              "explanation": "A neutral lithium atom has 3 electrons. Its ground-state electron configuration is [He] 2s¹.",
+              "element": "Li"
             },
             {
               "type": "choice",
@@ -790,7 +853,8 @@
                 "[He] 2s² 2p³"
               ],
               "answer": 0,
-              "explanation": "A neutral beryllium atom has 4 electrons. Its ground-state electron configuration is [He] 2s²."
+              "explanation": "A neutral beryllium atom has 4 electrons. Its ground-state electron configuration is [He] 2s².",
+              "element": "Be"
             },
             {
               "type": "choice",
@@ -802,7 +866,8 @@
                 "[He] 2s² 2p⁴"
               ],
               "answer": 1,
-              "explanation": "A neutral boron atom has 5 electrons. Its ground-state electron configuration is [He] 2s² 2p¹."
+              "explanation": "A neutral boron atom has 5 electrons. Its ground-state electron configuration is [He] 2s² 2p¹.",
+              "element": "B"
             },
             {
               "type": "choice",
@@ -814,7 +879,8 @@
                 "[He] 2s² 2p⁵"
               ],
               "answer": 2,
-              "explanation": "A neutral carbon atom has 6 electrons. Its ground-state electron configuration is [He] 2s² 2p²."
+              "explanation": "A neutral carbon atom has 6 electrons. Its ground-state electron configuration is [He] 2s² 2p².",
+              "element": "C"
             },
             {
               "type": "choice",
@@ -826,7 +892,8 @@
                 "[He] 2s² 2p³"
               ],
               "answer": 3,
-              "explanation": "A neutral nitrogen atom has 7 electrons. Its ground-state electron configuration is [He] 2s² 2p³."
+              "explanation": "A neutral nitrogen atom has 7 electrons. Its ground-state electron configuration is [He] 2s² 2p³.",
+              "element": "N"
             },
             {
               "type": "choice",
@@ -838,7 +905,8 @@
                 "[Ne] 3s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral oxygen atom has 8 electrons. Its ground-state electron configuration is [He] 2s² 2p⁴."
+              "explanation": "A neutral oxygen atom has 8 electrons. Its ground-state electron configuration is [He] 2s² 2p⁴.",
+              "element": "O"
             },
             {
               "type": "choice",
@@ -850,7 +918,8 @@
                 "[Ne] 3s²"
               ],
               "answer": 1,
-              "explanation": "A neutral fluorine atom has 9 electrons. Its ground-state electron configuration is [He] 2s² 2p⁵."
+              "explanation": "A neutral fluorine atom has 9 electrons. Its ground-state electron configuration is [He] 2s² 2p⁵.",
+              "element": "F"
             },
             {
               "type": "choice",
@@ -862,7 +931,8 @@
                 "[Ne] 3s² 3p¹"
               ],
               "answer": 2,
-              "explanation": "A neutral neon atom has 10 electrons. Its ground-state electron configuration is [He] 2s² 2p⁶."
+              "explanation": "A neutral neon atom has 10 electrons. Its ground-state electron configuration is [He] 2s² 2p⁶.",
+              "element": "Ne"
             },
             {
               "type": "choice",
@@ -874,7 +944,8 @@
                 "[Ne] 3s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral sodium atom has 11 electrons. Its ground-state electron configuration is [Ne] 3s¹."
+              "explanation": "A neutral sodium atom has 11 electrons. Its ground-state electron configuration is [Ne] 3s¹.",
+              "element": "Na"
             },
             {
               "type": "choice",
@@ -886,7 +957,8 @@
                 "[Ne] 3s² 3p³"
               ],
               "answer": 0,
-              "explanation": "A neutral magnesium atom has 12 electrons. Its ground-state electron configuration is [Ne] 3s²."
+              "explanation": "A neutral magnesium atom has 12 electrons. Its ground-state electron configuration is [Ne] 3s².",
+              "element": "Mg"
             },
             {
               "type": "choice",
@@ -898,7 +970,8 @@
                 "[Ne] 3s² 3p⁴"
               ],
               "answer": 1,
-              "explanation": "A neutral aluminum atom has 13 electrons. Its ground-state electron configuration is [Ne] 3s² 3p¹."
+              "explanation": "A neutral aluminum atom has 13 electrons. Its ground-state electron configuration is [Ne] 3s² 3p¹.",
+              "element": "Al"
             },
             {
               "type": "choice",
@@ -910,7 +983,8 @@
                 "[Ne] 3s² 3p⁵"
               ],
               "answer": 2,
-              "explanation": "A neutral silicon atom has 14 electrons. Its ground-state electron configuration is [Ne] 3s² 3p²."
+              "explanation": "A neutral silicon atom has 14 electrons. Its ground-state electron configuration is [Ne] 3s² 3p².",
+              "element": "Si"
             },
             {
               "type": "choice",
@@ -922,7 +996,8 @@
                 "[Ne] 3s² 3p³"
               ],
               "answer": 3,
-              "explanation": "A neutral phosphorus atom has 15 electrons. Its ground-state electron configuration is [Ne] 3s² 3p³."
+              "explanation": "A neutral phosphorus atom has 15 electrons. Its ground-state electron configuration is [Ne] 3s² 3p³.",
+              "element": "P"
             },
             {
               "type": "choice",
@@ -934,7 +1009,8 @@
                 "[Ar] 4s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral sulfur atom has 16 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁴."
+              "explanation": "A neutral sulfur atom has 16 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁴.",
+              "element": "S"
             },
             {
               "type": "choice",
@@ -946,7 +1022,8 @@
                 "[Ar] 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral chlorine atom has 17 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁵."
+              "explanation": "A neutral chlorine atom has 17 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁵.",
+              "element": "Cl"
             },
             {
               "type": "choice",
@@ -958,7 +1035,8 @@
                 "[Ar] 3d¹ 4s²"
               ],
               "answer": 2,
-              "explanation": "A neutral argon atom has 18 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁶."
+              "explanation": "A neutral argon atom has 18 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁶.",
+              "element": "Ar"
             },
             {
               "type": "choice",
@@ -970,7 +1048,8 @@
                 "[Ar] 4s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral potassium atom has 19 electrons. Its ground-state electron configuration is [Ar] 4s¹."
+              "explanation": "A neutral potassium atom has 19 electrons. Its ground-state electron configuration is [Ar] 4s¹.",
+              "element": "K"
             },
             {
               "type": "choice",
@@ -982,7 +1061,8 @@
                 "[Ar] 3d³ 4s²"
               ],
               "answer": 0,
-              "explanation": "A neutral calcium atom has 20 electrons. Its ground-state electron configuration is [Ar] 4s²."
+              "explanation": "A neutral calcium atom has 20 electrons. Its ground-state electron configuration is [Ar] 4s².",
+              "element": "Ca"
             },
             {
               "type": "choice",
@@ -994,7 +1074,8 @@
                 "[Ar] 3d⁵ 4s¹"
               ],
               "answer": 1,
-              "explanation": "A neutral scandium atom has 21 electrons. Its ground-state electron configuration is [Ar] 3d¹ 4s²."
+              "explanation": "A neutral scandium atom has 21 electrons. Its ground-state electron configuration is [Ar] 3d¹ 4s².",
+              "element": "Sc"
             },
             {
               "type": "choice",
@@ -1006,7 +1087,8 @@
                 "[Ar] 3d⁵ 4s²"
               ],
               "answer": 2,
-              "explanation": "A neutral titanium atom has 22 electrons. Its ground-state electron configuration is [Ar] 3d² 4s²."
+              "explanation": "A neutral titanium atom has 22 electrons. Its ground-state electron configuration is [Ar] 3d² 4s².",
+              "element": "Ti"
             },
             {
               "type": "choice",
@@ -1018,7 +1100,8 @@
                 "[Ar] 3d³ 4s²"
               ],
               "answer": 3,
-              "explanation": "A neutral vanadium atom has 23 electrons. Its ground-state electron configuration is [Ar] 3d³ 4s²."
+              "explanation": "A neutral vanadium atom has 23 electrons. Its ground-state electron configuration is [Ar] 3d³ 4s².",
+              "element": "V"
             },
             {
               "type": "choice",
@@ -1030,7 +1113,8 @@
                 "[Ar] 3d³ 4s²"
               ],
               "answer": 0,
-              "explanation": "A neutral chromium atom has 24 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s¹. This is an exception to the simple filling-order prediction."
+              "explanation": "A neutral chromium atom has 24 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s¹. This is an exception to the simple filling-order prediction.",
+              "element": "Cr"
             },
             {
               "type": "choice",
@@ -1042,7 +1126,8 @@
                 "[Ar] 3d⁸ 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral manganese atom has 25 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s²."
+              "explanation": "A neutral manganese atom has 25 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s².",
+              "element": "Mn"
             },
             {
               "type": "choice",
@@ -1054,7 +1139,8 @@
                 "[Ar] 3d¹⁰ 4s¹"
               ],
               "answer": 2,
-              "explanation": "A neutral iron atom has 26 electrons. Its ground-state electron configuration is [Ar] 3d⁶ 4s²."
+              "explanation": "A neutral iron atom has 26 electrons. Its ground-state electron configuration is [Ar] 3d⁶ 4s².",
+              "element": "Fe"
             },
             {
               "type": "choice",
@@ -1066,7 +1152,8 @@
                 "[Ar] 3d⁷ 4s²"
               ],
               "answer": 3,
-              "explanation": "A neutral cobalt atom has 27 electrons. Its ground-state electron configuration is [Ar] 3d⁷ 4s²."
+              "explanation": "A neutral cobalt atom has 27 electrons. Its ground-state electron configuration is [Ar] 3d⁷ 4s².",
+              "element": "Co"
             },
             {
               "type": "choice",
@@ -1078,7 +1165,8 @@
                 "1s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral nickel atom has 28 electrons. Its ground-state electron configuration is [Ar] 3d⁸ 4s²."
+              "explanation": "A neutral nickel atom has 28 electrons. Its ground-state electron configuration is [Ar] 3d⁸ 4s².",
+              "element": "Ni"
             },
             {
               "type": "choice",
@@ -1090,7 +1178,8 @@
                 "[Ar] 3d¹⁰ 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral copper atom has 29 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s¹. This is an exception to the simple filling-order prediction."
+              "explanation": "A neutral copper atom has 29 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s¹. This is an exception to the simple filling-order prediction.",
+              "element": "Cu"
             },
             {
               "type": "choice",
@@ -1102,7 +1191,8 @@
                 "[He] 2s¹"
               ],
               "answer": 2,
-              "explanation": "A neutral zinc atom has 30 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s²."
+              "explanation": "A neutral zinc atom has 30 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s².",
+              "element": "Zn"
             }
           ]
         }
@@ -1120,5 +1210,727 @@
       "subject": "Physics practice",
       "quizzes": []
     }
-  ]
+  ],
+  "elements": {
+    "H": {
+      "name": "Hydrogen",
+      "symbol": "H",
+      "atomicNumber": 1,
+      "period": 1,
+      "group": 1,
+      "block": "s",
+      "subshell": "1s",
+      "fact": "It is the lightest element and the most abundant element in the universe.",
+      "uses": "Used to manufacture ammonia for fertilizers and as a reactant in fuel cells.",
+      "source": "https://periodic-table.rsc.org/element/1/hydrogen"
+    },
+    "He": {
+      "name": "Helium",
+      "symbol": "He",
+      "atomicNumber": 2,
+      "period": 1,
+      "group": 18,
+      "block": "s",
+      "subshell": "1s",
+      "fact": "Its boiling point is lower than that of any other element.",
+      "uses": "Liquid helium cools superconducting magnets, including those in MRI scanners.",
+      "source": "https://periodic-table.rsc.org/element/2/helium"
+    },
+    "Li": {
+      "name": "Lithium",
+      "symbol": "Li",
+      "atomicNumber": 3,
+      "period": 2,
+      "group": 1,
+      "block": "s",
+      "subshell": "2s",
+      "fact": "It is the lightest metal.",
+      "uses": "Lithium compounds are used in rechargeable lithium-ion batteries.",
+      "source": "https://periodic-table.rsc.org/element/3/lithium"
+    },
+    "Be": {
+      "name": "Beryllium",
+      "symbol": "Be",
+      "atomicNumber": 4,
+      "period": 2,
+      "group": 2,
+      "block": "s",
+      "subshell": "2s",
+      "fact": "It combines low density with high stiffness.",
+      "uses": "Used in specialized aerospace components and X-ray windows.",
+      "source": "https://periodic-table.rsc.org/element/4/beryllium"
+    },
+    "B": {
+      "name": "Boron",
+      "symbol": "B",
+      "atomicNumber": 5,
+      "period": 2,
+      "group": 13,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "Boron is a metalloid, with properties between those of metals and nonmetals.",
+      "uses": "Boron compounds are used in heat-resistant borosilicate glass.",
+      "source": "https://periodic-table.rsc.org/element/5/boron"
+    },
+    "C": {
+      "name": "Carbon",
+      "symbol": "C",
+      "atomicNumber": 6,
+      "period": 2,
+      "group": 14,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "Diamond and graphite are different structural forms of carbon.",
+      "uses": "Graphite is used in pencil cores and battery electrodes; diamond is used in cutting tools.",
+      "source": "https://periodic-table.rsc.org/element/6/carbon"
+    },
+    "N": {
+      "name": "Nitrogen",
+      "symbol": "N",
+      "atomicNumber": 7,
+      "period": 2,
+      "group": 15,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "Nitrogen gas makes up about 78% of Earth's atmosphere.",
+      "uses": "Used to manufacture ammonia; liquid nitrogen provides very low-temperature cooling.",
+      "source": "https://periodic-table.rsc.org/element/7/nitrogen"
+    },
+    "O": {
+      "name": "Oxygen",
+      "symbol": "O",
+      "atomicNumber": 8,
+      "period": 2,
+      "group": 16,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "Oxygen supports combustion but is not itself a fuel.",
+      "uses": "Used in steelmaking and medical oxygen supplies.",
+      "source": "https://periodic-table.rsc.org/element/8/oxygen"
+    },
+    "F": {
+      "name": "Fluorine",
+      "symbol": "F",
+      "atomicNumber": 9,
+      "period": 2,
+      "group": 17,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "It is the most electronegative element.",
+      "uses": "Fluoride compounds are used in toothpaste; fluorine-containing polymers include PTFE.",
+      "source": "https://periodic-table.rsc.org/element/9/fluorine"
+    },
+    "Ne": {
+      "name": "Neon",
+      "symbol": "Ne",
+      "atomicNumber": 10,
+      "period": 2,
+      "group": 18,
+      "block": "p",
+      "subshell": "2p",
+      "fact": "Electrically excited neon gas emits a reddish-orange light.",
+      "uses": "Used in illuminated signs and indicator lamps.",
+      "source": "https://periodic-table.rsc.org/element/10/neon"
+    },
+    "Na": {
+      "name": "Sodium",
+      "symbol": "Na",
+      "atomicNumber": 11,
+      "period": 3,
+      "group": 1,
+      "block": "s",
+      "subshell": "3s",
+      "fact": "Its symbol comes from the Latin name natrium.",
+      "uses": "Sodium compounds are used in table salt, glass production, and many industrial processes.",
+      "source": "https://periodic-table.rsc.org/element/11/sodium"
+    },
+    "Mg": {
+      "name": "Magnesium",
+      "symbol": "Mg",
+      "atomicNumber": 12,
+      "period": 3,
+      "group": 2,
+      "block": "s",
+      "subshell": "3s",
+      "fact": "Magnesium burns with an intense white light.",
+      "uses": "Used in lightweight alloys and in flares and fireworks.",
+      "source": "https://periodic-table.rsc.org/element/12/magnesium"
+    },
+    "Al": {
+      "name": "Aluminum",
+      "symbol": "Al",
+      "atomicNumber": 13,
+      "period": 3,
+      "group": 13,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "A thin oxide layer helps protect the metal from further corrosion.",
+      "uses": "Used in aircraft, beverage cans, foil, and electrical transmission lines.",
+      "source": "https://periodic-table.rsc.org/element/13/aluminium"
+    },
+    "Si": {
+      "name": "Silicon",
+      "symbol": "Si",
+      "atomicNumber": 14,
+      "period": 3,
+      "group": 14,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "It is the second most abundant element in Earth's crust, after oxygen.",
+      "uses": "Used in computer chips and solar cells; silicon dioxide is a major glass ingredient.",
+      "source": "https://periodic-table.rsc.org/element/14/silicon"
+    },
+    "P": {
+      "name": "Phosphorus",
+      "symbol": "P",
+      "atomicNumber": 15,
+      "period": 3,
+      "group": 15,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "Phosphorus is part of DNA, RNA, and ATP.",
+      "uses": "Phosphate compounds are used in fertilizers; red phosphorus is used on safety-match striking surfaces.",
+      "source": "https://periodic-table.rsc.org/element/15/phosphorus"
+    },
+    "S": {
+      "name": "Sulfur",
+      "symbol": "S",
+      "atomicNumber": 16,
+      "period": 3,
+      "group": 16,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "Pure sulfur commonly forms a yellow solid.",
+      "uses": "Used to manufacture sulfuric acid and to vulcanize rubber.",
+      "source": "https://periodic-table.rsc.org/element/16/sulfur"
+    },
+    "Cl": {
+      "name": "Chlorine",
+      "symbol": "Cl",
+      "atomicNumber": 17,
+      "period": 3,
+      "group": 17,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "Chlorine belongs to the halogen family.",
+      "uses": "Used to disinfect water and to manufacture PVC plastic.",
+      "source": "https://periodic-table.rsc.org/element/17/chlorine"
+    },
+    "Ar": {
+      "name": "Argon",
+      "symbol": "Ar",
+      "atomicNumber": 18,
+      "period": 3,
+      "group": 18,
+      "block": "p",
+      "subshell": "3p",
+      "fact": "Argon is the most abundant noble gas in Earth's atmosphere.",
+      "uses": "Provides a protective atmosphere in welding and some light bulbs.",
+      "source": "https://periodic-table.rsc.org/element/18/argon"
+    },
+    "K": {
+      "name": "Potassium",
+      "symbol": "K",
+      "atomicNumber": 19,
+      "period": 4,
+      "group": 1,
+      "block": "s",
+      "subshell": "4s",
+      "fact": "Its symbol comes from the Latin name kalium.",
+      "uses": "Potassium compounds are widely used in fertilizers.",
+      "source": "https://periodic-table.rsc.org/element/19/potassium"
+    },
+    "Ca": {
+      "name": "Calcium",
+      "symbol": "Ca",
+      "atomicNumber": 20,
+      "period": 4,
+      "group": 2,
+      "block": "s",
+      "subshell": "4s",
+      "fact": "Calcium compounds are important components of bones and teeth.",
+      "uses": "Calcium compounds are used in cement, plaster, and other construction materials.",
+      "source": "https://periodic-table.rsc.org/element/20/calcium"
+    },
+    "Sc": {
+      "name": "Scandium",
+      "symbol": "Sc",
+      "atomicNumber": 21,
+      "period": 4,
+      "group": 3,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "It is a lightweight transition metal.",
+      "uses": "Small amounts are added to aluminum alloys used in specialized sporting and aerospace equipment.",
+      "source": "https://periodic-table.rsc.org/element/21/scandium"
+    },
+    "Ti": {
+      "name": "Titanium",
+      "symbol": "Ti",
+      "atomicNumber": 22,
+      "period": 4,
+      "group": 4,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "It combines low density with strength and corrosion resistance.",
+      "uses": "Used in aircraft parts and medical implants; titanium dioxide is a white pigment.",
+      "source": "https://periodic-table.rsc.org/element/22/titanium"
+    },
+    "V": {
+      "name": "Vanadium",
+      "symbol": "V",
+      "atomicNumber": 23,
+      "period": 4,
+      "group": 5,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "Small amounts can increase the strength of steel.",
+      "uses": "Used in high-strength steel alloys and vanadium redox flow batteries.",
+      "source": "https://periodic-table.rsc.org/element/23/vanadium"
+    },
+    "Cr": {
+      "name": "Chromium",
+      "symbol": "Cr",
+      "atomicNumber": 24,
+      "period": 4,
+      "group": 6,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "A protective chromium oxide layer helps stainless steel resist corrosion.",
+      "uses": "Used in stainless steel and corrosion-resistant metal plating.",
+      "source": "https://periodic-table.rsc.org/element/24/chromium"
+    },
+    "Mn": {
+      "name": "Manganese",
+      "symbol": "Mn",
+      "atomicNumber": 25,
+      "period": 4,
+      "group": 7,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "It is an essential trace element for living organisms.",
+      "uses": "Used in steelmaking; manganese dioxide is used in some batteries.",
+      "source": "https://periodic-table.rsc.org/element/25/manganese"
+    },
+    "Fe": {
+      "name": "Iron",
+      "symbol": "Fe",
+      "atomicNumber": 26,
+      "period": 4,
+      "group": 8,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "Iron is the main metal in Earth's core.",
+      "uses": "Used to make steel for buildings, tools, vehicles, and machinery.",
+      "source": "https://periodic-table.rsc.org/element/26/iron"
+    },
+    "Co": {
+      "name": "Cobalt",
+      "symbol": "Co",
+      "atomicNumber": 27,
+      "period": 4,
+      "group": 9,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "Cobalt compounds can produce an intense blue color in glass.",
+      "uses": "Used in some rechargeable battery cathodes and high-temperature alloys.",
+      "source": "https://periodic-table.rsc.org/element/27/cobalt"
+    },
+    "Ni": {
+      "name": "Nickel",
+      "symbol": "Ni",
+      "atomicNumber": 28,
+      "period": 4,
+      "group": 10,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "Nickel is one of the elements that is ferromagnetic at room temperature.",
+      "uses": "Used in stainless steel, metal plating, and rechargeable batteries.",
+      "source": "https://periodic-table.rsc.org/element/28/nickel"
+    },
+    "Cu": {
+      "name": "Copper",
+      "symbol": "Cu",
+      "atomicNumber": 29,
+      "period": 4,
+      "group": 11,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "Copper is an excellent conductor of electricity and heat.",
+      "uses": "Used in electrical wiring, plumbing, and heat exchangers.",
+      "source": "https://periodic-table.rsc.org/element/29/copper"
+    },
+    "Zn": {
+      "name": "Zinc",
+      "symbol": "Zn",
+      "atomicNumber": 30,
+      "period": 4,
+      "group": 12,
+      "block": "d",
+      "subshell": "3d",
+      "fact": "A zinc coating can protect iron even when the coating is scratched.",
+      "uses": "Used to galvanize steel and to make brass with copper.",
+      "source": "https://periodic-table.rsc.org/element/30/zinc"
+    },
+    "Ga": {
+      "name": "Gallium",
+      "symbol": "Ga",
+      "atomicNumber": 31,
+      "period": 4,
+      "group": 13,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "It melts at about 30 degrees Celsius, just above typical room temperature.",
+      "uses": "Gallium compounds are used in LEDs and semiconductor devices.",
+      "source": "https://periodic-table.rsc.org/element/31/gallium"
+    },
+    "Ge": {
+      "name": "Germanium",
+      "symbol": "Ge",
+      "atomicNumber": 32,
+      "period": 4,
+      "group": 14,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "It is a metalloid used as a semiconductor.",
+      "uses": "Used in fiber-optic systems and infrared optics.",
+      "source": "https://periodic-table.rsc.org/element/32/germanium"
+    },
+    "As": {
+      "name": "Arsenic",
+      "symbol": "As",
+      "atomicNumber": 33,
+      "period": 4,
+      "group": 15,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "Arsenic is a metalloid, and many of its compounds are toxic.",
+      "uses": "Gallium arsenide is used in semiconductor devices and some solar cells.",
+      "source": "https://periodic-table.rsc.org/element/33/arsenic"
+    },
+    "Se": {
+      "name": "Selenium",
+      "symbol": "Se",
+      "atomicNumber": 34,
+      "period": 4,
+      "group": 16,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "Its electrical conductivity can increase when it is exposed to light.",
+      "uses": "Used in glassmaking and in some photovoltaic materials.",
+      "source": "https://periodic-table.rsc.org/element/34/selenium"
+    },
+    "Br": {
+      "name": "Bromine",
+      "symbol": "Br",
+      "atomicNumber": 35,
+      "period": 4,
+      "group": 17,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "Bromine is the only nonmetal that is liquid at typical room temperature.",
+      "uses": "Bromine compounds are used in some flame retardants and photographic materials.",
+      "source": "https://periodic-table.rsc.org/element/35/bromine"
+    },
+    "Kr": {
+      "name": "Krypton",
+      "symbol": "Kr",
+      "atomicNumber": 36,
+      "period": 4,
+      "group": 18,
+      "block": "p",
+      "subshell": "4p",
+      "fact": "Its name comes from a Greek word meaning hidden.",
+      "uses": "Used in specialized lamps and in some insulating window units.",
+      "source": "https://periodic-table.rsc.org/element/36/krypton"
+    },
+    "Rb": {
+      "name": "Rubidium",
+      "symbol": "Rb",
+      "atomicNumber": 37,
+      "period": 5,
+      "group": 1,
+      "block": "s",
+      "subshell": "5s",
+      "fact": "It is a very reactive alkali metal.",
+      "uses": "Used in some atomic clocks and in atomic-physics research.",
+      "source": "https://periodic-table.rsc.org/element/37/rubidium"
+    },
+    "Sr": {
+      "name": "Strontium",
+      "symbol": "Sr",
+      "atomicNumber": 38,
+      "period": 5,
+      "group": 2,
+      "block": "s",
+      "subshell": "5s",
+      "fact": "Strontium compounds can produce a bright red flame.",
+      "uses": "Used in red fireworks and signal flares.",
+      "source": "https://periodic-table.rsc.org/element/38/strontium"
+    },
+    "Y": {
+      "name": "Yttrium",
+      "symbol": "Y",
+      "atomicNumber": 39,
+      "period": 5,
+      "group": 3,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "It is named after Ytterby, a village in Sweden.",
+      "uses": "Used in phosphors, ceramics, and yttrium aluminum garnet laser materials.",
+      "source": "https://periodic-table.rsc.org/element/39/yttrium"
+    },
+    "Zr": {
+      "name": "Zirconium",
+      "symbol": "Zr",
+      "atomicNumber": 40,
+      "period": 5,
+      "group": 4,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "It resists corrosion and absorbs relatively few thermal neutrons.",
+      "uses": "Zirconium alloys are used as nuclear-reactor fuel cladding.",
+      "source": "https://periodic-table.rsc.org/element/40/zirconium"
+    },
+    "Nb": {
+      "name": "Niobium",
+      "symbol": "Nb",
+      "atomicNumber": 41,
+      "period": 5,
+      "group": 5,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "Niobium can form useful superconducting alloys.",
+      "uses": "Used in superconducting magnets and high-strength steels.",
+      "source": "https://periodic-table.rsc.org/element/41/niobium"
+    },
+    "Mo": {
+      "name": "Molybdenum",
+      "symbol": "Mo",
+      "atomicNumber": 42,
+      "period": 5,
+      "group": 6,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "It has a very high melting point.",
+      "uses": "Used in heat-resistant steels and alloys; molybdenum compounds are also used as catalysts.",
+      "source": "https://periodic-table.rsc.org/element/42/molybdenum"
+    },
+    "Tc": {
+      "name": "Technetium",
+      "symbol": "Tc",
+      "atomicNumber": 43,
+      "period": 5,
+      "group": 7,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "It was the first element to be produced artificially, and it has no stable isotopes.",
+      "uses": "The radioisotope technetium-99m is used in diagnostic medical imaging.",
+      "source": "https://periodic-table.rsc.org/element/43/technetium"
+    },
+    "Ru": {
+      "name": "Ruthenium",
+      "symbol": "Ru",
+      "atomicNumber": 44,
+      "period": 5,
+      "group": 8,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "It is a member of the platinum-group metals.",
+      "uses": "Used in catalysts and to improve the durability of some electrical contacts.",
+      "source": "https://periodic-table.rsc.org/element/44/ruthenium"
+    },
+    "Rh": {
+      "name": "Rhodium",
+      "symbol": "Rh",
+      "atomicNumber": 45,
+      "period": 5,
+      "group": 9,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "Rhodium is a platinum-group metal with a highly reflective surface.",
+      "uses": "Used in catalytic converters and reflective or decorative metal coatings.",
+      "source": "https://periodic-table.rsc.org/element/45/rhodium"
+    },
+    "Pd": {
+      "name": "Palladium",
+      "symbol": "Pd",
+      "atomicNumber": 46,
+      "period": 5,
+      "group": 10,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "Palladium can absorb large amounts of hydrogen.",
+      "uses": "Used in catalytic converters, chemical catalysts, and electronics.",
+      "source": "https://periodic-table.rsc.org/element/46/palladium"
+    },
+    "Ag": {
+      "name": "Silver",
+      "symbol": "Ag",
+      "atomicNumber": 47,
+      "period": 5,
+      "group": 11,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "Silver has the highest electrical conductivity of any element.",
+      "uses": "Used in electrical contacts, solar cells, jewelry, and mirrors.",
+      "source": "https://periodic-table.rsc.org/element/47/silver"
+    },
+    "Cd": {
+      "name": "Cadmium",
+      "symbol": "Cd",
+      "atomicNumber": 48,
+      "period": 5,
+      "group": 12,
+      "block": "d",
+      "subshell": "4d",
+      "fact": "Cadmium is toxic and often occurs with zinc ores.",
+      "uses": "Used in nickel-cadmium batteries and cadmium telluride solar cells.",
+      "source": "https://periodic-table.rsc.org/element/48/cadmium"
+    },
+    "In": {
+      "name": "Indium",
+      "symbol": "In",
+      "atomicNumber": 49,
+      "period": 5,
+      "group": 13,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "Indium is a soft metal that can form transparent conductive compounds.",
+      "uses": "Indium tin oxide is used in touchscreens and flat-panel displays.",
+      "source": "https://periodic-table.rsc.org/element/49/indium"
+    },
+    "Sn": {
+      "name": "Tin",
+      "symbol": "Sn",
+      "atomicNumber": 50,
+      "period": 5,
+      "group": 14,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "Tin is one of the metals used to make bronze.",
+      "uses": "Used in solder and as a protective coating on steel food cans.",
+      "source": "https://periodic-table.rsc.org/element/50/tin"
+    },
+    "Sb": {
+      "name": "Antimony",
+      "symbol": "Sb",
+      "atomicNumber": 51,
+      "period": 5,
+      "group": 15,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "Its symbol comes from the Latin name stibium.",
+      "uses": "Antimony compounds are used with flame retardants, and the metal is used in some alloys.",
+      "source": "https://periodic-table.rsc.org/element/51/antimony"
+    },
+    "Te": {
+      "name": "Tellurium",
+      "symbol": "Te",
+      "atomicNumber": 52,
+      "period": 5,
+      "group": 16,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "It is a relatively rare metalloid.",
+      "uses": "Used in cadmium telluride solar cells and thermoelectric materials.",
+      "source": "https://periodic-table.rsc.org/element/52/tellurium"
+    },
+    "I": {
+      "name": "Iodine",
+      "symbol": "I",
+      "atomicNumber": 53,
+      "period": 5,
+      "group": 17,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "Iodine is needed to make thyroid hormones.",
+      "uses": "Iodine compounds are used in iodized salt and some antiseptics.",
+      "source": "https://periodic-table.rsc.org/element/53/iodine"
+    },
+    "Xe": {
+      "name": "Xenon",
+      "symbol": "Xe",
+      "atomicNumber": 54,
+      "period": 5,
+      "group": 18,
+      "block": "p",
+      "subshell": "5p",
+      "fact": "Although it is a noble gas, xenon can form chemical compounds.",
+      "uses": "Used in some high-intensity lamps and spacecraft ion thrusters.",
+      "source": "https://periodic-table.rsc.org/element/54/xenon"
+    },
+    "Cs": {
+      "name": "Cesium",
+      "symbol": "Cs",
+      "atomicNumber": 55,
+      "period": 6,
+      "group": 1,
+      "block": "s",
+      "subshell": "6s",
+      "fact": "The cesium-133 atom defines the SI second.",
+      "uses": "Used in atomic clocks; cesium formate solutions are used in some drilling fluids.",
+      "source": "https://periodic-table.rsc.org/element/55/caesium"
+    },
+    "Ba": {
+      "name": "Barium",
+      "symbol": "Ba",
+      "atomicNumber": 56,
+      "period": 6,
+      "group": 2,
+      "block": "s",
+      "subshell": "6s",
+      "fact": "Barium compounds can produce a green flame.",
+      "uses": "Insoluble barium sulfate is used as an X-ray contrast material; some barium compounds are used in fireworks.",
+      "source": "https://periodic-table.rsc.org/element/56/barium"
+    },
+    "La": {
+      "name": "Lanthanum",
+      "symbol": "La",
+      "atomicNumber": 57,
+      "period": 6,
+      "group": "Lanthanides (series)",
+      "block": "d",
+      "subshell": "5d",
+      "fact": "Its name comes from a Greek word meaning to lie hidden.",
+      "uses": "Lanthanum compounds are used in optical glass and in some rechargeable battery alloys.",
+      "source": "https://periodic-table.rsc.org/element/57/lanthanum"
+    },
+    "Ce": {
+      "name": "Cerium",
+      "symbol": "Ce",
+      "atomicNumber": 58,
+      "period": 6,
+      "group": "Lanthanides (series)",
+      "block": "f",
+      "subshell": "4f",
+      "fact": "Cerium is the most abundant rare-earth element in Earth's crust.",
+      "uses": "Cerium oxide is used to polish glass and in automotive catalytic converters.",
+      "source": "https://periodic-table.rsc.org/element/58/cerium"
+    },
+    "Pr": {
+      "name": "Praseodymium",
+      "symbol": "Pr",
+      "atomicNumber": 59,
+      "period": 6,
+      "group": "Lanthanides (series)",
+      "block": "f",
+      "subshell": "4f",
+      "fact": "Its name refers to the green color of some of its salts.",
+      "uses": "Used in some strong magnet alloys and to color glass and ceramics.",
+      "source": "https://periodic-table.rsc.org/element/59/praseodymium"
+    },
+    "Nd": {
+      "name": "Neodymium",
+      "symbol": "Nd",
+      "atomicNumber": 60,
+      "period": 6,
+      "group": "Lanthanides (series)",
+      "block": "f",
+      "subshell": "4f",
+      "fact": "Neodymium is a rare-earth element used in powerful permanent magnets.",
+      "uses": "Neodymium-iron-boron magnets are used in headphones, electric motors, and wind-turbine generators.",
+      "source": "https://periodic-table.rsc.org/element/60/neodymium"
+    }
+  }
 }
