@@ -1,0 +1,7 @@
+{
+  "courses": [
+    { "id": "myp-chemistry", "title": "MYP Chemistry", "subject": "Chemistry practice", "quizzes": [] },
+    { "id": "dp-physics-1", "title": "DP Physics 1", "subject": "Physics practice", "quizzes": [] },
+    { "id": "dp-physics-2", "title": "DP Physics 2", "subject": "Physics practice", "quizzes": [] }
+  ]
+}

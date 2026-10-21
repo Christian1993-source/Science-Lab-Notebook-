@@ -38,6 +38,24 @@ Aplicación web académica para redactar informes de laboratorio con formato ins
   - Dibuja tablas con líneas visibles.
   - Descarga automática del PDF al estudiante.
 
+## Science Practice
+
+`practice.html` provides MYP Chemistry, DP Physics 1, and DP Physics 2 practice. Add teacher-supplied quizzes to the matching course in `practice-data.json`; keep existing quiz IDs and questions when adding new topics. Course lists use bullet points. The quiz engine requires every answer, reports correct answers out of the total and a percentage, provides answer review, and supports unlimited retries. Scores are displayed for the current attempt only; there is no teacher gradebook or cross-device storage.
+
+Each quiz has a unique `id` within its course, a `title`, optional `description`, and a nonempty `questions` array. Each question is worth one point. Supported question formats:
+
+```json
+{ "type": "choice", "prompt": "Teacher-supplied question", "options": ["Option A", "Option B"], "answer": 0, "explanation": "Optional teacher-supplied explanation" }
+```
+
+Choice `answer` is a zero-based option index. Numeric questions use a numeric `answer`, optional nonnegative absolute `tolerance` (default 0), and optional display `unit`:
+
+```json
+{ "type": "numeric", "prompt": "Teacher-supplied problem", "answer": 2.5, "tolerance": 0.01, "unit": "m/s" }
+```
+
+Keep course quiz lists empty until actual questions are supplied. Content is public, as appropriate for student practice; answer keys are included in the downloaded quiz data.
+
 ## Stack
 
 - Frontend: HTML + CSS + JavaScript moderno
