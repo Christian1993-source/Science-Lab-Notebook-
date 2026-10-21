@@ -1220,8 +1220,8 @@
       "group": 1,
       "block": "s",
       "subshell": "1s",
-      "fact": "It is the lightest element and the most abundant element in the universe.",
-      "uses": "Used to manufacture ammonia for fertilizers and as a reactant in fuel cells.",
+      "fact": "Lightest element.",
+      "uses": "Ammonia production and fuel cells.",
       "source": "https://periodic-table.rsc.org/element/1/hydrogen"
     },
     "He": {
@@ -1232,8 +1232,8 @@
       "group": 18,
       "block": "s",
       "subshell": "1s",
-      "fact": "Its boiling point is lower than that of any other element.",
-      "uses": "Liquid helium cools superconducting magnets, including those in MRI scanners.",
+      "fact": "Lowest boiling point of all elements.",
+      "uses": "Cooling MRI magnets.",
       "source": "https://periodic-table.rsc.org/element/2/helium"
     },
     "Li": {
@@ -1244,8 +1244,8 @@
       "group": 1,
       "block": "s",
       "subshell": "2s",
-      "fact": "It is the lightest metal.",
-      "uses": "Lithium compounds are used in rechargeable lithium-ion batteries.",
+      "fact": "Lightest metal.",
+      "uses": "Rechargeable batteries.",
       "source": "https://periodic-table.rsc.org/element/3/lithium"
     },
     "Be": {
@@ -1256,8 +1256,8 @@
       "group": 2,
       "block": "s",
       "subshell": "2s",
-      "fact": "It combines low density with high stiffness.",
-      "uses": "Used in specialized aerospace components and X-ray windows.",
+      "fact": "Lightweight and very stiff.",
+      "uses": "Aerospace parts and X-ray windows.",
       "source": "https://periodic-table.rsc.org/element/4/beryllium"
     },
     "B": {
@@ -1268,8 +1268,8 @@
       "group": 13,
       "block": "p",
       "subshell": "2p",
-      "fact": "Boron is a metalloid, with properties between those of metals and nonmetals.",
-      "uses": "Boron compounds are used in heat-resistant borosilicate glass.",
+      "fact": "A metalloid.",
+      "uses": "Heat-resistant glass.",
       "source": "https://periodic-table.rsc.org/element/5/boron"
     },
     "C": {
@@ -1280,8 +1280,8 @@
       "group": 14,
       "block": "p",
       "subshell": "2p",
-      "fact": "Diamond and graphite are different structural forms of carbon.",
-      "uses": "Graphite is used in pencil cores and battery electrodes; diamond is used in cutting tools.",
+      "fact": "Forms include diamond and graphite.",
+      "uses": "Pencils, batteries, and cutting tools.",
       "source": "https://periodic-table.rsc.org/element/6/carbon"
     },
     "N": {
@@ -1292,8 +1292,8 @@
       "group": 15,
       "block": "p",
       "subshell": "2p",
-      "fact": "Nitrogen gas makes up about 78% of Earth's atmosphere.",
-      "uses": "Used to manufacture ammonia; liquid nitrogen provides very low-temperature cooling.",
+      "fact": "About 78% of Earth's atmosphere.",
+      "uses": "Fertilizers and liquid-nitrogen cooling.",
       "source": "https://periodic-table.rsc.org/element/7/nitrogen"
     },
     "O": {
@@ -1304,8 +1304,8 @@
       "group": 16,
       "block": "p",
       "subshell": "2p",
-      "fact": "Oxygen supports combustion but is not itself a fuel.",
-      "uses": "Used in steelmaking and medical oxygen supplies.",
+      "fact": "Supports combustion.",
+      "uses": "Steelmaking and medical oxygen.",
       "source": "https://periodic-table.rsc.org/element/8/oxygen"
     },
     "F": {
@@ -1316,8 +1316,8 @@
       "group": 17,
       "block": "p",
       "subshell": "2p",
-      "fact": "It is the most electronegative element.",
-      "uses": "Fluoride compounds are used in toothpaste; fluorine-containing polymers include PTFE.",
+      "fact": "Most electronegative element.",
+      "uses": "Fluoride toothpaste and fluoropolymers.",
       "source": "https://periodic-table.rsc.org/element/9/fluorine"
     },
     "Ne": {
@@ -1328,8 +1328,8 @@
       "group": 18,
       "block": "p",
       "subshell": "2p",
-      "fact": "Electrically excited neon gas emits a reddish-orange light.",
-      "uses": "Used in illuminated signs and indicator lamps.",
+      "fact": "Glows reddish-orange when electrically excited.",
+      "uses": "Illuminated signs.",
       "source": "https://periodic-table.rsc.org/element/10/neon"
     },
     "Na": {
@@ -1340,8 +1340,8 @@
       "group": 1,
       "block": "s",
       "subshell": "3s",
-      "fact": "Its symbol comes from the Latin name natrium.",
-      "uses": "Sodium compounds are used in table salt, glass production, and many industrial processes.",
+      "fact": "Symbol comes from natrium.",
+      "uses": "Compounds in salt and glassmaking.",
       "source": "https://periodic-table.rsc.org/element/11/sodium"
     },
     "Mg": {
@@ -1352,8 +1352,8 @@
       "group": 2,
       "block": "s",
       "subshell": "3s",
-      "fact": "Magnesium burns with an intense white light.",
-      "uses": "Used in lightweight alloys and in flares and fireworks.",
+      "fact": "Burns with bright white light.",
+      "uses": "Lightweight alloys and flares.",
       "source": "https://periodic-table.rsc.org/element/12/magnesium"
     },
     "Al": {
@@ -1364,8 +1364,8 @@
       "group": 13,
       "block": "p",
       "subshell": "3p",
-      "fact": "A thin oxide layer helps protect the metal from further corrosion.",
-      "uses": "Used in aircraft, beverage cans, foil, and electrical transmission lines.",
+      "fact": "Its oxide layer resists corrosion.",
+      "uses": "Cans, foil, and aircraft.",
       "source": "https://periodic-table.rsc.org/element/13/aluminium"
     },
     "Si": {
@@ -1376,8 +1376,8 @@
       "group": 14,
       "block": "p",
       "subshell": "3p",
-      "fact": "It is the second most abundant element in Earth's crust, after oxygen.",
-      "uses": "Used in computer chips and solar cells; silicon dioxide is a major glass ingredient.",
+      "fact": "Second most abundant element in Earth's crust.",
+      "uses": "Computer chips and solar cells.",
       "source": "https://periodic-table.rsc.org/element/14/silicon"
     },
     "P": {
@@ -1388,8 +1388,8 @@
       "group": 15,
       "block": "p",
       "subshell": "3p",
-      "fact": "Phosphorus is part of DNA, RNA, and ATP.",
-      "uses": "Phosphate compounds are used in fertilizers; red phosphorus is used on safety-match striking surfaces.",
+      "fact": "Part of DNA and ATP.",
+      "uses": "Phosphate fertilizers.",
       "source": "https://periodic-table.rsc.org/element/15/phosphorus"
     },
     "S": {
@@ -1400,8 +1400,8 @@
       "group": 16,
       "block": "p",
       "subshell": "3p",
-      "fact": "Pure sulfur commonly forms a yellow solid.",
-      "uses": "Used to manufacture sulfuric acid and to vulcanize rubber.",
+      "fact": "Usually a yellow solid.",
+      "uses": "Sulfuric acid and rubber production.",
       "source": "https://periodic-table.rsc.org/element/16/sulfur"
     },
     "Cl": {
@@ -1412,8 +1412,8 @@
       "group": 17,
       "block": "p",
       "subshell": "3p",
-      "fact": "Chlorine belongs to the halogen family.",
-      "uses": "Used to disinfect water and to manufacture PVC plastic.",
+      "fact": "A halogen.",
+      "uses": "Water disinfection and PVC production.",
       "source": "https://periodic-table.rsc.org/element/17/chlorine"
     },
     "Ar": {
@@ -1424,8 +1424,8 @@
       "group": 18,
       "block": "p",
       "subshell": "3p",
-      "fact": "Argon is the most abundant noble gas in Earth's atmosphere.",
-      "uses": "Provides a protective atmosphere in welding and some light bulbs.",
+      "fact": "Most abundant atmospheric noble gas.",
+      "uses": "Shielding gas for welding.",
       "source": "https://periodic-table.rsc.org/element/18/argon"
     },
     "K": {
@@ -1436,8 +1436,8 @@
       "group": 1,
       "block": "s",
       "subshell": "4s",
-      "fact": "Its symbol comes from the Latin name kalium.",
-      "uses": "Potassium compounds are widely used in fertilizers.",
+      "fact": "Symbol comes from kalium.",
+      "uses": "Fertilizers.",
       "source": "https://periodic-table.rsc.org/element/19/potassium"
     },
     "Ca": {
@@ -1448,8 +1448,8 @@
       "group": 2,
       "block": "s",
       "subshell": "4s",
-      "fact": "Calcium compounds are important components of bones and teeth.",
-      "uses": "Calcium compounds are used in cement, plaster, and other construction materials.",
+      "fact": "Compounds strengthen bones and teeth.",
+      "uses": "Compounds in cement and plaster.",
       "source": "https://periodic-table.rsc.org/element/20/calcium"
     },
     "Sc": {
@@ -1460,8 +1460,8 @@
       "group": 3,
       "block": "d",
       "subshell": "3d",
-      "fact": "It is a lightweight transition metal.",
-      "uses": "Small amounts are added to aluminum alloys used in specialized sporting and aerospace equipment.",
+      "fact": "A lightweight transition metal.",
+      "uses": "Special aluminum alloys.",
       "source": "https://periodic-table.rsc.org/element/21/scandium"
     },
     "Ti": {
@@ -1472,8 +1472,8 @@
       "group": 4,
       "block": "d",
       "subshell": "3d",
-      "fact": "It combines low density with strength and corrosion resistance.",
-      "uses": "Used in aircraft parts and medical implants; titanium dioxide is a white pigment.",
+      "fact": "Strong, light, and corrosion-resistant.",
+      "uses": "Aircraft parts and medical implants.",
       "source": "https://periodic-table.rsc.org/element/22/titanium"
     },
     "V": {
@@ -1484,8 +1484,8 @@
       "group": 5,
       "block": "d",
       "subshell": "3d",
-      "fact": "Small amounts can increase the strength of steel.",
-      "uses": "Used in high-strength steel alloys and vanadium redox flow batteries.",
+      "fact": "Helps strengthen steel.",
+      "uses": "Steel alloys and flow batteries.",
       "source": "https://periodic-table.rsc.org/element/23/vanadium"
     },
     "Cr": {
@@ -1496,8 +1496,8 @@
       "group": 6,
       "block": "d",
       "subshell": "3d",
-      "fact": "A protective chromium oxide layer helps stainless steel resist corrosion.",
-      "uses": "Used in stainless steel and corrosion-resistant metal plating.",
+      "fact": "Helps stainless steel resist corrosion.",
+      "uses": "Stainless steel and metal plating.",
       "source": "https://periodic-table.rsc.org/element/24/chromium"
     },
     "Mn": {
@@ -1508,8 +1508,8 @@
       "group": 7,
       "block": "d",
       "subshell": "3d",
-      "fact": "It is an essential trace element for living organisms.",
-      "uses": "Used in steelmaking; manganese dioxide is used in some batteries.",
+      "fact": "An essential trace element.",
+      "uses": "Steelmaking and batteries.",
       "source": "https://periodic-table.rsc.org/element/25/manganese"
     },
     "Fe": {
@@ -1520,8 +1520,8 @@
       "group": 8,
       "block": "d",
       "subshell": "3d",
-      "fact": "Iron is the main metal in Earth's core.",
-      "uses": "Used to make steel for buildings, tools, vehicles, and machinery.",
+      "fact": "Main metal in Earth's core.",
+      "uses": "Steel for buildings and vehicles.",
       "source": "https://periodic-table.rsc.org/element/26/iron"
     },
     "Co": {
@@ -1532,8 +1532,8 @@
       "group": 9,
       "block": "d",
       "subshell": "3d",
-      "fact": "Cobalt compounds can produce an intense blue color in glass.",
-      "uses": "Used in some rechargeable battery cathodes and high-temperature alloys.",
+      "fact": "Compounds can color glass blue.",
+      "uses": "Batteries and heat-resistant alloys.",
       "source": "https://periodic-table.rsc.org/element/27/cobalt"
     },
     "Ni": {
@@ -1544,8 +1544,8 @@
       "group": 10,
       "block": "d",
       "subshell": "3d",
-      "fact": "Nickel is one of the elements that is ferromagnetic at room temperature.",
-      "uses": "Used in stainless steel, metal plating, and rechargeable batteries.",
+      "fact": "Magnetic at room temperature.",
+      "uses": "Stainless steel and batteries.",
       "source": "https://periodic-table.rsc.org/element/28/nickel"
     },
     "Cu": {
@@ -1556,8 +1556,8 @@
       "group": 11,
       "block": "d",
       "subshell": "3d",
-      "fact": "Copper is an excellent conductor of electricity and heat.",
-      "uses": "Used in electrical wiring, plumbing, and heat exchangers.",
+      "fact": "Excellent electrical conductor.",
+      "uses": "Wiring and plumbing.",
       "source": "https://periodic-table.rsc.org/element/29/copper"
     },
     "Zn": {
@@ -1568,8 +1568,8 @@
       "group": 12,
       "block": "d",
       "subshell": "3d",
-      "fact": "A zinc coating can protect iron even when the coating is scratched.",
-      "uses": "Used to galvanize steel and to make brass with copper.",
+      "fact": "Protects iron from corrosion.",
+      "uses": "Galvanized steel and brass.",
       "source": "https://periodic-table.rsc.org/element/30/zinc"
     },
     "Ga": {
@@ -1580,8 +1580,8 @@
       "group": 13,
       "block": "p",
       "subshell": "4p",
-      "fact": "It melts at about 30 degrees Celsius, just above typical room temperature.",
-      "uses": "Gallium compounds are used in LEDs and semiconductor devices.",
+      "fact": "Melts near 30°C.",
+      "uses": "Compounds in LEDs and semiconductors.",
       "source": "https://periodic-table.rsc.org/element/31/gallium"
     },
     "Ge": {
@@ -1592,8 +1592,8 @@
       "group": 14,
       "block": "p",
       "subshell": "4p",
-      "fact": "It is a metalloid used as a semiconductor.",
-      "uses": "Used in fiber-optic systems and infrared optics.",
+      "fact": "A semiconductor metalloid.",
+      "uses": "Fiber optics and infrared lenses.",
       "source": "https://periodic-table.rsc.org/element/32/germanium"
     },
     "As": {
@@ -1604,8 +1604,8 @@
       "group": 15,
       "block": "p",
       "subshell": "4p",
-      "fact": "Arsenic is a metalloid, and many of its compounds are toxic.",
-      "uses": "Gallium arsenide is used in semiconductor devices and some solar cells.",
+      "fact": "Many compounds are toxic.",
+      "uses": "Gallium arsenide semiconductors.",
       "source": "https://periodic-table.rsc.org/element/33/arsenic"
     },
     "Se": {
@@ -1616,8 +1616,8 @@
       "group": 16,
       "block": "p",
       "subshell": "4p",
-      "fact": "Its electrical conductivity can increase when it is exposed to light.",
-      "uses": "Used in glassmaking and in some photovoltaic materials.",
+      "fact": "Light can increase its conductivity.",
+      "uses": "Glassmaking and solar-cell materials.",
       "source": "https://periodic-table.rsc.org/element/34/selenium"
     },
     "Br": {
@@ -1628,8 +1628,8 @@
       "group": 17,
       "block": "p",
       "subshell": "4p",
-      "fact": "Bromine is the only nonmetal that is liquid at typical room temperature.",
-      "uses": "Bromine compounds are used in some flame retardants and photographic materials.",
+      "fact": "Only nonmetal liquid at room temperature.",
+      "uses": "Compounds in some flame retardants.",
       "source": "https://periodic-table.rsc.org/element/35/bromine"
     },
     "Kr": {
@@ -1640,8 +1640,8 @@
       "group": 18,
       "block": "p",
       "subshell": "4p",
-      "fact": "Its name comes from a Greek word meaning hidden.",
-      "uses": "Used in specialized lamps and in some insulating window units.",
+      "fact": "Its name means hidden.",
+      "uses": "Special lamps and insulating windows.",
       "source": "https://periodic-table.rsc.org/element/36/krypton"
     },
     "Rb": {
@@ -1652,8 +1652,8 @@
       "group": 1,
       "block": "s",
       "subshell": "5s",
-      "fact": "It is a very reactive alkali metal.",
-      "uses": "Used in some atomic clocks and in atomic-physics research.",
+      "fact": "A highly reactive alkali metal.",
+      "uses": "Atomic clocks and research.",
       "source": "https://periodic-table.rsc.org/element/37/rubidium"
     },
     "Sr": {
@@ -1664,8 +1664,8 @@
       "group": 2,
       "block": "s",
       "subshell": "5s",
-      "fact": "Strontium compounds can produce a bright red flame.",
-      "uses": "Used in red fireworks and signal flares.",
+      "fact": "Compounds produce red flames.",
+      "uses": "Red fireworks and flares.",
       "source": "https://periodic-table.rsc.org/element/38/strontium"
     },
     "Y": {
@@ -1676,8 +1676,8 @@
       "group": 3,
       "block": "d",
       "subshell": "4d",
-      "fact": "It is named after Ytterby, a village in Sweden.",
-      "uses": "Used in phosphors, ceramics, and yttrium aluminum garnet laser materials.",
+      "fact": "Named after Ytterby, Sweden.",
+      "uses": "Laser materials and ceramics.",
       "source": "https://periodic-table.rsc.org/element/39/yttrium"
     },
     "Zr": {
@@ -1688,8 +1688,8 @@
       "group": 4,
       "block": "d",
       "subshell": "4d",
-      "fact": "It resists corrosion and absorbs relatively few thermal neutrons.",
-      "uses": "Zirconium alloys are used as nuclear-reactor fuel cladding.",
+      "fact": "Absorbs few thermal neutrons.",
+      "uses": "Nuclear fuel cladding.",
       "source": "https://periodic-table.rsc.org/element/40/zirconium"
     },
     "Nb": {
@@ -1700,8 +1700,8 @@
       "group": 5,
       "block": "d",
       "subshell": "4d",
-      "fact": "Niobium can form useful superconducting alloys.",
-      "uses": "Used in superconducting magnets and high-strength steels.",
+      "fact": "Forms superconducting alloys.",
+      "uses": "Superconducting magnets and strong steels.",
       "source": "https://periodic-table.rsc.org/element/41/niobium"
     },
     "Mo": {
@@ -1712,8 +1712,8 @@
       "group": 6,
       "block": "d",
       "subshell": "4d",
-      "fact": "It has a very high melting point.",
-      "uses": "Used in heat-resistant steels and alloys; molybdenum compounds are also used as catalysts.",
+      "fact": "Has a very high melting point.",
+      "uses": "Heat-resistant alloys and catalysts.",
       "source": "https://periodic-table.rsc.org/element/42/molybdenum"
     },
     "Tc": {
@@ -1724,8 +1724,8 @@
       "group": 7,
       "block": "d",
       "subshell": "4d",
-      "fact": "It was the first element to be produced artificially, and it has no stable isotopes.",
-      "uses": "The radioisotope technetium-99m is used in diagnostic medical imaging.",
+      "fact": "Has no stable isotopes.",
+      "uses": "Technetium-99m medical imaging.",
       "source": "https://periodic-table.rsc.org/element/43/technetium"
     },
     "Ru": {
@@ -1736,8 +1736,8 @@
       "group": 8,
       "block": "d",
       "subshell": "4d",
-      "fact": "It is a member of the platinum-group metals.",
-      "uses": "Used in catalysts and to improve the durability of some electrical contacts.",
+      "fact": "A platinum-group metal.",
+      "uses": "Catalysts and electrical contacts.",
       "source": "https://periodic-table.rsc.org/element/44/ruthenium"
     },
     "Rh": {
@@ -1748,8 +1748,8 @@
       "group": 9,
       "block": "d",
       "subshell": "4d",
-      "fact": "Rhodium is a platinum-group metal with a highly reflective surface.",
-      "uses": "Used in catalytic converters and reflective or decorative metal coatings.",
+      "fact": "Highly reflective.",
+      "uses": "Catalytic converters and metal coatings.",
       "source": "https://periodic-table.rsc.org/element/45/rhodium"
     },
     "Pd": {
@@ -1760,8 +1760,8 @@
       "group": 10,
       "block": "d",
       "subshell": "4d",
-      "fact": "Palladium can absorb large amounts of hydrogen.",
-      "uses": "Used in catalytic converters, chemical catalysts, and electronics.",
+      "fact": "Absorbs large amounts of hydrogen.",
+      "uses": "Catalytic converters and electronics.",
       "source": "https://periodic-table.rsc.org/element/46/palladium"
     },
     "Ag": {
@@ -1772,8 +1772,8 @@
       "group": 11,
       "block": "d",
       "subshell": "4d",
-      "fact": "Silver has the highest electrical conductivity of any element.",
-      "uses": "Used in electrical contacts, solar cells, jewelry, and mirrors.",
+      "fact": "Highest electrical conductivity of any element.",
+      "uses": "Electrical contacts and solar cells.",
       "source": "https://periodic-table.rsc.org/element/47/silver"
     },
     "Cd": {
@@ -1784,8 +1784,8 @@
       "group": 12,
       "block": "d",
       "subshell": "4d",
-      "fact": "Cadmium is toxic and often occurs with zinc ores.",
-      "uses": "Used in nickel-cadmium batteries and cadmium telluride solar cells.",
+      "fact": "A toxic metal.",
+      "uses": "Batteries and cadmium telluride solar cells.",
       "source": "https://periodic-table.rsc.org/element/48/cadmium"
     },
     "In": {
@@ -1796,8 +1796,8 @@
       "group": 13,
       "block": "p",
       "subshell": "5p",
-      "fact": "Indium is a soft metal that can form transparent conductive compounds.",
-      "uses": "Indium tin oxide is used in touchscreens and flat-panel displays.",
+      "fact": "Can form transparent conductive compounds.",
+      "uses": "Touchscreens and flat-panel displays.",
       "source": "https://periodic-table.rsc.org/element/49/indium"
     },
     "Sn": {
@@ -1808,8 +1808,8 @@
       "group": 14,
       "block": "p",
       "subshell": "5p",
-      "fact": "Tin is one of the metals used to make bronze.",
-      "uses": "Used in solder and as a protective coating on steel food cans.",
+      "fact": "Combined with copper, makes bronze.",
+      "uses": "Solder and protective can coatings.",
       "source": "https://periodic-table.rsc.org/element/50/tin"
     },
     "Sb": {
@@ -1820,8 +1820,8 @@
       "group": 15,
       "block": "p",
       "subshell": "5p",
-      "fact": "Its symbol comes from the Latin name stibium.",
-      "uses": "Antimony compounds are used with flame retardants, and the metal is used in some alloys.",
+      "fact": "Symbol comes from stibium.",
+      "uses": "Flame-retardant compounds and alloys.",
       "source": "https://periodic-table.rsc.org/element/51/antimony"
     },
     "Te": {
@@ -1832,8 +1832,8 @@
       "group": 16,
       "block": "p",
       "subshell": "5p",
-      "fact": "It is a relatively rare metalloid.",
-      "uses": "Used in cadmium telluride solar cells and thermoelectric materials.",
+      "fact": "A relatively rare metalloid.",
+      "uses": "Solar cells and thermoelectric materials.",
       "source": "https://periodic-table.rsc.org/element/52/tellurium"
     },
     "I": {
@@ -1844,8 +1844,8 @@
       "group": 17,
       "block": "p",
       "subshell": "5p",
-      "fact": "Iodine is needed to make thyroid hormones.",
-      "uses": "Iodine compounds are used in iodized salt and some antiseptics.",
+      "fact": "Needed for thyroid hormones.",
+      "uses": "Iodized salt and antiseptics.",
       "source": "https://periodic-table.rsc.org/element/53/iodine"
     },
     "Xe": {
@@ -1856,8 +1856,8 @@
       "group": 18,
       "block": "p",
       "subshell": "5p",
-      "fact": "Although it is a noble gas, xenon can form chemical compounds.",
-      "uses": "Used in some high-intensity lamps and spacecraft ion thrusters.",
+      "fact": "Can form compounds despite being a noble gas.",
+      "uses": "Lamps and spacecraft ion thrusters.",
       "source": "https://periodic-table.rsc.org/element/54/xenon"
     },
     "Cs": {
@@ -1868,8 +1868,8 @@
       "group": 1,
       "block": "s",
       "subshell": "6s",
-      "fact": "The cesium-133 atom defines the SI second.",
-      "uses": "Used in atomic clocks; cesium formate solutions are used in some drilling fluids.",
+      "fact": "Cesium-133 defines the SI second.",
+      "uses": "Atomic clocks.",
       "source": "https://periodic-table.rsc.org/element/55/caesium"
     },
     "Ba": {
@@ -1880,8 +1880,8 @@
       "group": 2,
       "block": "s",
       "subshell": "6s",
-      "fact": "Barium compounds can produce a green flame.",
-      "uses": "Insoluble barium sulfate is used as an X-ray contrast material; some barium compounds are used in fireworks.",
+      "fact": "Compounds can produce green flames.",
+      "uses": "Barium sulfate for X-ray imaging.",
       "source": "https://periodic-table.rsc.org/element/56/barium"
     },
     "La": {
@@ -1892,8 +1892,8 @@
       "group": "Lanthanides (series)",
       "block": "d",
       "subshell": "5d",
-      "fact": "Its name comes from a Greek word meaning to lie hidden.",
-      "uses": "Lanthanum compounds are used in optical glass and in some rechargeable battery alloys.",
+      "fact": "Its name means to lie hidden.",
+      "uses": "Optical glass and battery alloys.",
       "source": "https://periodic-table.rsc.org/element/57/lanthanum"
     },
     "Ce": {
@@ -1904,8 +1904,8 @@
       "group": "Lanthanides (series)",
       "block": "f",
       "subshell": "4f",
-      "fact": "Cerium is the most abundant rare-earth element in Earth's crust.",
-      "uses": "Cerium oxide is used to polish glass and in automotive catalytic converters.",
+      "fact": "Most abundant rare-earth element in Earth's crust.",
+      "uses": "Glass polishing and catalytic converters.",
       "source": "https://periodic-table.rsc.org/element/58/cerium"
     },
     "Pr": {
@@ -1916,8 +1916,8 @@
       "group": "Lanthanides (series)",
       "block": "f",
       "subshell": "4f",
-      "fact": "Its name refers to the green color of some of its salts.",
-      "uses": "Used in some strong magnet alloys and to color glass and ceramics.",
+      "fact": "Some salts are green.",
+      "uses": "Magnet alloys and colored glass.",
       "source": "https://periodic-table.rsc.org/element/59/praseodymium"
     },
     "Nd": {
@@ -1928,8 +1928,8 @@
       "group": "Lanthanides (series)",
       "block": "f",
       "subshell": "4f",
-      "fact": "Neodymium is a rare-earth element used in powerful permanent magnets.",
-      "uses": "Neodymium-iron-boron magnets are used in headphones, electric motors, and wind-turbine generators.",
+      "fact": "Used in powerful permanent magnets.",
+      "uses": "Magnets in headphones and electric motors.",
       "source": "https://periodic-table.rsc.org/element/60/neodymium"
     }
   }

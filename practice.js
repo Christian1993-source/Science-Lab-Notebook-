@@ -110,17 +110,7 @@ if (typeof document !== "undefined") {
   function renderElementFacts(element) {
     const card = el("section", undefined, "element-facts");
     card.append(el("h3", `${element.name} (${element.symbol})`));
-    const details = el("dl", undefined, "element-details");
-    [["Atomic number", element.atomicNumber], ["Period", element.period], ["Group", element.group], ["Block", element.block], ["Block subshell", element.subshell]].forEach(([label, value]) => {
-      details.append(el("dt", label), el("dd", String(value)));
-    });
-    card.append(details, el("p", "The block subshell identifies the s, p, d, or f region of the table; it is not always the outermost occupied subshell.", "muted"), el("h4", "Interesting fact"), el("p", element.fact), el("h4", "Uses and applications"), el("p", element.uses));
-    if (element.source) {
-      const source = link("Learn more: Royal Society of Chemistry ↗", element.source);
-      source.target = "_blank";
-      source.rel = "noopener noreferrer";
-      card.append(source);
-    }
+    card.append(el("p", `Period ${element.period} · Group: ${element.group} · Block ${element.block} · Subshell ${element.subshell}`), el("p", `Fact: ${element.fact}`), el("p", `Use: ${element.uses}`));
     return card;
   }
 
@@ -160,7 +150,7 @@ if (typeof document !== "undefined") {
         fieldset.querySelectorAll("input").forEach((input) => { input.disabled = true; });
         feedback.className = `feedback${result.correct ? " correct" : ""}`;
         feedback.append(el("strong", result.correct ? "Correct!" : "Incorrect."), el("p", `Correct answer: ${answerLabel(question, question.answer)}`));
-        if (question.explanation) feedback.append(el("p", question.explanation));
+        if (question.explanation && !(result.correct && elements[question.element])) feedback.append(el("p", question.explanation));
         if (result.correct && elements[question.element]) feedback.append(renderElementFacts(elements[question.element]));
         const answered = answers.filter((answer) => answer !== null).length;
         progress.textContent = `${answered} of ${quiz.questions.length} answered`;
