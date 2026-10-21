@@ -210,7 +210,7 @@ if (typeof document !== "undefined") {
 
   async function load() {
     try {
-      const response = await fetch("practice-data.json", { cache: "no-store" });
+      const response = await fetch(`practice-data.json?v=${Date.now()}`, { cache: "no-store" });
       if (!response.ok) throw new Error("Unable to load quizzes");
       const data = validatePracticeData(await response.json());
       courses = data.courses;
