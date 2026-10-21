@@ -1,7 +1,390 @@
 {
   "courses": [
-    { "id": "myp-chemistry", "title": "MYP Chemistry", "subject": "Chemistry practice", "quizzes": [] },
-    { "id": "dp-physics-1", "title": "DP Physics 1", "subject": "Physics practice", "quizzes": [] },
-    { "id": "dp-physics-2", "title": "DP Physics 2", "subject": "Physics practice", "quizzes": [] }
+    {
+      "id": "myp-chemistry",
+      "title": "MYP Chemistry",
+      "subject": "Chemistry practice",
+      "quizzes": [
+        {
+          "id": "periodic-table-1",
+          "title": "Periodic Table 1",
+          "description": "Identify the first 30 elements by their chemical symbols.",
+          "questions": [
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol H?",
+              "options": [
+                "Hydrogen",
+                "Helium",
+                "Hafnium",
+                "Mercury"
+              ],
+              "answer": 0,
+              "explanation": "H is the chemical symbol for hydrogen."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol He?",
+              "options": [
+                "Hydrogen",
+                "Helium",
+                "Holmium",
+                "Hafnium"
+              ],
+              "answer": 1,
+              "explanation": "He is the chemical symbol for helium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Li?",
+              "options": [
+                "Lead",
+                "Lanthanum",
+                "Lithium",
+                "Lutetium"
+              ],
+              "answer": 2,
+              "explanation": "Li is the chemical symbol for lithium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Be?",
+              "options": [
+                "Boron",
+                "Barium",
+                "Bromine",
+                "Beryllium"
+              ],
+              "answer": 3,
+              "explanation": "Be is the chemical symbol for beryllium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol B?",
+              "options": [
+                "Boron",
+                "Beryllium",
+                "Bromine",
+                "Bismuth"
+              ],
+              "answer": 0,
+              "explanation": "B is the chemical symbol for boron."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol C?",
+              "options": [
+                "Calcium",
+                "Carbon",
+                "Cobalt",
+                "Copper"
+              ],
+              "answer": 1,
+              "explanation": "C is the chemical symbol for carbon."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol N?",
+              "options": [
+                "Neon",
+                "Nickel",
+                "Nitrogen",
+                "Sodium"
+              ],
+              "answer": 2,
+              "explanation": "N is the chemical symbol for nitrogen."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol O?",
+              "options": [
+                "Osmium",
+                "Gold",
+                "Hydrogen",
+                "Oxygen"
+              ],
+              "answer": 3,
+              "explanation": "O is the chemical symbol for oxygen."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol F?",
+              "options": [
+                "Fluorine",
+                "Iron",
+                "Francium",
+                "Phosphorus"
+              ],
+              "answer": 0,
+              "explanation": "F is the chemical symbol for fluorine."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Ne?",
+              "options": [
+                "Nitrogen",
+                "Neon",
+                "Nickel",
+                "Neodymium"
+              ],
+              "answer": 1,
+              "explanation": "Ne is the chemical symbol for neon."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Na?",
+              "options": [
+                "Nitrogen",
+                "Nickel",
+                "Sodium",
+                "Neon"
+              ],
+              "answer": 2,
+              "explanation": "Na is the chemical symbol for sodium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Mg?",
+              "options": [
+                "Manganese",
+                "Mercury",
+                "Molybdenum",
+                "Magnesium"
+              ],
+              "answer": 3,
+              "explanation": "Mg is the chemical symbol for magnesium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Al?",
+              "options": [
+                "Aluminum",
+                "Silver",
+                "Argon",
+                "Gold"
+              ],
+              "answer": 0,
+              "explanation": "Al is the chemical symbol for aluminum."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Si?",
+              "options": [
+                "Sulfur",
+                "Silicon",
+                "Silver",
+                "Sodium"
+              ],
+              "answer": 1,
+              "explanation": "Si is the chemical symbol for silicon."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol P?",
+              "options": [
+                "Potassium",
+                "Platinum",
+                "Phosphorus",
+                "Lead"
+              ],
+              "answer": 2,
+              "explanation": "P is the chemical symbol for phosphorus."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol S?",
+              "options": [
+                "Silicon",
+                "Sodium",
+                "Strontium",
+                "Sulfur"
+              ],
+              "answer": 3,
+              "explanation": "S is the chemical symbol for sulfur."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Cl?",
+              "options": [
+                "Chlorine",
+                "Carbon",
+                "Calcium",
+                "Cobalt"
+              ],
+              "answer": 0,
+              "explanation": "Cl is the chemical symbol for chlorine."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Ar?",
+              "options": [
+                "Silver",
+                "Argon",
+                "Arsenic",
+                "Aluminum"
+              ],
+              "answer": 1,
+              "explanation": "Ar is the chemical symbol for argon."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol K?",
+              "options": [
+                "Krypton",
+                "Calcium",
+                "Potassium",
+                "Sodium"
+              ],
+              "answer": 2,
+              "explanation": "K is the chemical symbol for potassium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Ca?",
+              "options": [
+                "Carbon",
+                "Cadmium",
+                "Copper",
+                "Calcium"
+              ],
+              "answer": 3,
+              "explanation": "Ca is the chemical symbol for calcium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Sc?",
+              "options": [
+                "Scandium",
+                "Silicon",
+                "Sulfur",
+                "Selenium"
+              ],
+              "answer": 0,
+              "explanation": "Sc is the chemical symbol for scandium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Ti?",
+              "options": [
+                "Tin",
+                "Titanium",
+                "Thallium",
+                "Tungsten"
+              ],
+              "answer": 1,
+              "explanation": "Ti is the chemical symbol for titanium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol V?",
+              "options": [
+                "Titanium",
+                "Chromium",
+                "Vanadium",
+                "Zinc"
+              ],
+              "answer": 2,
+              "explanation": "V is the chemical symbol for vanadium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Cr?",
+              "options": [
+                "Carbon",
+                "Chlorine",
+                "Copper",
+                "Chromium"
+              ],
+              "answer": 3,
+              "explanation": "Cr is the chemical symbol for chromium."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Mn?",
+              "options": [
+                "Manganese",
+                "Magnesium",
+                "Molybdenum",
+                "Mercury"
+              ],
+              "answer": 0,
+              "explanation": "Mn is the chemical symbol for manganese."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Fe?",
+              "options": [
+                "Fluorine",
+                "Iron",
+                "Francium",
+                "Fermium"
+              ],
+              "answer": 1,
+              "explanation": "Fe is the chemical symbol for iron."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Co?",
+              "options": [
+                "Copper",
+                "Carbon",
+                "Cobalt",
+                "Calcium"
+              ],
+              "answer": 2,
+              "explanation": "Co is the chemical symbol for cobalt."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Ni?",
+              "options": [
+                "Nitrogen",
+                "Neon",
+                "Niobium",
+                "Nickel"
+              ],
+              "answer": 3,
+              "explanation": "Ni is the chemical symbol for nickel."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Cu?",
+              "options": [
+                "Copper",
+                "Cobalt",
+                "Carbon",
+                "Calcium"
+              ],
+              "answer": 0,
+              "explanation": "Cu is the chemical symbol for copper."
+            },
+            {
+              "type": "choice",
+              "prompt": "Which element has the chemical symbol Zn?",
+              "options": [
+                "Zirconium",
+                "Zinc",
+                "Tin",
+                "Xenon"
+              ],
+              "answer": 1,
+              "explanation": "Zn is the chemical symbol for zinc."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dp-physics-1",
+      "title": "DP Physics 1",
+      "subject": "Physics practice",
+      "quizzes": []
+    },
+    {
+      "id": "dp-physics-2",
+      "title": "DP Physics 2",
+      "subject": "Physics practice",
+      "quizzes": []
+    }
   ]
 }
