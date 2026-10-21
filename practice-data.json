@@ -802,7 +802,7 @@
         {
           "id": "electron-configuration",
           "title": "Electron Configuration",
-          "description": "30 questions on neutral atoms in the ground state. Brackets represent a noble-gas core; superscripts show electrons in each subshell.",
+          "description": "30 questions on complete ground-state electron configurations of neutral atoms, without noble-gas abbreviations.",
           "questions": [
             {
               "type": "choice",
@@ -810,8 +810,8 @@
               "options": [
                 "1s²",
                 "1s¹",
-                "[He] 2s¹",
-                "[He] 2s²"
+                "1s² 2s¹",
+                "1s² 2s²"
               ],
               "answer": 1,
               "explanation": "A neutral hydrogen atom has 1 electron. Its ground-state electron configuration is 1s¹.",
@@ -821,10 +821,10 @@
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral helium atom (He)?",
               "options": [
-                "[He] 2s¹",
-                "[He] 2s²",
+                "1s² 2s¹",
+                "1s² 2s²",
                 "1s²",
-                "[He] 2s² 2p¹"
+                "1s² 2s² 2p¹"
               ],
               "answer": 2,
               "explanation": "A neutral helium atom has 2 electrons. Its ground-state electron configuration is 1s².",
@@ -834,351 +834,351 @@
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral lithium atom (Li)?",
               "options": [
-                "[He] 2s²",
-                "[He] 2s² 2p¹",
-                "[He] 2s² 2p²",
-                "[He] 2s¹"
+                "1s² 2s²",
+                "1s² 2s² 2p¹",
+                "1s² 2s² 2p²",
+                "1s² 2s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral lithium atom has 3 electrons. Its ground-state electron configuration is [He] 2s¹.",
+              "explanation": "A neutral lithium atom has 3 electrons. Its ground-state electron configuration is 1s² 2s¹.",
               "element": "Li"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral beryllium atom (Be)?",
               "options": [
-                "[He] 2s²",
-                "[He] 2s² 2p¹",
-                "[He] 2s² 2p²",
-                "[He] 2s² 2p³"
+                "1s² 2s²",
+                "1s² 2s² 2p¹",
+                "1s² 2s² 2p²",
+                "1s² 2s² 2p³"
               ],
               "answer": 0,
-              "explanation": "A neutral beryllium atom has 4 electrons. Its ground-state electron configuration is [He] 2s².",
+              "explanation": "A neutral beryllium atom has 4 electrons. Its ground-state electron configuration is 1s² 2s².",
               "element": "Be"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral boron atom (B)?",
               "options": [
-                "[He] 2s² 2p²",
-                "[He] 2s² 2p¹",
-                "[He] 2s² 2p³",
-                "[He] 2s² 2p⁴"
+                "1s² 2s² 2p²",
+                "1s² 2s² 2p¹",
+                "1s² 2s² 2p³",
+                "1s² 2s² 2p⁴"
               ],
               "answer": 1,
-              "explanation": "A neutral boron atom has 5 electrons. Its ground-state electron configuration is [He] 2s² 2p¹.",
+              "explanation": "A neutral boron atom has 5 electrons. Its ground-state electron configuration is 1s² 2s² 2p¹.",
               "element": "B"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral carbon atom (C)?",
               "options": [
-                "[He] 2s² 2p³",
-                "[He] 2s² 2p⁴",
-                "[He] 2s² 2p²",
-                "[He] 2s² 2p⁵"
+                "1s² 2s² 2p³",
+                "1s² 2s² 2p⁴",
+                "1s² 2s² 2p²",
+                "1s² 2s² 2p⁵"
               ],
               "answer": 2,
-              "explanation": "A neutral carbon atom has 6 electrons. Its ground-state electron configuration is [He] 2s² 2p².",
+              "explanation": "A neutral carbon atom has 6 electrons. Its ground-state electron configuration is 1s² 2s² 2p².",
               "element": "C"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral nitrogen atom (N)?",
               "options": [
-                "[He] 2s² 2p⁴",
-                "[He] 2s² 2p⁵",
-                "[He] 2s² 2p⁶",
-                "[He] 2s² 2p³"
+                "1s² 2s² 2p⁴",
+                "1s² 2s² 2p⁵",
+                "1s² 2s² 2p⁶",
+                "1s² 2s² 2p³"
               ],
               "answer": 3,
-              "explanation": "A neutral nitrogen atom has 7 electrons. Its ground-state electron configuration is [He] 2s² 2p³.",
+              "explanation": "A neutral nitrogen atom has 7 electrons. Its ground-state electron configuration is 1s² 2s² 2p³.",
               "element": "N"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral oxygen atom (O)?",
               "options": [
-                "[He] 2s² 2p⁴",
-                "[He] 2s² 2p⁵",
-                "[He] 2s² 2p⁶",
-                "[Ne] 3s¹"
+                "1s² 2s² 2p⁴",
+                "1s² 2s² 2p⁵",
+                "1s² 2s² 2p⁶",
+                "1s² 2s² 2p⁶ 3s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral oxygen atom has 8 electrons. Its ground-state electron configuration is [He] 2s² 2p⁴.",
+              "explanation": "A neutral oxygen atom has 8 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁴.",
               "element": "O"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral fluorine atom (F)?",
               "options": [
-                "[He] 2s² 2p⁶",
-                "[He] 2s² 2p⁵",
-                "[Ne] 3s¹",
-                "[Ne] 3s²"
+                "1s² 2s² 2p⁶",
+                "1s² 2s² 2p⁵",
+                "1s² 2s² 2p⁶ 3s¹",
+                "1s² 2s² 2p⁶ 3s²"
               ],
               "answer": 1,
-              "explanation": "A neutral fluorine atom has 9 electrons. Its ground-state electron configuration is [He] 2s² 2p⁵.",
+              "explanation": "A neutral fluorine atom has 9 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁵.",
               "element": "F"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral neon atom (Ne)?",
               "options": [
-                "[Ne] 3s¹",
-                "[Ne] 3s²",
-                "[He] 2s² 2p⁶",
-                "[Ne] 3s² 3p¹"
+                "1s² 2s² 2p⁶ 3s¹",
+                "1s² 2s² 2p⁶ 3s²",
+                "1s² 2s² 2p⁶",
+                "1s² 2s² 2p⁶ 3s² 3p¹"
               ],
               "answer": 2,
-              "explanation": "A neutral neon atom has 10 electrons. Its ground-state electron configuration is [He] 2s² 2p⁶.",
+              "explanation": "A neutral neon atom has 10 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶.",
               "element": "Ne"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral sodium atom (Na)?",
               "options": [
-                "[Ne] 3s²",
-                "[Ne] 3s² 3p¹",
-                "[Ne] 3s² 3p²",
-                "[Ne] 3s¹"
+                "1s² 2s² 2p⁶ 3s²",
+                "1s² 2s² 2p⁶ 3s² 3p¹",
+                "1s² 2s² 2p⁶ 3s² 3p²",
+                "1s² 2s² 2p⁶ 3s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral sodium atom has 11 electrons. Its ground-state electron configuration is [Ne] 3s¹.",
+              "explanation": "A neutral sodium atom has 11 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s¹.",
               "element": "Na"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral magnesium atom (Mg)?",
               "options": [
-                "[Ne] 3s²",
-                "[Ne] 3s² 3p¹",
-                "[Ne] 3s² 3p²",
-                "[Ne] 3s² 3p³"
+                "1s² 2s² 2p⁶ 3s²",
+                "1s² 2s² 2p⁶ 3s² 3p¹",
+                "1s² 2s² 2p⁶ 3s² 3p²",
+                "1s² 2s² 2p⁶ 3s² 3p³"
               ],
               "answer": 0,
-              "explanation": "A neutral magnesium atom has 12 electrons. Its ground-state electron configuration is [Ne] 3s².",
+              "explanation": "A neutral magnesium atom has 12 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s².",
               "element": "Mg"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral aluminum atom (Al)?",
               "options": [
-                "[Ne] 3s² 3p²",
-                "[Ne] 3s² 3p¹",
-                "[Ne] 3s² 3p³",
-                "[Ne] 3s² 3p⁴"
+                "1s² 2s² 2p⁶ 3s² 3p²",
+                "1s² 2s² 2p⁶ 3s² 3p¹",
+                "1s² 2s² 2p⁶ 3s² 3p³",
+                "1s² 2s² 2p⁶ 3s² 3p⁴"
               ],
               "answer": 1,
-              "explanation": "A neutral aluminum atom has 13 electrons. Its ground-state electron configuration is [Ne] 3s² 3p¹.",
+              "explanation": "A neutral aluminum atom has 13 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p¹.",
               "element": "Al"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral silicon atom (Si)?",
               "options": [
-                "[Ne] 3s² 3p³",
-                "[Ne] 3s² 3p⁴",
-                "[Ne] 3s² 3p²",
-                "[Ne] 3s² 3p⁵"
+                "1s² 2s² 2p⁶ 3s² 3p³",
+                "1s² 2s² 2p⁶ 3s² 3p⁴",
+                "1s² 2s² 2p⁶ 3s² 3p²",
+                "1s² 2s² 2p⁶ 3s² 3p⁵"
               ],
               "answer": 2,
-              "explanation": "A neutral silicon atom has 14 electrons. Its ground-state electron configuration is [Ne] 3s² 3p².",
+              "explanation": "A neutral silicon atom has 14 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p².",
               "element": "Si"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral phosphorus atom (P)?",
               "options": [
-                "[Ne] 3s² 3p⁴",
-                "[Ne] 3s² 3p⁵",
-                "[Ne] 3s² 3p⁶",
-                "[Ne] 3s² 3p³"
+                "1s² 2s² 2p⁶ 3s² 3p⁴",
+                "1s² 2s² 2p⁶ 3s² 3p⁵",
+                "1s² 2s² 2p⁶ 3s² 3p⁶",
+                "1s² 2s² 2p⁶ 3s² 3p³"
               ],
               "answer": 3,
-              "explanation": "A neutral phosphorus atom has 15 electrons. Its ground-state electron configuration is [Ne] 3s² 3p³.",
+              "explanation": "A neutral phosphorus atom has 15 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p³.",
               "element": "P"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral sulfur atom (S)?",
               "options": [
-                "[Ne] 3s² 3p⁴",
-                "[Ne] 3s² 3p⁵",
-                "[Ne] 3s² 3p⁶",
-                "[Ar] 4s¹"
+                "1s² 2s² 2p⁶ 3s² 3p⁴",
+                "1s² 2s² 2p⁶ 3s² 3p⁵",
+                "1s² 2s² 2p⁶ 3s² 3p⁶",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral sulfur atom has 16 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁴.",
+              "explanation": "A neutral sulfur atom has 16 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁴.",
               "element": "S"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral chlorine atom (Cl)?",
               "options": [
-                "[Ne] 3s² 3p⁶",
-                "[Ne] 3s² 3p⁵",
-                "[Ar] 4s¹",
-                "[Ar] 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶",
+                "1s² 2s² 2p⁶ 3s² 3p⁵",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral chlorine atom has 17 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁵.",
+              "explanation": "A neutral chlorine atom has 17 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁵.",
               "element": "Cl"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral argon atom (Ar)?",
               "options": [
-                "[Ar] 4s¹",
-                "[Ar] 4s²",
-                "[Ne] 3s² 3p⁶",
-                "[Ar] 3d¹ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹ 4s²"
               ],
               "answer": 2,
-              "explanation": "A neutral argon atom has 18 electrons. Its ground-state electron configuration is [Ne] 3s² 3p⁶.",
+              "explanation": "A neutral argon atom has 18 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶.",
               "element": "Ar"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral potassium atom (K)?",
               "options": [
-                "[Ar] 4s²",
-                "[Ar] 3d¹ 4s²",
-                "[Ar] 3d² 4s²",
-                "[Ar] 4s¹"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d² 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹"
               ],
               "answer": 3,
-              "explanation": "A neutral potassium atom has 19 electrons. Its ground-state electron configuration is [Ar] 4s¹.",
+              "explanation": "A neutral potassium atom has 19 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹.",
               "element": "K"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral calcium atom (Ca)?",
               "options": [
-                "[Ar] 4s²",
-                "[Ar] 3d¹ 4s²",
-                "[Ar] 3d² 4s²",
-                "[Ar] 3d³ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d² 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s²"
               ],
               "answer": 0,
-              "explanation": "A neutral calcium atom has 20 electrons. Its ground-state electron configuration is [Ar] 4s².",
+              "explanation": "A neutral calcium atom has 20 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 4s².",
               "element": "Ca"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral scandium atom (Sc)?",
               "options": [
-                "[Ar] 3d² 4s²",
-                "[Ar] 3d¹ 4s²",
-                "[Ar] 3d³ 4s²",
-                "[Ar] 3d⁵ 4s¹"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d² 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s¹"
               ],
               "answer": 1,
-              "explanation": "A neutral scandium atom has 21 electrons. Its ground-state electron configuration is [Ar] 3d¹ 4s².",
+              "explanation": "A neutral scandium atom has 21 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹ 4s².",
               "element": "Sc"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral titanium atom (Ti)?",
               "options": [
-                "[Ar] 3d³ 4s²",
-                "[Ar] 3d⁵ 4s¹",
-                "[Ar] 3d² 4s²",
-                "[Ar] 3d⁵ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d² 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s²"
               ],
               "answer": 2,
-              "explanation": "A neutral titanium atom has 22 electrons. Its ground-state electron configuration is [Ar] 3d² 4s².",
+              "explanation": "A neutral titanium atom has 22 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d² 4s².",
               "element": "Ti"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral vanadium atom (V)?",
               "options": [
-                "[Ar] 3d⁵ 4s¹",
-                "[Ar] 3d⁵ 4s²",
-                "[Ar] 3d⁶ 4s²",
-                "[Ar] 3d³ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s²"
               ],
               "answer": 3,
-              "explanation": "A neutral vanadium atom has 23 electrons. Its ground-state electron configuration is [Ar] 3d³ 4s².",
+              "explanation": "A neutral vanadium atom has 23 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s².",
               "element": "V"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral chromium atom (Cr)?",
               "options": [
-                "[Ar] 3d⁵ 4s¹",
-                "[Ar] 3d⁴ 4s²",
-                "[Ar] 3d⁶",
-                "[Ar] 3d³ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁴ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d³ 4s²"
               ],
               "answer": 0,
-              "explanation": "A neutral chromium atom has 24 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s¹. This is an exception to the simple filling-order prediction.",
+              "explanation": "A neutral chromium atom has 24 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s¹. This is an exception to the simple filling-order prediction.",
               "element": "Cr"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral manganese atom (Mn)?",
               "options": [
-                "[Ar] 3d⁶ 4s²",
-                "[Ar] 3d⁵ 4s²",
-                "[Ar] 3d⁷ 4s²",
-                "[Ar] 3d⁸ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral manganese atom has 25 electrons. Its ground-state electron configuration is [Ar] 3d⁵ 4s².",
+              "explanation": "A neutral manganese atom has 25 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s².",
               "element": "Mn"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral iron atom (Fe)?",
               "options": [
-                "[Ar] 3d⁷ 4s²",
-                "[Ar] 3d⁸ 4s²",
-                "[Ar] 3d⁶ 4s²",
-                "[Ar] 3d¹⁰ 4s¹"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹"
               ],
               "answer": 2,
-              "explanation": "A neutral iron atom has 26 electrons. Its ground-state electron configuration is [Ar] 3d⁶ 4s².",
+              "explanation": "A neutral iron atom has 26 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s².",
               "element": "Fe"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral cobalt atom (Co)?",
               "options": [
-                "[Ar] 3d⁸ 4s²",
-                "[Ar] 3d¹⁰ 4s¹",
-                "[Ar] 3d¹⁰ 4s²",
-                "[Ar] 3d⁷ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²"
               ],
               "answer": 3,
-              "explanation": "A neutral cobalt atom has 27 electrons. Its ground-state electron configuration is [Ar] 3d⁷ 4s².",
+              "explanation": "A neutral cobalt atom has 27 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s².",
               "element": "Co"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral nickel atom (Ni)?",
               "options": [
-                "[Ar] 3d⁸ 4s²",
-                "[Ar] 3d¹⁰ 4s¹",
-                "[Ar] 3d¹⁰ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²",
                 "1s¹"
               ],
               "answer": 0,
-              "explanation": "A neutral nickel atom has 28 electrons. Its ground-state electron configuration is [Ar] 3d⁸ 4s².",
+              "explanation": "A neutral nickel atom has 28 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s².",
               "element": "Ni"
             },
             {
               "type": "choice",
               "prompt": "Which is the ground-state electron configuration of a neutral copper atom (Cu)?",
               "options": [
-                "[Ar] 3d⁹ 4s²",
-                "[Ar] 3d¹⁰ 4s¹",
-                "[Ar] 3d⁸ 4s²",
-                "[Ar] 3d¹⁰ 4s²"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁹ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s²",
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²"
               ],
               "answer": 1,
-              "explanation": "A neutral copper atom has 29 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s¹. This is an exception to the simple filling-order prediction.",
+              "explanation": "A neutral copper atom has 29 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹. This is an exception to the simple filling-order prediction.",
               "element": "Cu"
             },
             {
@@ -1187,11 +1187,11 @@
               "options": [
                 "1s¹",
                 "1s²",
-                "[Ar] 3d¹⁰ 4s²",
-                "[He] 2s¹"
+                "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s²",
+                "1s² 2s¹"
               ],
               "answer": 2,
-              "explanation": "A neutral zinc atom has 30 electrons. Its ground-state electron configuration is [Ar] 3d¹⁰ 4s².",
+              "explanation": "A neutral zinc atom has 30 electrons. Its ground-state electron configuration is 1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s².",
               "element": "Zn"
             }
           ]
