@@ -89,7 +89,7 @@ if (typeof document !== "undefined") {
       const list = el("ul", undefined, "topic-list");
       course.quizzes.forEach((quiz) => {
         const item = el("li");
-        item.append(link(quiz.title, `${courseUrl(course)}&quiz=${encodeURIComponent(quiz.id)}`), el("small", `${quiz.questions.length} questions${quiz.description ? ` · ${quiz.description}` : ""}`));
+        item.append(link(quiz.title, `${courseUrl(course)}&quiz=${encodeURIComponent(quiz.id)}`));
         list.append(item);
       });
       panel.append(list);
