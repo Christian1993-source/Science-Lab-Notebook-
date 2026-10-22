@@ -1611,7 +1611,350 @@
       "id": "tutoring",
       "title": "Tutoring",
       "subject": "Tutoring practice",
-      "quizzes": []
+      "quizzes": [
+        {
+          "id": "significant-figures",
+          "title": "Significant Figures – Multiple Choice Worksheet",
+          "description": "30 Questions | High School / IB Physics",
+          "instructions": "Choose the correct answer for each question.",
+          "teacherNote": "The asterisk (*) in the supplied worksheet indicates the correct answer. For questions with trailing zeros in whole numbers, scientific notation is preferred when necessary to communicate precision unambiguously.",
+          "questions": [
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 0.004080?",
+              "options": [
+                "3",
+                "4",
+                "5",
+                "6"
+              ],
+              "answer": 1,
+              "section": "Part A – Identifying Significant Figures (Questions 1–10)"
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 705.030?",
+              "options": [
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 0.0009200?",
+              "options": [
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 48000, assuming no additional precision information?",
+              "options": [
+                "2",
+                "3",
+                "4",
+                "5"
+              ],
+              "answer": 0
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 600.00?",
+              "options": [
+                "1",
+                "3",
+                "4",
+                "5"
+              ],
+              "answer": 3
+            },
+            {
+              "type": "choice",
+              "prompt": "Which number contains exactly three significant figures?",
+              "options": [
+                "0.0070",
+                "0.0705",
+                "700.0",
+                "0.0008"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 9.00040?",
+              "options": [
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "Which measurement has four significant figures?",
+              "options": [
+                "0.00320 m",
+                "40.05 m",
+                "500 m",
+                "0.008 m"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 0.060070?",
+              "options": [
+                "3",
+                "4",
+                "5",
+                "6"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "How many significant figures are in 3000. (decimal point explicitly shown)?",
+              "options": [
+                "1",
+                "2",
+                "3",
+                "4"
+              ],
+              "answer": 3
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 8.7462 to three significant figures.",
+              "options": [
+                "8.74",
+                "8.75",
+                "8.746",
+                "8.70"
+              ],
+              "answer": 1,
+              "section": "Part B – Rounding Significant Figures (Questions 11–20)"
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 0.006384 to two significant figures.",
+              "options": [
+                "0.0063",
+                "0.0064",
+                "0.00638",
+                "0.0060"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 95672 to three significant figures.",
+              "options": [
+                "95600",
+                "95700",
+                "96000",
+                "95670"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 3.995 to three significant figures. Use the conventional round-half-up rule.",
+              "options": [
+                "3.99",
+                "4.00",
+                "4.0",
+                "3.995"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 0.00078462 to four significant figures.",
+              "options": [
+                "0.0007846",
+                "0.000785",
+                "0.000784",
+                "0.00078462"
+              ],
+              "answer": 0
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 72.486 to two significant figures.",
+              "options": [
+                "72",
+                "72.5",
+                "73",
+                "70"
+              ],
+              "answer": 0
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 0.09986 to three significant figures.",
+              "options": [
+                "0.0998",
+                "0.0999",
+                "0.100",
+                "0.0989"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 0.00056789 to two significant figures.",
+              "options": [
+                "0.00056",
+                "0.00057",
+                "0.000568",
+                "0.00060"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 486350 to three significant figures.",
+              "options": [
+                "486000",
+                "487000",
+                "486300",
+                "490000"
+              ],
+              "answer": 0
+            },
+            {
+              "type": "choice",
+              "prompt": "Round 0.045678 to three significant figures.",
+              "options": [
+                "0.0456",
+                "0.0457",
+                "0.0460",
+                "0.04568"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 6.25 × 3.4 using the correct number of significant figures.",
+              "options": [
+                "21.25",
+                "21.3",
+                "21",
+                "20"
+              ],
+              "answer": 2,
+              "section": "Part C – Calculations with Significant Figures (Questions 21–30)"
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 15.68 + 2.3 using the correct decimal-place rule.",
+              "options": [
+                "17.98",
+                "18.0",
+                "18",
+                "17.9"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 48.72 − 6.351 using the correct decimal-place rule.",
+              "options": [
+                "42.369",
+                "42.37",
+                "42.4",
+                "42"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 18.75 ÷ 2.5 using the correct number of significant figures.",
+              "options": [
+                "7.500",
+                "7.50",
+                "7.5",
+                "8"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 0.0456 × 2.8 using the correct number of significant figures.",
+              "options": [
+                "0.12768",
+                "0.128",
+                "0.13",
+                "0.12"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 12.345 + 6.7 + 0.82 using the correct decimal-place rule.",
+              "options": [
+                "19.865",
+                "19.87",
+                "19.9",
+                "20"
+              ],
+              "answer": 2
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 45.6 ÷ 3.20 using the correct number of significant figures.",
+              "options": [
+                "14",
+                "14.3",
+                "14.25",
+                "14.250"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 0.0084 × 0.035 using the correct number of significant figures.",
+              "options": [
+                "2.94 × 10⁻⁴",
+                "2.9 × 10⁻⁴",
+                "3.0 × 10⁻⁴",
+                "2.940 × 10⁻⁴"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate 87.35 − 12.6 using the correct decimal-place rule.",
+              "options": [
+                "74.75",
+                "74.8",
+                "74.7",
+                "75"
+              ],
+              "answer": 1
+            },
+            {
+              "type": "choice",
+              "prompt": "Calculate (4.52 × 2.1) ÷ 3.6 using the correct number of significant figures.",
+              "options": [
+                "2.6367",
+                "2.64",
+                "2.6",
+                "3.0"
+              ],
+              "answer": 2
+            }
+          ]
+        }
+      ]
     }
   ],
   "elements": {

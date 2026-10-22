@@ -139,6 +139,7 @@ if (typeof document !== "undefined") {
     content.append(progress);
     form.addEventListener("submit", (event) => event.preventDefault());
     quiz.questions.forEach((question, index) => {
+      if (question.section) form.append(el("h3", question.section));
       const fieldset = el("fieldset");
       fieldset.append(el("legend", `Question ${index + 1}`), el("p", question.prompt, "prompt"));
       const feedback = el("div");
