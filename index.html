@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20261021-science-practice-1" />
+    <meta name="notebook-release" content="20261022-essay-word-count-paused-monitor" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
@@ -121,7 +121,7 @@
                 <label for="essayClassCode">Class Code *</label>
                 <input id="essayClassCode" type="text" maxlength="24" autocomplete="off" autocapitalize="characters" spellcheck="false" />
               </div>
-              <div class="integrity-strip" aria-live="polite">
+              <div class="integrity-strip" aria-live="polite" hidden>
                 <span class="integrity-dot" aria-hidden="true"></span>
                 <span><strong>Tab Changes:</strong> <span id="essayTabChangeCount">0</span></span>
               </div>
@@ -132,7 +132,8 @@
             <label for="essayTitle">Essay Title *</label>
             <input id="essayTitle" type="text" />
             <label for="essayContent">Complete Essay *</label>
-            <textarea id="essayContent" class="essay-content" aria-describedby="essayWritingNote"></textarea>
+            <textarea id="essayContent" class="essay-content" aria-describedby="essayWordCount essayWritingNote"></textarea>
+            <p id="essayWordCount" class="meta" aria-live="polite">Word count: 0</p>
             <p id="essayWritingNote" class="meta">Use this single writing box for the entire essay. Paragraph breaks will be preserved in the downloaded PDF.</p>
             <label for="essayReferences">References</label>
             <textarea id="essayReferences" class="essay-references" placeholder="Type each reference on a separate line."></textarea>

@@ -3,6 +3,7 @@ const SESSION_STORAGE_KEY = "libretaLaboratorio.currentSession";
 const REPORT_ID_KEY = "libretaLaboratorio.reportId";
 const REPORT_STARTED_AT_KEY = "libretaLaboratorio.startedAt";
 const ESSAY_STORAGE_KEY = "libretaLaboratorio.essayDraft";
+const ESSAY_TAB_TRACKING_ENABLED = false;
 const PROGRAM_KEY = "libretaLaboratorio.program";
 const REPORT_TOKEN_KEY = "libretaLaboratorio.reportToken";
 const REPORT_SCHEMA_VERSION = 4;
@@ -246,6 +247,7 @@ const elements = {
   essayTabWarningMessage: document.getElementById("essayTabWarningMessage"),
   essayTabWarningClose: document.getElementById("essayTabWarningClose"),
   essayContent: document.getElementById("essayContent"),
+  essayWordCount: document.getElementById("essayWordCount"),
   essayReferences: document.getElementById("essayReferences"),
   loadPhysicsEssayExampleBtn: document.getElementById("loadPhysicsEssayExampleBtn"),
   resetEssayBtn: document.getElementById("resetEssayBtn"),
@@ -1153,6 +1155,8 @@ function attachInputListeners() {
   elements.saveEssayDraftBtn.addEventListener("click", saveEssayDraft);
   elements.loadEssayDraftBtn.addEventListener("click", loadEssayDraft);
   elements.downloadEssayBtn.addEventListener("click", downloadEssay);
+  elements.essayContent.addEventListener("input", updateEssayWordCount);
+  updateEssayWordCount();
   [elements.essayTitle, elements.essayStudentName].forEach((field) => {
     field.addEventListener("input", maybeStartEssayTimer);
   });
@@ -2596,6 +2600,7 @@ function openEssayWorkspace() {
 }
 
 function updateEssayTabChangeDisplay() {
+  elements.essayTabChangeCount.closest(".integrity-strip").hidden = !ESSAY_TAB_TRACKING_ENABLED;
   elements.essayTabChangeCount.textContent = String(state.essayTabChanges);
   elements.essayTabChangeCount.closest(".integrity-strip")?.classList.toggle("is-warning", state.essayTabChanges >= 2);
 }
@@ -2608,6 +2613,7 @@ function showEssayTabWarning() {
 }
 
 function attachEssayTabChangeTracking() {
+  if (!ESSAY_TAB_TRACKING_ENABLED) return;
   let essayWasActiveWhenHidden = false;
 
   document.addEventListener("visibilitychange", () => {
@@ -2625,6 +2631,11 @@ function attachEssayTabChangeTracking() {
   });
 
   elements.essayTabWarningClose.addEventListener("click", () => elements.essayTabWarning.close());
+}
+
+function updateEssayWordCount() {
+  const words = elements.essayContent.value.trim().split(/\s+/u).filter((word) => /[\p{L}\p{N}]/u.test(word));
+  elements.essayWordCount.textContent = `Word count: ${words.length}`;
 }
 
 function maybeStartEssayTimer() {
@@ -2669,6 +2680,7 @@ Serway, R. A., & Vuille, C. (2018). College physics (11th ed.). Cengage Learning
   elements.essayClassCode.value = example.classCode;
   elements.essayTitle.value = example.title;
   elements.essayContent.value = example.content;
+  updateEssayWordCount();
   elements.essayReferences.value = example.references;
   state.essayStartedAt = startedAt;
   state.essayBlockedAttempts = 0;
@@ -2702,6 +2714,7 @@ function resetEssayWorkspace() {
   state.essayBlockedAttempts = 0;
   state.essayTabChanges = 0;
   state.essayStartedAt = 0;
+  updateEssayWordCount();
   updateEssayTabChangeDisplay();
   localStorage.removeItem(ESSAY_STORAGE_KEY);
   elements.essayDate.value = formatAutomaticDateTime(Date.now()).date;
@@ -2756,6 +2769,7 @@ function loadEssayDraft() {
     elements.essayTime.value = String(draft.startTime || "");
     elements.essayClassCode.value = String(draft.classCode || "").toUpperCase();
     elements.essayContent.value = String(draft.content || "");
+    updateEssayWordCount();
     elements.essayReferences.value = String(draft.references || "");
     [
       elements.essayTitle,
@@ -2823,8 +2837,10 @@ function generateEssayPdfBlob(essay) {
     `Download Time: ${essay.downloadTime}`,
     `Time Spent: ${formatDuration(essay.timeSpentSeconds)}`,
     `Copy and Paste Attempts: ${essay.blockedAttempts}`,
-    `Tab Changes: ${essay.tabChanges}`,
-    `Tab Change Result: ${essay.tabChanges >= 2 ? "ZERO - more than one tab change recorded" : "No zero triggered"}`
+    ...(ESSAY_TAB_TRACKING_ENABLED ? [
+      `Tab Changes: ${essay.tabChanges}`,
+      `Tab Change Result: ${essay.tabChanges >= 2 ? "ZERO - more than one tab change recorded" : "No zero triggered"}`
+    ] : ["Tab Monitoring: Paused"])
   ].forEach((detail) => drawLines(detail, { size: 11, lineHeight: 16, align: "center" }));
   y += 18;
 
