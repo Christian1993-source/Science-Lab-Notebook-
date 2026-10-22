@@ -1195,6 +1195,403 @@
               "element": "Zn"
             }
           ]
+        },
+        {
+          "id": "electron-configuration-noble-gas",
+          "title": "Electron Configuration: Noble Gas Notation",
+          "description": "30 questions using noble-gas abbreviations, from lithium to germanium.",
+          "questions": [
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral lithium atom (Li) in noble-gas notation?",
+              "options": [
+                "[He] 2s¹",
+                "[He] 2s²",
+                "[He] 2s² 2p¹",
+                "[He] 2s² 2p²"
+              ],
+              "answer": 0,
+              "explanation": "Lithium: [He] 2s¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Li"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral beryllium atom (Be) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p¹",
+                "[He] 2s²",
+                "[He] 2s² 2p²",
+                "[He] 2s² 2p³"
+              ],
+              "answer": 1,
+              "explanation": "Beryllium: [He] 2s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Be"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral boron atom (B) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p²",
+                "[He] 2s² 2p³",
+                "[He] 2s² 2p¹",
+                "[He] 2s² 2p⁴"
+              ],
+              "answer": 2,
+              "explanation": "Boron: [He] 2s² 2p¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "B"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral carbon atom (C) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p³",
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p⁵",
+                "[He] 2s² 2p²"
+              ],
+              "answer": 3,
+              "explanation": "Carbon: [He] 2s² 2p². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "C"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral nitrogen atom (N) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p³",
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p⁵",
+                "[He] 2s² 2p⁶"
+              ],
+              "answer": 0,
+              "explanation": "Nitrogen: [He] 2s² 2p³. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "N"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral oxygen atom (O) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p⁵",
+                "[He] 2s² 2p⁴",
+                "[He] 2s² 2p⁶",
+                "[Ne] 3s¹"
+              ],
+              "answer": 1,
+              "explanation": "Oxygen: [He] 2s² 2p⁴. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "O"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral fluorine atom (F) in noble-gas notation?",
+              "options": [
+                "[He] 2s² 2p⁶",
+                "[Ne] 3s¹",
+                "[He] 2s² 2p⁵",
+                "[Ne] 3s²"
+              ],
+              "answer": 2,
+              "explanation": "Fluorine: [He] 2s² 2p⁵. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "F"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral neon atom (Ne) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s¹",
+                "[Ne] 3s²",
+                "[Ne] 3s² 3p¹",
+                "[He] 2s² 2p⁶"
+              ],
+              "answer": 3,
+              "explanation": "Neon: [He] 2s² 2p⁶. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ne"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral sodium atom (Na) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s¹",
+                "[Ne] 3s²",
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s² 3p²"
+              ],
+              "answer": 0,
+              "explanation": "Sodium: [Ne] 3s¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Na"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral magnesium atom (Mg) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s²",
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s² 3p³"
+              ],
+              "answer": 1,
+              "explanation": "Magnesium: [Ne] 3s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Mg"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral aluminum atom (Al) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p²",
+                "[Ne] 3s² 3p³",
+                "[Ne] 3s² 3p¹",
+                "[Ne] 3s² 3p⁴"
+              ],
+              "answer": 2,
+              "explanation": "Aluminum: [Ne] 3s² 3p¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Al"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral silicon atom (Si) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p³",
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p⁵",
+                "[Ne] 3s² 3p²"
+              ],
+              "answer": 3,
+              "explanation": "Silicon: [Ne] 3s² 3p². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Si"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral phosphorus atom (P) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p³",
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p⁵",
+                "[Ne] 3s² 3p⁶"
+              ],
+              "answer": 0,
+              "explanation": "Phosphorus: [Ne] 3s² 3p³. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "P"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral sulfur atom (S) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p⁵",
+                "[Ne] 3s² 3p⁴",
+                "[Ne] 3s² 3p⁶",
+                "[Ar] 4s¹"
+              ],
+              "answer": 1,
+              "explanation": "Sulfur: [Ne] 3s² 3p⁴. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "S"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral chlorine atom (Cl) in noble-gas notation?",
+              "options": [
+                "[Ne] 3s² 3p⁶",
+                "[Ar] 4s¹",
+                "[Ne] 3s² 3p⁵",
+                "[Ar] 4s²"
+              ],
+              "answer": 2,
+              "explanation": "Chlorine: [Ne] 3s² 3p⁵. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Cl"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral argon atom (Ar) in noble-gas notation?",
+              "options": [
+                "[Ar] 4s¹",
+                "[Ar] 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ne] 3s² 3p⁶"
+              ],
+              "answer": 3,
+              "explanation": "Argon: [Ne] 3s² 3p⁶. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ar"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral potassium atom (K) in noble-gas notation?",
+              "options": [
+                "[Ar] 4s¹",
+                "[Ar] 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 3d² 4s²"
+              ],
+              "answer": 0,
+              "explanation": "Potassium: [Ar] 4s¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "K"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral calcium atom (Ca) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 4s²",
+                "[Ar] 3d² 4s²",
+                "[Ar] 3d³ 4s²"
+              ],
+              "answer": 1,
+              "explanation": "Calcium: [Ar] 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ca"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral scandium atom (Sc) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d² 4s²",
+                "[Ar] 3d³ 4s²",
+                "[Ar] 3d¹ 4s²",
+                "[Ar] 3d⁵ 4s¹"
+              ],
+              "answer": 2,
+              "explanation": "Scandium: [Ar] 3d¹ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Sc"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral titanium atom (Ti) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d³ 4s²",
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d⁵ 4s²",
+                "[Ar] 3d² 4s²"
+              ],
+              "answer": 3,
+              "explanation": "Titanium: [Ar] 3d² 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ti"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral vanadium atom (V) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d³ 4s²",
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d⁵ 4s²",
+                "[Ar] 3d⁶ 4s²"
+              ],
+              "answer": 0,
+              "explanation": "Vanadium: [Ar] 3d³ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "V"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral chromium atom (Cr) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d⁴ 4s²",
+                "[Ar] 3d⁵ 4s¹",
+                "[Ar] 3d⁶",
+                "[Ar] 3d³ 4s²"
+              ],
+              "answer": 1,
+              "explanation": "Chromium: [Ar] 3d⁵ 4s¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Cr"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral manganese atom (Mn) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d⁶ 4s²",
+                "[Ar] 3d⁷ 4s²",
+                "[Ar] 3d⁵ 4s²",
+                "[Ar] 3d⁸ 4s²"
+              ],
+              "answer": 2,
+              "explanation": "Manganese: [Ar] 3d⁵ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Mn"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral iron atom (Fe) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d⁷ 4s²",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d⁶ 4s²"
+              ],
+              "answer": 3,
+              "explanation": "Iron: [Ar] 3d⁶ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Fe"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral cobalt atom (Co) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d⁷ 4s²",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d¹⁰ 4s²"
+              ],
+              "answer": 0,
+              "explanation": "Cobalt: [Ar] 3d⁷ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Co"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral nickel atom (Ni) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s²",
+                "[Ar] 3d¹⁰ 4s² 4p¹"
+              ],
+              "answer": 1,
+              "explanation": "Nickel: [Ar] 3d⁸ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ni"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral copper atom (Cu) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d⁹ 4s²",
+                "[Ar] 3d⁸ 4s²",
+                "[Ar] 3d¹⁰ 4s¹",
+                "[Ar] 3d¹⁰ 4s²"
+              ],
+              "answer": 2,
+              "explanation": "Copper: [Ar] 3d¹⁰ 4s¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Cu"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral zinc atom (Zn) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d¹⁰ 4s² 4p¹",
+                "[Ar] 3d¹⁰ 4s² 4p²",
+                "[He] 2s¹",
+                "[Ar] 3d¹⁰ 4s²"
+              ],
+              "answer": 3,
+              "explanation": "Zinc: [Ar] 3d¹⁰ 4s². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Zn"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral gallium atom (Ga) in noble-gas notation?",
+              "options": [
+                "[Ar] 3d¹⁰ 4s² 4p¹",
+                "[Ar] 3d¹⁰ 4s² 4p²",
+                "[He] 2s¹",
+                "[He] 2s²"
+              ],
+              "answer": 0,
+              "explanation": "Gallium: [Ar] 3d¹⁰ 4s² 4p¹. The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ga"
+            },
+            {
+              "type": "choice",
+              "prompt": "Which is the ground-state electron configuration of a neutral germanium atom (Ge) in noble-gas notation?",
+              "options": [
+                "[He] 2s¹",
+                "[Ar] 3d¹⁰ 4s² 4p²",
+                "[He] 2s²",
+                "[He] 2s² 2p¹"
+              ],
+              "answer": 1,
+              "explanation": "Germanium: [Ar] 3d¹⁰ 4s² 4p². The bracketed noble gas represents the inner-shell electrons.",
+              "element": "Ge"
+            }
+          ]
         }
       ]
     },
