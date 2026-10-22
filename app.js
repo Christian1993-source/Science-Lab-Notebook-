@@ -2923,7 +2923,7 @@ function downloadEssay() {
 
 function attachRestrictions() {
   const isReferenceLinkField = (target) =>
-    target instanceof HTMLInputElement && target.dataset.allowPaste === "true";
+    (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) && target.dataset.allowPaste === "true";
   const isEssayField = (target) =>
     target instanceof Element && Boolean(target.closest("#essayWorkspace"));
 
@@ -2943,6 +2943,11 @@ function attachRestrictions() {
       if (eventName === "paste" && isReferenceLinkField(event.target)) {
         const pastedText = event.clipboardData?.getData("text") || "";
         if (normalizeReferenceUrl(pastedText)) return;
+      }
+      if (eventName === "copy" && isReferenceLinkField(event.target)) {
+        const field = event.target;
+        const selectedText = field.value.slice(field.selectionStart, field.selectionEnd);
+        if (normalizeReferenceUrl(selectedText)) return;
       }
       blockEvent(event);
     }, true);
@@ -2975,7 +2980,7 @@ function attachRestrictions() {
       if (refreshShortcut) {
         return;
       }
-      if (isReferenceLinkField(event.target) && withCommandKey && key === "v") {
+      if (isReferenceLinkField(event.target) && ((withCommandKey && ["c", "v", "insert"].includes(key)) || (event.shiftKey && key === "insert"))) {
         return;
       }
       const blockedShortcuts = withCommandKey && ["c", "v", "x", "insert"].includes(key);
@@ -3031,6 +3036,7 @@ function attachRestrictions() {
     "selectionchange",
     () => {
       const active = document.activeElement;
+      if (isReferenceLinkField(active)) return;
       if (active instanceof HTMLTextAreaElement) {
         if (typeof active.selectionStart === "number" && typeof active.selectionEnd === "number") {
           if (active.selectionStart !== active.selectionEnd) {
