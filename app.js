@@ -2923,7 +2923,9 @@ function downloadEssay() {
 
 function attachRestrictions() {
   const isReferenceLinkField = (target) =>
-    (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) && target.dataset.allowPaste === "true";
+    target instanceof HTMLInputElement && target.dataset.allowPaste === "true";
+  const isEssayReferencesField = (target) => target === elements.essayReferences;
+  const allowsCopyPaste = (target) => isReferenceLinkField(target) || isEssayReferencesField(target);
   const isEssayField = (target) =>
     target instanceof Element && Boolean(target.closest("#essayWorkspace"));
 
@@ -2940,6 +2942,7 @@ function attachRestrictions() {
 
   ["paste", "copy", "cut", "drop", "dragstart"].forEach((eventName) => {
     document.addEventListener(eventName, (event) => {
+      if (["paste", "copy"].includes(eventName) && isEssayReferencesField(event.target)) return;
       if (eventName === "paste" && isReferenceLinkField(event.target)) {
         const pastedText = event.clipboardData?.getData("text") || "";
         if (normalizeReferenceUrl(pastedText)) return;
@@ -2963,7 +2966,7 @@ function attachRestrictions() {
         "deleteByCut",
         "insertFromPasteAsQuotation"
       ]);
-      if (blockedTypes.has(event.inputType) && !(isReferenceLinkField(event.target) && String(event.inputType).includes("Paste"))) {
+      if (blockedTypes.has(event.inputType) && !(allowsCopyPaste(event.target) && String(event.inputType).includes("Paste"))) {
         blockEvent(event);
       }
     },
@@ -2980,7 +2983,7 @@ function attachRestrictions() {
       if (refreshShortcut) {
         return;
       }
-      if (isReferenceLinkField(event.target) && ((withCommandKey && ["c", "v", "insert"].includes(key)) || (event.shiftKey && key === "insert"))) {
+      if (allowsCopyPaste(event.target) && ((withCommandKey && ["c", "v", "insert"].includes(key)) || (event.shiftKey && key === "insert"))) {
         return;
       }
       const blockedShortcuts = withCommandKey && ["c", "v", "x", "insert"].includes(key);
@@ -2993,10 +2996,10 @@ function attachRestrictions() {
   );
 
   document.addEventListener("contextmenu", (event) => {
-    if (!isReferenceLinkField(event.target)) blockEvent(event);
+    if (!allowsCopyPaste(event.target)) blockEvent(event);
   }, true);
   document.addEventListener("selectstart", (event) => {
-    if (!isReferenceLinkField(event.target)) blockEvent(event);
+    if (!allowsCopyPaste(event.target)) blockEvent(event);
   }, true);
 
   document.addEventListener("focusin", (event) => {
@@ -3012,7 +3015,7 @@ function attachRestrictions() {
     if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) || field.readOnly || field.type === "date" || field.type === "file") return;
     const previous = field.dataset.safeTypedValue ?? "";
     const current = field.value;
-    if (isReferenceLinkField(field)) {
+    if (allowsCopyPaste(field)) {
       field.dataset.safeTypedValue = current;
       return;
     }
@@ -3036,7 +3039,7 @@ function attachRestrictions() {
     "selectionchange",
     () => {
       const active = document.activeElement;
-      if (isReferenceLinkField(active)) return;
+      if (allowsCopyPaste(active)) return;
       if (active instanceof HTMLTextAreaElement) {
         if (typeof active.selectionStart === "number" && typeof active.selectionEnd === "number") {
           if (active.selectionStart !== active.selectionEnd) {
