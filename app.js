@@ -1156,6 +1156,53 @@ function attachInputListeners() {
   elements.loadEssayDraftBtn.addEventListener("click", loadEssayDraft);
   elements.downloadEssayBtn.addEventListener("click", downloadEssay);
   elements.essayContent.addEventListener("input", updateEssayWordCount);
+  const moveButton = document.getElementById("moveEssayTextBtn");
+  const moveNote = document.getElementById("moveEssayTextNote");
+  let pendingMove = null;
+  moveButton.addEventListener("click", () => {
+    const field = elements.essayContent;
+    if (!pendingMove) {
+      const start = field.selectionStart;
+      const end = field.selectionEnd;
+      if (start === end) {
+        moveNote.textContent = "Select the words or sentence you want to move first.";
+        field.focus();
+        return;
+      }
+      pendingMove = { start, end, value: field.value };
+      moveButton.textContent = "Place Selected Text Here";
+      moveNote.textContent = "Click the new position in your essay, then click Place Selected Text Here.";
+      field.focus();
+      return;
+    }
+    if (field.value !== pendingMove.value) {
+      pendingMove = null;
+      moveButton.textContent = "Move Selected Text";
+      moveNote.textContent = "The essay changed. Select the text again to move it.";
+      field.focus();
+      return;
+    }
+    if (field.selectionStart !== field.selectionEnd) {
+      moveNote.textContent = "Click the new position in your essay before placing the text.";
+      field.focus();
+      return;
+    }
+    const destination = field.selectionStart;
+    const { start, end, value } = pendingMove;
+    if (destination < start || destination > end) {
+      const selected = value.slice(start, end);
+      const remaining = value.slice(0, start) + value.slice(end);
+      const insertion = destination > end ? destination - (end - start) : destination;
+      field.value = remaining.slice(0, insertion) + selected + remaining.slice(insertion);
+      field.dataset.safeTypedValue = field.value;
+      field.setSelectionRange(insertion, insertion + selected.length);
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    pendingMove = null;
+    moveButton.textContent = "Move Selected Text";
+    moveNote.textContent = "Text moved. Select text and click Move Selected Text to move it again.";
+    field.focus();
+  });
   updateEssayWordCount();
   [elements.essayTitle, elements.essayStudentName].forEach((field) => {
     field.addEventListener("input", maybeStartEssayTimer);
@@ -2926,6 +2973,7 @@ function attachRestrictions() {
     target instanceof HTMLInputElement && target.dataset.allowPaste === "true";
   const isEssayReferencesField = (target) => target === elements.essayReferences;
   const allowsCopyPaste = (target) => isReferenceLinkField(target) || isEssayReferencesField(target);
+  const allowsSelection = (target) => allowsCopyPaste(target) || target === elements.essayContent;
   const isEssayField = (target) =>
     target instanceof Element && Boolean(target.closest("#essayWorkspace"));
 
@@ -2955,6 +3003,7 @@ function attachRestrictions() {
       blockEvent(event);
     }, true);
   });
+
 
   document.addEventListener(
     "beforeinput",
@@ -2999,7 +3048,7 @@ function attachRestrictions() {
     if (!allowsCopyPaste(event.target)) blockEvent(event);
   }, true);
   document.addEventListener("selectstart", (event) => {
-    if (!allowsCopyPaste(event.target)) blockEvent(event);
+    if (!allowsSelection(event.target)) blockEvent(event);
   }, true);
 
   document.addEventListener("focusin", (event) => {
@@ -3039,7 +3088,7 @@ function attachRestrictions() {
     "selectionchange",
     () => {
       const active = document.activeElement;
-      if (allowsCopyPaste(active)) return;
+      if (allowsSelection(active)) return;
       if (active instanceof HTMLTextAreaElement) {
         if (typeof active.selectionStart === "number" && typeof active.selectionEnd === "number") {
           if (active.selectionStart !== active.selectionEnd) {
