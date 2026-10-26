@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Science Lab Notebook</title>
-    <meta name="notebook-release" content="20261026-essay-move-text" />
+    <meta name="notebook-release" content="20261026-essay-move-visible" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20260914-chemistry-favicon-1" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20260914-chemistry-favicon-1" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=20260914-chemistry-favicon-1" />
@@ -97,7 +97,7 @@
               </div>
               <button id="closeEssayBtn" type="button" class="btn btn-secondary">Close Essay</button>
             </div>
-            <p class="data-loss-warning">(You can select and move text within the essay. Copying and pasting are allowed only in References. Before refreshing, closing the tab, or turning off the computer, click Save Essay Draft. Return on this browser and device and click Load Saved Essay to continue.)</p>
+            <p class="data-loss-warning">(You can select and move text within the essay using Move Selected Text. Copying and pasting are allowed only in References. Before refreshing, closing the tab, or turning off the computer, click Save Essay Draft. Return on this browser and device and click Load Saved Essay to continue.)</p>
             <div class="essay-student-information">
               <h3>Student Information</h3>
               <div class="student-grid essay-info-grid">
@@ -132,14 +132,14 @@
             <label for="essayTitle">Essay Title *</label>
             <input id="essayTitle" type="text" />
             <label for="essayContent">Complete Essay *</label>
+            <p id="moveEssayTextNote" class="meta" aria-live="polite">Select text, click Move Selected Text, then choose its new position and click Place Selected Text Here.</p>
             <textarea id="essayContent" class="essay-content" aria-describedby="essayWordCount essayWritingNote"></textarea>
-            <button id="moveEssayTextBtn" type="button" class="btn btn-secondary">Move Selected Text</button>
-            <p id="moveEssayTextNote" class="meta" aria-live="polite">Select text, click Move Selected Text, then choose its new position.</p>
             <p id="essayWordCount" class="meta" aria-live="polite">Word count: 0</p>
             <p id="essayWritingNote" class="meta">Use this single writing box for the entire essay. Paragraph breaks will be preserved in the downloaded PDF.</p>
             <label for="essayReferences">References</label>
             <textarea id="essayReferences" class="essay-references" placeholder="Enter each reference on a separate line. You may copy and paste complete references or links here."></textarea>
             <div class="button-row essay-actions">
+              <button id="moveEssayTextBtn" type="button" class="btn btn-secondary">Move Selected Text</button>
               <button id="loadPhysicsEssayExampleBtn" type="button" class="btn btn-secondary">Load Physics Essay Example</button>
               <button id="resetEssayBtn" type="button" class="btn btn-secondary">Reset Essay</button>
               <button id="saveEssayDraftBtn" type="button" class="btn">Save Essay Draft</button>
